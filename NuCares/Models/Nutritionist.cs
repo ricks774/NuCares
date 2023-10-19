@@ -87,7 +87,7 @@ namespace NuCares.Models
         /// </summary>
         [MaxLength(1000)]
         [Display(Name = "課程介紹")]
-        public string CourseIntor { get; set; }
+        public string CourseIntro { get; set; }
 
         [JsonIgnore]
         [Display(Name = "營養師帳戶")]
