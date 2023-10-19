@@ -59,7 +59,7 @@ namespace NuCares.Models
         /// </summary>
         [Required(ErrorMessage = "{0}必填")]
         [Display(Name = "專長")]
-        public EnumList.ExpertiseType Expertise { get; set; }
+        public List<EnumList.ExpertiseType> Expertise { get; set; }
 
         /// <summary>
         /// 學歷

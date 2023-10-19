@@ -167,26 +167,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202310190930055_AddUserModel.cs" />
-    <Compile Include="Migrations\202310190930055_AddUserModel.Designer.cs">
-      <DependentUpon>202310190930055_AddUserModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202310191000305_UpdateUserModel.cs" />
-    <Compile Include="Migrations\202310191000305_UpdateUserModel.Designer.cs">
-      <DependentUpon>202310191000305_UpdateUserModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202310191110561_AddNutritionistsModel.cs" />
-    <Compile Include="Migrations\202310191110561_AddNutritionistsModel.Designer.cs">
-      <DependentUpon>202310191110561_AddNutritionistsModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202310191122138_AddBanksModel.cs" />
-    <Compile Include="Migrations\202310191122138_AddBanksModel.Designer.cs">
-      <DependentUpon>202310191122138_AddBanksModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202310191127146_UpdateBanksModel.cs" />
-    <Compile Include="Migrations\202310191127146_UpdateBanksModel.Designer.cs">
-      <DependentUpon>202310191127146_UpdateBanksModel.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Bank.cs" />
     <Compile Include="Models\EnumList.cs" />
@@ -277,23 +257,6 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\202310190930055_AddUserModel.resx">
-      <DependentUpon>202310190930055_AddUserModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202310191000305_UpdateUserModel.resx">
-      <DependentUpon>202310191000305_UpdateUserModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202310191110561_AddNutritionistsModel.resx">
-      <DependentUpon>202310191110561_AddNutritionistsModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202310191122138_AddBanksModel.resx">
-      <DependentUpon>202310191122138_AddBanksModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202310191127146_UpdateBanksModel.resx">
-      <DependentUpon>202310191127146_UpdateBanksModel.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
