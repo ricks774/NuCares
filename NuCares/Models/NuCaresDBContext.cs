@@ -12,6 +12,9 @@ namespace NuCares.Models
         {
         }
 
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Nutritionist> Nutritionists { get; set; }
+        public virtual DbSet<Bank> Banks { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
