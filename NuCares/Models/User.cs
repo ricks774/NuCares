@@ -94,6 +94,14 @@ namespace NuCares.Models
         [Display(Name = "營養師會員")]
         public virtual ICollection<Nutritionist> Nutritionists { get; set; }
 
+        [JsonIgnore]
+        [Display(Name = "會員訂單")]
+        public virtual ICollection<Order> Orders{ get; set; }
+
+        [JsonIgnore]
+        [Display(Name = "會員課程")]
+        public virtual ICollection<Course> Courses { get; set; }
+
         /// <summary>
         /// 營養師證照圖
         /// </summary>
