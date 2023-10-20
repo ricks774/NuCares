@@ -45,5 +45,18 @@ namespace NuCares.Models
             孕期營養,
             樂齡營養與保健
         }
+
+        public enum PlanTag
+        {
+            入門首選,
+            最超值
+        }
+
+        public enum CourseState
+        {
+            未開始,
+            進行中,
+            已結束
+        }
     }
 }
