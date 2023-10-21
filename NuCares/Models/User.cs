@@ -96,7 +96,11 @@ namespace NuCares.Models
 
         [JsonIgnore]
         [Display(Name = "會員訂單")]
-        public virtual ICollection<Order> Orders{ get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
+
+        [JsonIgnore]
+        [Display(Name = "會員評論")]
+        public virtual ICollection<Comment> Comments { get; set; }
 
         [JsonIgnore]
         [Display(Name = "會員課程")]
