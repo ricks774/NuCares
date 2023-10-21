@@ -19,7 +19,7 @@ namespace NuCares.Models
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<Course> Courses { get; set; }
         public virtual DbSet<Survey> Surveys { get; set; }
-        public virtual DbSet<Comment> CommentsS { get; set; }
+        public virtual DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
