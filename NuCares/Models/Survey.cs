@@ -20,7 +20,7 @@ namespace NuCares.Models
         [JsonIgnore]
         [ForeignKey("CourseId")]
         [Display(Name = "所屬課程")]
-        public virtual User MyUser { get; set; }
+        public virtual Course MyCourse { get; set; }
 
         [Required(ErrorMessage = "{0}必填")]
         [Display(Name = "Question1")]

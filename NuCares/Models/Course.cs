@@ -102,6 +102,14 @@ namespace NuCares.Models
         [Display(Name = "是否提領")]
         public bool IsWithdraw { get; set; } = false;
 
+        [JsonIgnore]
+        [Display(Name = "課程問卷")]
+        public virtual ICollection<Survey> Surveys { get; set; }
+
+        [JsonIgnore]
+        [Display(Name = "課程評論")]
+        public virtual ICollection<Comment> Comments { get; set; }
+
         [Display(Name = "建立日期")]
         public DateTime CreateDate { get; set; } = DateTime.Now;
 

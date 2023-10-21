@@ -169,6 +169,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Bank.cs" />
+    <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Plan.cs" />
     <Compile Include="Models\EnumDisplayNameAttribute.cs" />
     <Compile Include="Models\EnumList.cs" />
