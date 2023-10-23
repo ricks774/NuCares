@@ -15,6 +15,9 @@ namespace NuCares.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [Display(Name = "每日菜單")]
+        public int DailyCourseMenuId { get; set; }
+
         [JsonIgnore]    //LINQ不會產生無限迴圈
         [ForeignKey("DailyCourseMenuId")]
         [Display(Name = "每日菜單編號")]
