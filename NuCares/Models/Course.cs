@@ -27,26 +27,6 @@ namespace NuCares.Models
         public virtual Order Order { get; set; }
 
         /// <summary>
-        /// 會員 ID
-        /// </summary>
-        [Display(Name = "會員")]
-        public int UserId { get; set; }
-        [JsonIgnore]
-        [ForeignKey("UserId")]
-        [Display(Name = "所屬會員")]
-        public virtual User MyUser { get; set; }
-
-        /// <summary>
-        /// 營養師 ID
-        /// </summary>
-        [Display(Name = "營養師")]
-        public int NutritionistId { get; set; }
-        [JsonIgnore]
-        [ForeignKey("NutritionistId ")]
-        [Display(Name = "所屬營養師")]
-        public virtual Nutritionist MyNutritionist { get; set; }
-
-        /// <summary>
         /// 目標體重
         /// </summary>
         [Display(Name = "目標體重")]
@@ -59,18 +39,18 @@ namespace NuCares.Models
         public int? GoalBodyFat { get; set; }
 
         /// <summary>
-        /// 課程起始日 yyyy-MM-dd
+        /// 課程起始日 yyyy/MM/dd
         /// </summary>
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "課程起始日")]
         public DateTime? CourseStartDate { get; set; }
 
         /// <summary>
-        /// 課程結束日 yyyy-MM-dd
+        /// 課程結束日 yyyy/MM/dd
         /// </summary>
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "課程結束日")]
         public DateTime? CourseEndDate { get; set; }
 
@@ -105,10 +85,6 @@ namespace NuCares.Models
         [JsonIgnore]
         [Display(Name = "課程問卷")]
         public virtual ICollection<Survey> Surveys { get; set; }
-
-        [JsonIgnore]
-        [Display(Name = "課程評論")]
-        public virtual ICollection<Comment> Comments { get; set; }
 
         [Display(Name = "建立日期")]
         public DateTime CreateDate { get; set; } = DateTime.Now;

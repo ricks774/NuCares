@@ -111,7 +111,6 @@ namespace NuCares.Models
         [Display(Name = "訂單課程")]
         public virtual ICollection<Course> Courses { get; set; }
 
-
         [Display(Name = "建立日期")]
         public DateTime CreateDate { get; set; } = DateTime.Now;
     }

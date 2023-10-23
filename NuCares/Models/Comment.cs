@@ -26,26 +26,6 @@ namespace NuCares.Models
         public virtual Course MyCourse { get; set; }
 
         /// <summary>
-        /// 課程方案 Id
-        /// </summary>
-        [Display(Name = "課程方案")]
-        public int PlanId { get; set; }
-        [JsonIgnore]
-        [ForeignKey("PlanId")]
-        [Display(Name = "所屬課程方案")]
-        public virtual Plan MyPlan { get; set; }
-
-        /// <summary>
-        /// 會員 ID
-        /// </summary>
-        [Display(Name = "會員")]
-        public int UserId { get; set; }
-        [JsonIgnore]
-        [ForeignKey("UserId")]
-        [Display(Name = "所屬會員")]
-        public virtual User MyUser { get; set; }
-
-        /// <summary>
         /// 評論內容
         /// </summary>
         [Required(ErrorMessage = "{0}必填")]
@@ -64,4 +44,4 @@ namespace NuCares.Models
         [Display(Name = "建立日期")]
         public DateTime CreateDate { get; set; } = DateTime.Now;
     }
-}
+//}

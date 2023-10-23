@@ -18,12 +18,8 @@ namespace NuCares.Models
         /// <summary>
         /// User Id
         /// </summary>
-        [Display(Name = "會員")]
-        public int UserId { get; set; }
-        [JsonIgnore]
-        [ForeignKey("UserId")]
         [Display(Name = "所屬會員")]
-        public virtual User MyUser { get; set; }
+        public string UserId{ get; set; }
 
         /// <summary>
         /// 是否公開
@@ -96,10 +92,6 @@ namespace NuCares.Models
         [JsonIgnore]
         [Display(Name = "營養師課程方案")]
         public virtual ICollection<Plan> Plans { get; set; }
-
-        [JsonIgnore]
-        [Display(Name = "會員課程")]
-        public virtual ICollection<Course> Courses { get; set; }
 
         public DateTime CreateDate { get; set; } = DateTime.Now;
     }
