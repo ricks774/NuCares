@@ -171,7 +171,17 @@
     <Compile Include="Models\DailyCourseMenu.cs" />
     <Compile Include="Models\DailyLog.cs" />
     <Compile Include="Models\DailyMealTime.cs" />
+    <Compile Include="Models\Bank.cs" />
+    <Compile Include="Models\Comment.cs" />
+    <Compile Include="Models\Plan.cs" />
+    <Compile Include="Models\EnumDisplayNameAttribute.cs" />
+    <Compile Include="Models\EnumList.cs" />
     <Compile Include="Models\NuCaresDBContext.cs" />
+    <Compile Include="Models\Nutritionist.cs" />
+    <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\Course.cs" />
+    <Compile Include="Models\Survey.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,14 @@ namespace NuCares.Models
         {
         }
 
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Nutritionist> Nutritionists { get; set; }
+        public virtual DbSet<Bank> Banks { get; set; }
+        public virtual DbSet<Plan> Plans { get; set; }
+        public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<Course> Courses { get; set; }
+        public virtual DbSet<Survey> Surveys { get; set; }
+        public virtual DbSet<Comment> Comments { get; set; }
         //public virtual DbSet<DailyCourseMenu> DailyCourseMenus { get; set; }
         //public virtual DbSet<DailyLog> DailyLogs { get; set; }
         //public virtual DbSet<DailyMealTime> DailyMealTimes { get; set; }
