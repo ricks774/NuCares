@@ -23,9 +23,11 @@ namespace NuCares.Models
         //public virtual DbSet<DailyCourseMenu> DailyCourseMenus { get; set; }
         //public virtual DbSet<DailyLog> DailyLogs { get; set; }
         //public virtual DbSet<DailyMealTime> DailyMealTimes { get; set; }
+        public virtual DbSet<FavoriteList> FavoriteLists { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Nutritionist>().HasRequired(n=> n.User) ;
         }
     }
 }

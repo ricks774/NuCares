@@ -33,6 +33,10 @@ namespace NuCares.Models
         [Display(Name = "密碼")]
         public string Password { get; set; }
 
+        [MaxLength(100)]
+        [Display(Name = "密碼鹽")]
+        public string Salt { get; set; }
+
         /// <summary>
         /// Email
         /// </summary>
@@ -98,12 +102,18 @@ namespace NuCares.Models
         [Display(Name = "會員評論")]
         public virtual ICollection<Comment> Comments { get; set; }
 
+        [JsonIgnore]
+        [Display(Name = "追蹤者")]
+        public virtual ICollection<FavoriteList> FavoriteLists { get; set; }
+
         /// <summary>
         /// 營養師證照圖
         /// </summary>
         [MaxLength(500)]
         [Display(Name = "證照圖片")]
         public string CertificateImage { get; set; }
+
+        public Nutritionist Nutritionist { get; set; }
 
         [Display(Name = "建立日期")]
         public DateTime CreateDate { get; set; } = DateTime.Now;
