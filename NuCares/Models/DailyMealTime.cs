@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,8 +15,12 @@ namespace NuCares.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Display(Name = "每日記錄")]
+        [JsonIgnore]    //LINQ不會產生無限迴圈
+        [ForeignKey("DailyLogId")]
+        [Display(Name = "每日記錄Id")]
         public int DailyLogId { get; set; }
+
+        public virtual ICollection<DailyLog> DailyLogs { get; set; }
 
         [Display(Name = "三餐時間")]
         public string MealTime { get; set; }

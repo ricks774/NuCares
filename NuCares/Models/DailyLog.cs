@@ -15,11 +15,12 @@ namespace NuCares.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        // TODO 尚未連接Order
-        //[JsonIgnore]    //LINQ不會產生無限迴圈
-        //[Display(Name = "訂單編號")]
-        //public int DailyCourseMenuId { get; set; }
-        //public virtual ICollection<Order> Orders { get; set; }
+        [JsonIgnore]    //LINQ不會產生無限迴圈
+        [ForeignKey("DailyCourseMenuId")]
+        [Display(Name = "訂單編號")]
+        public int DailyCourseMenuId { get; set; }
+
+        public virtual ICollection<DailyCourseMenu> DailyCourseMenus { get; set; }
 
         [MaxLength(2)]
         [Display(Name = "油脂")]
