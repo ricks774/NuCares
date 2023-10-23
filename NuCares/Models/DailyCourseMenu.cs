@@ -48,6 +48,6 @@ namespace NuCares.Models
         public DateTime CreateDate { get; set; } = DateTime.Now;
 
         [Display(Name = "每日log")]
-        public virtual ICollection<DailyLog> DailyLogs { get; set; }
+        public virtual DailyLog DailyLogs { get; set; }
     }
 }

@@ -17,10 +17,8 @@ namespace NuCares.Models
 
         [JsonIgnore]    //LINQ不會產生無限迴圈
         [ForeignKey("DailyCourseMenuId")]
-        [Display(Name = "訂單編號")]
-        public int DailyCourseMenuId { get; set; }
-
-        public virtual ICollection<DailyCourseMenu> DailyCourseMenus { get; set; }
+        [Display(Name = "每日菜單編號")]
+        public virtual DailyCourseMenu MyDailyCourseMenu { get; set; }
 
         [Display(Name = "油脂")]
         public int Oil { get; set; } = 0;
