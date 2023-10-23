@@ -46,5 +46,8 @@ namespace NuCares.Models
 
         [Display(Name = "建立日期")]
         public DateTime CreateDate { get; set; } = DateTime.Now;
+
+        [Display(Name = "每日log")]
+        public virtual ICollection<DailyLog> DailyLogs { get; set; }
     }
 }

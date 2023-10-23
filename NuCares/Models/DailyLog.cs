@@ -54,5 +54,8 @@ namespace NuCares.Models
 
         [Display(Name = "建立日期")]
         public DateTime CreateDate { get; set; } = DateTime.Now;
+
+        [Display(Name = "三餐時間")]
+        public virtual ICollection<DailyMealTime> DailyMealTimes { get; set; }
     }
 }
