@@ -22,7 +22,6 @@ namespace NuCares.Models
 
         public virtual ICollection<DailyCourseMenu> DailyCourseMenus { get; set; }
 
-        [MaxLength(2)]
         [Display(Name = "油脂")]
         public int Oil { get; set; } = 0;
 
@@ -32,7 +31,6 @@ namespace NuCares.Models
         [Display(Name = "油脂照片")]
         public string OilImgUrl { get; set; }
 
-        [MaxLength(2)]
         [Display(Name = "水果")]
         public int Fruit { get; set; } = 0;
 
@@ -42,7 +40,6 @@ namespace NuCares.Models
         [Display(Name = "水果照片")]
         public string FruitImgUrl { get; set; }
 
-        [MaxLength(2)]
         [Display(Name = "飲水")]
         public int Water { get; set; } = 0;
 

@@ -35,15 +35,12 @@ namespace NuCares.Models
         [Display(Name = "蔬菜")]
         public string Vegetable { get; set; }
 
-        [MaxLength(2)]
         [Display(Name = "油脂")]
         public int Oil { get; set; } = 0;
 
-        [MaxLength(2)]
         [Display(Name = "水果")]
         public int Fruit { get; set; } = 0;
 
-        [MaxLength(4)]
         [Display(Name = "飲水")]
         public int Water { get; set; } = 0;
 

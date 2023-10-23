@@ -12,7 +12,6 @@ namespace NuCares.Models
         {
         }
 
-
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
         }
