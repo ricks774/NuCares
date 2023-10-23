@@ -53,13 +53,13 @@ namespace NuCares.Models
         public string UserName { get; set; }
 
         /// <summary>
-        /// 生日 yyyy-MM-dd
+        /// 生日 yyyy/MM/dd
         /// </summary>
         [Required(ErrorMessage = "{0}必填")]
-        [Display(Name = "生日")]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime? Birthday { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = true)]
+        [Display(Name = "生日")]
+        public DateTime Birthday { get; set; }
 
         /// <summary>
         /// 性別：0 男, 1 女
@@ -91,20 +91,12 @@ namespace NuCares.Models
         public bool IsNutritionist { get; set; } = false;
 
         [JsonIgnore]
-        [Display(Name = "營養師會員")]
-        public virtual ICollection<Nutritionist> Nutritionists { get; set; }
-
-        [JsonIgnore]
         [Display(Name = "會員訂單")]
         public virtual ICollection<Order> Orders { get; set; }
 
         [JsonIgnore]
         [Display(Name = "會員評論")]
         public virtual ICollection<Comment> Comments { get; set; }
-
-        [JsonIgnore]
-        [Display(Name = "會員課程")]
-        public virtual ICollection<Course> Courses { get; set; }
 
         /// <summary>
         /// 營養師證照圖
