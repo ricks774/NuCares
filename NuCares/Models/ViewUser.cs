@@ -8,20 +8,8 @@ using System.Web;
 
 namespace NuCares.Models
 {
-    public class User
+    public class ViewUser
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Display(Name = "編號")]
-        public int Id { get; set; }
-
-        /// <summary>
-        /// 照片
-        /// </summary>
-        [MaxLength(500)]
-        [Display(Name = "照片")]
-        public string ImgUrl { get; set; }
-
         /// <summary>
         /// 密碼, 必須為6-12位英文字母和數字的組合
         /// </summary>
@@ -30,10 +18,6 @@ namespace NuCares.Models
         [DataType(DataType.Password)]
         [Display(Name = "密碼")]
         public string Password { get; set; }
-
-        [MaxLength(100)]
-        [Display(Name = "密碼鹽")]
-        public string Salt { get; set; }
 
         /// <summary>
         /// Email
@@ -78,42 +62,36 @@ namespace NuCares.Models
         [RegularExpression(@"^09\d{8}$", ErrorMessage = "{0}格式錯誤")]
         [Display(Name = "手機號碼")]
         public string Phone { get; set; }
+    }
+
+    public class ViewUserCheck
+    {
+        /// <summary>
+        /// Email
+        /// </summary>
+        [Required(ErrorMessage = "{0}必填")]
+        [MaxLength(200)]
+        [EmailAddress(ErrorMessage = "{0}格式錯誤")]
+        [DataType(DataType.EmailAddress)]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
 
         /// <summary>
-        /// Line Id
+        /// 密碼, 必須為6-12位英文字母和數字的組合
         /// </summary>
-        [MaxLength(50)]
-        [Display(Name = "Line ID")]
-        public string LineId { get; set; }
+        [Required(ErrorMessage = "{0}必填")]
+        [StringLength(100)]
+        [DataType(DataType.Password)]
+        [Display(Name = "密碼")]
+        public string Password { get; set; }
 
         /// <summary>
-        /// 是否為營養師
+        /// 密碼, 必須為6-12位英文字母和數字的組合
         /// </summary>
-        [Display(Name = "是否營養師")]
-        public bool IsNutritionist { get; set; } = false;
-
-        [JsonIgnore]
-        [Display(Name = "會員訂單")]
-        public virtual ICollection<Order> Orders { get; set; }
-
-        [JsonIgnore]
-        [Display(Name = "會員評論")]
-        public virtual ICollection<Comment> Comments { get; set; }
-
-        [JsonIgnore]
-        [Display(Name = "追蹤者")]
-        public virtual ICollection<FavoriteList> FavoriteLists { get; set; }
-
-        /// <summary>
-        /// 營養師證照圖
-        /// </summary>
-        [MaxLength(500)]
-        [Display(Name = "證照圖片")]
-        public string CertificateImage { get; set; }
-
-        public Nutritionist Nutritionist { get; set; }
-
-        [Display(Name = "建立日期")]
-        public DateTime CreateDate { get; set; } = DateTime.Now;
+        [Required(ErrorMessage = "{0}必填")]
+        [StringLength(100)]
+        [DataType(DataType.Password)]
+        [Display(Name = "密碼確認")]
+        public string PasswordConfirm { get; set; }
     }
 }
