@@ -23,7 +23,7 @@ namespace NuCares.Models
         [JsonIgnore]
         [ForeignKey("PlanId")]
         [Display(Name = "所屬課程方案")]
-        public virtual Plan MyPlan { get; set; }
+        public virtual Plan Plan { get; set; }
 
         /// <summary>
         /// 會員 Id
@@ -33,7 +33,7 @@ namespace NuCares.Models
         [JsonIgnore]
         [ForeignKey("UserId")]
         [Display(Name = "所屬會員")]
-        public virtual User MyUser { get; set; }
+        public virtual User User { get; set; }
 
         /// <summary>
         /// 訂單編號
