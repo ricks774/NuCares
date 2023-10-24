@@ -24,6 +24,8 @@ namespace NuCares.Models
         //public virtual DbSet<DailyLog> DailyLogs { get; set; }
         //public virtual DbSet<DailyMealTime> DailyMealTimes { get; set; }
 
+        public virtual DbSet<BodyInfo> BodyInfos { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
         }
