@@ -15,11 +15,6 @@ namespace NuCares.Models
         [Display(Name = "編號")]
         public int Id { get; set; }
 
-        /// <summary>
-        /// User Id
-        /// </summary>
-        [Display(Name = "所屬會員")]
-        public string UserId{ get; set; }
 
         /// <summary>
         /// 是否公開
@@ -92,6 +87,13 @@ namespace NuCares.Models
         [JsonIgnore]
         [Display(Name = "營養師課程方案")]
         public virtual ICollection<Plan> Plans { get; set; }
+
+        [JsonIgnore]
+        [Display(Name = "追蹤營養師")]
+        public virtual ICollection<FavoriteList> FavoriteLists { get; set; }
+
+        public int UserId { get; set; }
+        public virtual User User { get; set; }
 
         public DateTime CreateDate { get; set; } = DateTime.Now;
     }
