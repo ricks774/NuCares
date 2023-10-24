@@ -20,9 +20,9 @@ namespace NuCares.Models
         public virtual DbSet<Course> Courses { get; set; }
         public virtual DbSet<Survey> Surveys { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
-        //public virtual DbSet<DailyCourseMenu> DailyCourseMenus { get; set; }
-        //public virtual DbSet<DailyLog> DailyLogs { get; set; }
-        //public virtual DbSet<DailyMealTime> DailyMealTimes { get; set; }
+        public virtual DbSet<DailyCourseMenu> DailyCourseMenus { get; set; }
+        public virtual DbSet<DailyLog> DailyLogs { get; set; }
+        public virtual DbSet<DailyMealTime> DailyMealTimes { get; set; }
         public virtual DbSet<FavoriteList> FavoriteLists { get; set; }
 
         public virtual DbSet<BodyInfo> BodyInfos { get; set; }

@@ -23,7 +23,7 @@ namespace NuCares.Models
         [JsonIgnore]
         [ForeignKey("NutritionistId ")]
         [Display(Name = "所屬營養師")]
-        public virtual Nutritionist MyNutritionist { get; set; }
+        public virtual Nutritionist Nutritionist { get; set; }
 
         /// <summary>
         /// 課程排序
@@ -64,13 +64,11 @@ namespace NuCares.Models
         [Display(Name = "課程說明")]
         public string Detail { get; set; }
 
-
         /// <summary>
         /// 標籤：0 入門首選, 1 最超值
         /// </summary>
         [Display(Name = " 標籤")]
         public EnumList.PlanTag Tag { get; set; }
-
 
         [JsonIgnore]
         [Display(Name = "課程訂單")]
@@ -79,7 +77,6 @@ namespace NuCares.Models
         [JsonIgnore]
         [Display(Name = "方案評論")]
         public virtual ICollection<Comment> Comments { get; set; }
-
 
         [Display(Name = " 已刪除")]
         public bool IsDelete { get; set; } = false;
