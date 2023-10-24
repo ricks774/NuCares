@@ -168,6 +168,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\BodyInfo.cs" />
     <Compile Include="Models\DailyCourseMenu.cs" />
     <Compile Include="Models\DailyLog.cs" />
     <Compile Include="Models\DailyMealTime.cs" />

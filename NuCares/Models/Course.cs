@@ -87,6 +87,10 @@ namespace NuCares.Models
         public virtual ICollection<Survey> Surveys { get; set; }
 
         [JsonIgnore]
+        [Display(Name = "課程身體指數")]
+        public virtual ICollection<BodyInfo> BodyInfos { get; set; }
+
+        [JsonIgnore]
         [Display(Name = "課程菜單")]
         public virtual ICollection<DailyCourseMenu> DailyCourseMenus { get; set; }
 
