@@ -23,7 +23,7 @@ namespace NuCares.Controllers
         /// </summary>
         /// <param name="viewUserLogin">使用者登入</param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpPost]
         [Route("auth/login")]
         public IHttpActionResult Login(ViewUserLogin viewUserLogin)
         {
