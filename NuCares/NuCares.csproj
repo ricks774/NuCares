@@ -224,17 +224,8 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\SingUpController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202310240317529_init DataBase.cs" />
-    <Compile Include="Migrations\202310240317529_init DataBase.Designer.cs">
-      <DependentUpon>202310240317529_init DataBase.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202310240800377_unless email inex.cs" />
-    <Compile Include="Migrations\202310240800377_unless email inex.Designer.cs">
-      <DependentUpon>202310240800377_unless email inex.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BodyInfo.cs" />
@@ -343,14 +334,6 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\202310240317529_init DataBase.resx">
-      <DependentUpon>202310240317529_init DataBase.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202310240800377_unless email inex.resx">
-      <DependentUpon>202310240800377_unless email inex.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

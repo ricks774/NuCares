@@ -68,19 +68,17 @@ namespace NuCares.Controllers
             }
             else
             {
-                // TODO 目前回傳200，有空研究是否可以回傳400
                 // 回傳錯誤的訊息
                 var errors = ModelState.Values
                     .SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
                     .ToList();
 
-                return Ok(new
+                return Content(HttpStatusCode.BadRequest, new
                 {
                     StatusCode = 400,
                     Status = "Error",
-                    Message = "註冊失敗",
-                    Errors = errors
+                    Message = errors
                 });
             }
         }
@@ -102,7 +100,12 @@ namespace NuCares.Controllers
             bool emailCheck = db.Users.Any(u => u.Email == viewUserCheck.Email);
             if (emailCheck)
             {
-                return BadRequest("Email重複!");
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = "Email重複"
+                });
             }
             return Ok(new
             {
