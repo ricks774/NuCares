@@ -81,27 +81,27 @@ namespace NuCares.Models
         public string CourseIntro { get; set; }
 
         [MaxLength(100)]
-        [Display(Name = "其他通訊軟體1")]
+        [Display(Name = "其他通訊軟體 1")]
         public string Option1{ get; set; }
 
         [MaxLength(100)]
-        [Display(Name = "其他通訊軟體 ID 1")]
+        [Display(Name = "其他通訊軟體 1 ID")]
         public string OptionId1 { get; set; }
 
         [MaxLength(100)]
-        [Display(Name = "其他通訊軟體21")]
+        [Display(Name = "其他通訊軟體 2")]
         public string Option2 { get; set; }
 
         [MaxLength(100)]
-        [Display(Name = "其他通訊軟體 ID 2")]
+        [Display(Name = "其他通訊軟體 2 ID")]
         public string OptionId2 { get; set; }
 
         [MaxLength(100)]
-        [Display(Name = "其他通訊軟體31")]
+        [Display(Name = "其他通訊軟體 3")]
         public string Option3 { get; set; }
 
         [MaxLength(100)]
-        [Display(Name = "其他通訊軟體 ID 3")]
+        [Display(Name = "其他通訊軟體 3 ID")]
         public string OptionId3 { get; set; }
 
         [JsonIgnore]
