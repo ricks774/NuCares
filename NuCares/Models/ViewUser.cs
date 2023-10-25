@@ -94,4 +94,36 @@ namespace NuCares.Models
         [Display(Name = "密碼確認")]
         public string PasswordConfirm { get; set; }
     }
+
+    public class ViewUserLogin
+    {
+        /// <summary>
+        /// Id
+        /// </summary>
+        [Display(Name = "編號")]
+        public int Id { get; set; }
+
+        /// <summary>
+        /// Email
+        /// </summary>
+        [Required(ErrorMessage = "{0}必填")]
+        [MaxLength(200)]
+        [EmailAddress(ErrorMessage = "{0}格式錯誤")]
+        [DataType(DataType.EmailAddress)]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
+
+        /// <summary>
+        /// 密碼, 必須為6-12位英文字母和數字的組合
+        /// </summary>
+        [Required(ErrorMessage = "{0}必填")]
+        [StringLength(100)]
+        [DataType(DataType.Password)]
+        [Display(Name = "密碼")]
+        public string Password { get; set; }
+
+        [MaxLength(100)]
+        [Display(Name = "密碼鹽")]
+        public string Salt { get; set; }
+    }
 }

@@ -51,75 +51,19 @@ namespace NuCares.Security
             return hash.SequenceEqual(newHash); // 比較兩個位元組數組（hash 和 newHash）是否相等
         }
 
-        // ! 設定驗證票
-        private void SetAuthenTicket(string userData, string userId)
-        {
-            // 宣告一個驗證票 要引入 using System.Web.Security
-            FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1, userId, DateTime.Now, DateTime.Now.AddHours(3), false, userData);
-            // 加密驗證票
-            string encryptedTicket = FormsAuthentication.Encrypt(ticket);
-            // 建立 Cookie
-            HttpCookie authenticationCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
-            // 將 Cookie 寫入回應
-            HttpContext.Current.Response.Cookies.Add(authenticationCookie);
-        }
-
         #endregion "驗證加密密碼"
 
         #region "登入驗證"
 
-        public void Argon2_Login(string account, string password)
+        public bool Argon2_Login(string Salt, string Password, string dbPassword)
         {
-            SqlConnection connection = new SqlConnection(WebConfigurationManager.ConnectionStrings["NuCaresDB"].ConnectionString);
+            byte[] salt = Convert.FromBase64String(Salt);
+            byte[] hash = Convert.FromBase64String(dbPassword);
 
-            string sql = "SELECT * from YachtsUser WHERE Account = @Account";
-            SqlCommand sqlcommand = new SqlCommand(sql, connection);
-            sqlcommand.Parameters.AddWithValue("@Account", account);
-            //sqlcommand.Parameters.AddWithValue("@Password", password);
+            // 驗證密碼
+            bool success = VerifyHash(Password, salt, hash);
 
-            // 資料庫用 Adapter 執行指令
-            SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlcommand);
-            // 建立一個空的 Table
-            DataTable dataTable = new DataTable();
-            // 將資料放入 Table 內
-            dataAdapter.Fill(dataTable);
-
-            // SQL有找到資料時執行
-            if (dataTable.Rows.Count > 0)
-            {
-                byte[] hash = Convert.FromBase64String(dataTable.Rows[0]["Password"].ToString());
-                byte[] salt = Convert.FromBase64String(dataTable.Rows[0]["Salt"].ToString());
-
-                // 驗證密碼
-                bool success = VerifyHash(password, salt, hash);
-
-                if (success)
-                {
-                    // 宣告驗證票要夾帶的資料(用 ; 區隔)
-                    string userData =
-                        dataTable.Rows[0]["MaxPower"].ToString() + ";" +
-                        dataTable.Rows[0]["Account"].ToString() + ";" +
-                        dataTable.Rows[0]["Name"].ToString() + ";" +
-                        dataTable.Rows[0]["Email"].ToString();
-                    // 設定驗證票(夾帶資料、Cookie命名)
-                    SetAuthenTicket(userData, account);
-                }
-                else
-                {
-                    // 資料庫找不到資料時 表示密碼有錯誤
-                    HttpContext.Current.Response.Write("<script>alert('密碼輸入錯誤!')</script>");
-                    connection.Close();
-                    return;
-                }
-            }
-            else
-            {
-                //資料庫裡找不到相同資料時，表示帳號有誤!
-                HttpContext.Current.Response.Write("<script>alert('帳號輸入錯誤!')</script>");
-                connection.Close();
-                return;
-            }
-            connection.Close();
+            return success;
         }
 
         #endregion "登入驗證"
