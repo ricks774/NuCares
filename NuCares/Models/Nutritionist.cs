@@ -80,9 +80,29 @@ namespace NuCares.Models
         [Display(Name = "課程介紹")]
         public string CourseIntro { get; set; }
 
-        [JsonIgnore]
-        [Display(Name = "營養師帳戶")]
-        public virtual ICollection<Bank> Banks { get; set; }
+        [MaxLength(100)]
+        [Display(Name = "其他通訊軟體 1")]
+        public string Option1{ get; set; }
+
+        [MaxLength(100)]
+        [Display(Name = "其他通訊軟體 1 ID")]
+        public string OptionId1 { get; set; }
+
+        [MaxLength(100)]
+        [Display(Name = "其他通訊軟體 2")]
+        public string Option2 { get; set; }
+
+        [MaxLength(100)]
+        [Display(Name = "其他通訊軟體 2 ID")]
+        public string OptionId2 { get; set; }
+
+        [MaxLength(100)]
+        [Display(Name = "其他通訊軟體 3")]
+        public string Option3 { get; set; }
+
+        [MaxLength(100)]
+        [Display(Name = "其他通訊軟體 3 ID")]
+        public string OptionId3 { get; set; }
 
         [JsonIgnore]
         [Display(Name = "營養師課程方案")]
