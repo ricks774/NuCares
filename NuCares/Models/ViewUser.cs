@@ -15,6 +15,7 @@ namespace NuCares.Models
         /// </summary>
         [Required(ErrorMessage = "{0}必填")]
         [StringLength(100)]
+        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,12}$", ErrorMessage = "密碼必須為6-12位英文字母和數字的組合")]
         [DataType(DataType.Password)]
         [Display(Name = "密碼")]
         public string Password { get; set; }

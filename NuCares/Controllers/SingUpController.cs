@@ -69,10 +69,14 @@ namespace NuCares.Controllers
             else
             {
                 // 回傳錯誤的訊息
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
+                var errors = ModelState.Keys
+                    .Select(key =>
+                    {
+                        var propertyName = key.Split('.').Last(); // 取的屬性名稱
+                        var errorMessage = ModelState[key].Errors.First().ErrorMessage; // 取得錯誤訊息
+                        return new { PropertyName = propertyName, ErrorMessage = errorMessage };
+                    })
+                    .ToDictionary(e => e.PropertyName, e => e.ErrorMessage);
 
                 return Content(HttpStatusCode.BadRequest, new
                 {
