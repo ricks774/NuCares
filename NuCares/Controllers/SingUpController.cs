@@ -90,23 +90,57 @@ namespace NuCares.Controllers
         /// <summary>
         /// 信箱重複驗證
         /// </summary>
-        /// <param name="viewUserCheck">判斷信箱是否重複</param>
+        /// <param name="viewEmailCheck">判斷信箱是否重複</param>
         /// <returns></returns>
         [HttpPost]
         [Route("auth/checkEmail")]
-        public IHttpActionResult CheckEmail(ViewUserCheck viewUserCheck)
+        public IHttpActionResult CheckEmail(ViewEmailCheck viewEmailCheck)
         {
             // 判斷Email是否有重複
-            bool emailCheck = db.Users.Any(u => u.Email == viewUserCheck.Email);
+            bool emailCheck = db.Users.Any(u => u.Email == viewEmailCheck.Email);
             if (emailCheck)
             {
                 return Content(HttpStatusCode.BadRequest, new
                 {
                     StatusCode = 400,
                     Status = "Error",
-                    Message = "Email重複"
+                    Message = new { Password = "用戶已存在" }
                 });
             }
+
+            // 判斷Email格式是否正確
+            if (!ModelState.IsValid)
+            {
+                if (viewEmailCheck.Password != viewEmailCheck.PasswordConfirm)
+                {
+                    return Content(HttpStatusCode.BadRequest, new
+                    {
+                        StatusCode = 400,
+                        Status = "Error",
+                        Message = new { Password = "密碼不相同" }
+                    });
+                }
+
+                // 回傳錯誤的訊息
+                var errors = ModelState.Keys
+                    .Select(key =>
+                    {
+                        var propertyName = key.Split('.').Last(); // 取的屬性名稱
+                        var errorMessage = ModelState[key].Errors.First().ErrorMessage; // 取得錯誤訊息
+                        return new { PropertyName = propertyName, ErrorMessage = errorMessage };
+                    })
+                    .ToDictionary(e => e.PropertyName, e => e.ErrorMessage);
+
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = errors
+                });
+            }
+
+            // 判斷密碼輸入是否正確
+
             return Ok(new
             {
                 StatusCode = 200,

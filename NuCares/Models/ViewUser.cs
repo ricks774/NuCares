@@ -64,7 +64,7 @@ namespace NuCares.Models
         public string Phone { get; set; }
     }
 
-    public class ViewUserCheck
+    public class ViewEmailCheck
     {
         /// <summary>
         /// Email
@@ -80,7 +80,7 @@ namespace NuCares.Models
         /// 密碼, 必須為6-12位英文字母和數字的組合
         /// </summary>
         [Required(ErrorMessage = "{0}必填")]
-        [StringLength(100)]
+        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,12}$", ErrorMessage = "密碼必須為6-12位英文字母和數字的組合")]
         [DataType(DataType.Password)]
         [Display(Name = "密碼")]
         public string Password { get; set; }
