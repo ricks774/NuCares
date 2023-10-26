@@ -171,17 +171,7 @@ namespace NuCares.Controllers
                 });
             }
             var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
-            var plan = db.Plans.FirstOrDefault(p => p.Id == planId && p.NutritionistId == nu.Id);
-
-            if (plan.IsDelete)
-            {
-                return Content(HttpStatusCode.BadRequest, new
-                {
-                    StatusCode = 400,
-                    Status = "Error",
-                    Message = new { planId = "查無此方案 ID" }
-                });
-            }
+            var plan = db.Plans.FirstOrDefault(p => p.Id == planId && p.NutritionistId == nu.Id && !p.IsDelete);
             if (plan == null)
             {
                 return Content(HttpStatusCode.BadRequest, new
@@ -267,16 +257,7 @@ namespace NuCares.Controllers
             }
 
             var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
-            var plan = db.Plans.FirstOrDefault(p => p.Id == planId && p.NutritionistId == nu.Id);
-            if (plan.IsDelete)
-            {
-                return Content(HttpStatusCode.BadRequest, new
-                {
-                    StatusCode = 400,
-                    Status = "Error",
-                    Message = new { planId = "查無此方案 ID" }
-                });
-            }
+            var plan = db.Plans.FirstOrDefault(p => p.Id == planId && p.NutritionistId == nu.Id && !p.IsDelete);
             if (plan == null)
             {
                 return Content(HttpStatusCode.BadRequest, new
