@@ -35,7 +35,7 @@ namespace NuCares.Security
                 { "Email", user.Email},
                 { "ImgUrl", user.ImgUrl },
                 { "IsNutritionist", user.IsNutritionist },
-                { "Exp", DateTime.Now.AddMinutes(30).ToString() } // JwtToken 時效設定 30 分
+                { "Exp", DateTime.Now.AddDays(1).ToString() } // JwtToken 時效設定 1 天
             };
 
             // 產生 JwtToken
