@@ -87,6 +87,13 @@ namespace NuCares.Controllers
                 UserPhone = viewOrder.UserPhone,
                 UserLineId = viewOrder.UserLineId,
             };
+            db.Orders.Add(newOrder);
+            var newCourse = new Course
+            {
+                OrderId = newOrder.Id
+            };
+            db.Courses.Add(newCourse);
+            db.SaveChanges();
             var result = new
             {
                 StatusCode = 200,
@@ -94,7 +101,8 @@ namespace NuCares.Controllers
                 Message = "訂單新增成功",
                 Date = new
                 {
-                    newOrder
+                    newOrder,
+                    CourseId = newOrder.Id
                 }
             };
             return Ok(result);
