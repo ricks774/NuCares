@@ -99,9 +99,9 @@ namespace NuCares.Controllers
                 StatusCode = 200,
                 Status = "Success",
                 Message = "訂單新增成功",
-                Date = new
+                Data = new
                 {
-                    newOrder,
+                    Order = newOrder,
                     CourseId = newOrder.Id
                 }
             };
