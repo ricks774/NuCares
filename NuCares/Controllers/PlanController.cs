@@ -1,4 +1,5 @@
-﻿using NuCares.Models;
+﻿using NSwag.Annotations;
+using NuCares.Models;
 using NuCares.Security;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Web.Http;
 
 namespace NuCares.Controllers
 {
+    [OpenApiTag("Nutritionist", Description = "營養師")]
     public class PlanController : ApiController
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();
@@ -126,7 +128,7 @@ namespace NuCares.Controllers
 
         #region "修改課程方案"
         /// <summary>
-        /// 新增營養師課程方案
+        /// 更新營養師課程方案
         /// </summary>
         /// <param name="viewEditPlan">新增方案</param>
         /// <param name="planId">方案 Id</param>
@@ -241,7 +243,7 @@ namespace NuCares.Controllers
 
         #region "刪除課程方案"
         /// <summary>
-        /// 新增營養師課程方案
+        /// 刪除營養師課程方案
         /// </summary>
         /// <param name="planId">方案 Id</param>
         /// <returns></returns>
