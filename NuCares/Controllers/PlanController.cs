@@ -81,5 +81,47 @@ namespace NuCares.Controllers
             return Ok(result);
         }
         #endregion "新增API"
+
+        #region "取得課程方案"
+        /// <summary>
+        /// 取得營養師課程方案
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("nu/plan")]
+        [JwtAuthFilter]
+        public IHttpActionResult GelPlans()
+        {
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int id = (int)userToken["Id"];
+            bool isNutritionist = (bool)userToken["IsNutritionist"];
+            bool checkUser = db.Nutritionists.Any(n => n.UserId == id);
+            if (!isNutritionist || !checkUser)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 403,
+                    Status = "Error",
+                    Message = new { Auth = "您沒有營養師權限" }
+                });
+            }
+            var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
+            var nuPlan = db.Plans
+            .Where(plan => plan.NutritionistId == nu.Id)
+            .OrderByDescending(plan => plan.Rank)
+            .ThenBy(plan => plan.CreateDate)
+            .ToList();
+
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "營養師課程方案取得成功",
+                Date = new { nuPlan }
+            };
+            return Ok(result);
+        }
+
+        #endregion "取得課程方案"
     }
 }
