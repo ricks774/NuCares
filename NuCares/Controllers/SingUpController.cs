@@ -108,7 +108,7 @@ namespace NuCares.Controllers
                 {
                     StatusCode = 400,
                     Status = "Error",
-                    Message = new { Password = "用戶已存在" }
+                    Message = new { Email = "用戶已存在" }
                 });
             }
 
