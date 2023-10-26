@@ -250,7 +250,7 @@
     <Compile Include="Models\Nutritionist.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\Course.cs" />
-    <Compile Include="Models\PlanView.cs" />
+    <Compile Include="Models\ViewPlan.cs" />
     <Compile Include="Models\Survey.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\ViewUser.cs" />
