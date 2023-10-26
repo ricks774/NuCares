@@ -29,6 +29,20 @@ namespace NuCares.Controllers
         {
             var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
             int userId = (int)userToken["Id"];
+
+            //檢查會員
+            bool checkUser = db.Users.Any(n => n.Id == userId);
+            if (!checkUser)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = new { Auth = "請重新登入" }
+                });
+            }
+
+            //檢查課程方案
             var plan = db.Plans.FirstOrDefault(p => p.Id == planId && !p.IsDelete);
             if (plan == null)
             {
