@@ -107,8 +107,8 @@ namespace NuCares.Controllers
             }
             var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
             var nuPlan = db.Plans
-            .Where(plan => plan.NutritionistId == nu.Id)
-            .OrderByDescending(plan => plan.Rank)
+            .Where(plan => plan.NutritionistId == nu.Id && !plan.IsDelete)
+            .OrderBy(plan => (int)plan.Rank)
             .ThenBy(plan => plan.CreateDate)
             .ToList();
 
@@ -169,8 +169,17 @@ namespace NuCares.Controllers
                 });
             }
             var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
-            var plan = db.Plans.FirstOrDefault(p => p.Id == planId);
+            var plan = db.Plans.FirstOrDefault(p => p.Id == planId && p.NutritionistId == nu.Id);
 
+            if (plan.IsDelete)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { planId = "查無此方案 ID" }
+                });
+            }
             if (plan == null)
             {
                 return Content(HttpStatusCode.BadRequest, new
@@ -180,7 +189,6 @@ namespace NuCares.Controllers
                     Message = new { Plan = "查無此課程方案" }
                 });
             }
-
 
             //更新資料
             if (viewEditPlan.Rank.HasValue)
@@ -229,5 +237,71 @@ namespace NuCares.Controllers
         }
 
         #endregion "修改課程方案"
+
+
+        #region "刪除課程方案"
+        /// <summary>
+        /// 新增營養師課程方案
+        /// </summary>
+        /// <param name="planId">方案 Id</param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("nu/plan/{planId}")]
+        [JwtAuthFilter]
+        public IHttpActionResult DelPlan(int planId)
+        {
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int id = (int)userToken["Id"];
+            bool isNutritionist = (bool)userToken["IsNutritionist"];
+            bool checkUser = db.Nutritionists.Any(n => n.UserId == id);
+            if (!isNutritionist || !checkUser)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 403,
+                    Status = "Error",
+                    Message = new { Auth = "您沒有營養師權限" }
+                });
+            }
+
+            var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
+            var plan = db.Plans.FirstOrDefault(p => p.Id == planId && p.NutritionistId == nu.Id);
+            if (plan.IsDelete)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { planId = "查無此方案 ID" }
+                });
+            }
+            if (plan == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { Plan = "查無此課程方案" }
+                });
+            }
+
+            plan.IsDelete = true;
+            db.SaveChanges();
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "營養師課程方案刪除成功",
+                Date = new
+                {
+                    plan
+                }
+            };
+
+            return Ok(result);
+
+        }
+
+        #endregion"刪除課程方案"
     }
 }

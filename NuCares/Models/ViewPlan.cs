@@ -13,7 +13,7 @@ namespace NuCares.Models
         /// </summary>
         [Range(1, int.MaxValue, ErrorMessage = "{0}必須為正整数")]
         [Display(Name = "排序順序")]
-        public int? Rank { get; set; }
+        public int? Rank { get; set; } = 100;
 
         /// <summary>
         /// 課程名稱
