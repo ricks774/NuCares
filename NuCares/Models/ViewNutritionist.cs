@@ -7,7 +7,7 @@ using static NuCares.Models.EnumList;
 
 namespace NuCares.Models
 {
-    public class NutritionistView
+    public class ViewNutritionist
     {
         /// <summary>
         /// 是否公開

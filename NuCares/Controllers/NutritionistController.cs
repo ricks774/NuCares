@@ -74,12 +74,12 @@ namespace NuCares.Controllers
         /// <summary>
         /// 編輯營養師資料
         /// </summary>
-        /// /// <param name="nutritionistView">營養師資料</param>
+        /// /// <param name="viewNutritionist">營養師資料</param>
         /// <returns></returns>
         [HttpPut]
         [Route("nu/info")]
         [JwtAuthFilter]
-        public IHttpActionResult EditNutritionist([FromBody] NutritionistView nutritionistView)
+        public IHttpActionResult EditNutritionist([FromBody] ViewNutritionist viewNutritionist)
         {
             var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
             int id = (int)userToken["Id"];
@@ -112,10 +112,10 @@ namespace NuCares.Controllers
             var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
 
             //變更資料比對
-            nu.IsPublic = nutritionistView.IsPublic;
-            if (nutritionistView.Expertise != null && nutritionistView.Expertise.Count > 0)
+            nu.IsPublic = viewNutritionist.IsPublic;
+            if (viewNutritionist.Expertise != null && viewNutritionist.Expertise.Count > 0)
             {
-                string expertiseString = string.Join(",", nutritionistView.Expertise);
+                string expertiseString = string.Join(",", viewNutritionist.Expertise);
                 nu.Expertise = expertiseString;
             }
 
@@ -138,7 +138,7 @@ namespace NuCares.Controllers
 
             foreach (var property in propertiesToCopy)
             {
-                var propertyValue = nutritionistView.GetType().GetProperty(property).GetValue(nutritionistView, null);
+                var propertyValue = viewNutritionist.GetType().GetProperty(property).GetValue(viewNutritionist, null);
                 if (propertyValue != null)
                 {
                     nu.GetType().GetProperty(property).SetValue(nu, propertyValue);
