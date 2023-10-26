@@ -106,12 +106,10 @@ namespace NuCares.Models
 
         /// <summary>
         /// 營養師證照圖
-        /// </summary>
+        /////// </summary>
         [MaxLength(500)]
         [Display(Name = "證照圖片")]
         public string CertificateImage { get; set; }
-
-        public Nutritionist Nutritionist { get; set; }
 
         [Display(Name = "建立日期")]
         public DateTime CreateDate { get; set; } = DateTime.Now;

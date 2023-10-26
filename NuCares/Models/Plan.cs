@@ -65,10 +65,11 @@ namespace NuCares.Models
         public string Detail { get; set; }
 
         /// <summary>
-        /// 標籤：0 入門首選, 1 最超值
+        /// 標籤
         /// </summary>
+        [MaxLength(500)]
         [Display(Name = " 標籤")]
-        public EnumList.PlanTag Tag { get; set; }
+        public string Tag { get; set; }
 
         [JsonIgnore]
         [Display(Name = "課程訂單")]
