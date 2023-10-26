@@ -101,7 +101,22 @@ namespace NuCares.Controllers
                 Message = "訂單新增成功",
                 Data = new
                 {
-                    Order = newOrder,
+                    newOrder.Id,
+                    newOrder.OrderNumber,
+                    newOrder.ContactTime,
+                    CourseName = newOrder.Plan.CourseName,
+                    Nutritionist = newOrder.Plan.Nutritionist.Title,
+                    CourseWeek = newOrder.Plan.CourseWeek,
+                    CoursePrice = newOrder.Plan.CoursePrice,
+                    newOrder.UserId,
+                    newOrder.UserName,
+                    newOrder.UserEmail,
+                    newOrder.UserPhone,
+                    newOrder.UserLineId,
+                    newOrder.PaymentMethod,
+                    newOrder.Invoice,
+                    newOrder.IsPayment,
+                    newCourse.IsComment,
                     CourseId = newOrder.Id
                 }
             };
