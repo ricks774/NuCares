@@ -78,7 +78,10 @@ namespace NuCares.Controllers
                 StatusCode = 200,
                 Status = "Success",
                 Message = "營養師課程方案成功",
-                Date = new { newPlan }
+                Data = new
+                {
+                    Plan = newPlan
+                }
             };
             return Ok(result);
         }
@@ -119,7 +122,7 @@ namespace NuCares.Controllers
                 StatusCode = 200,
                 Status = "Success",
                 Message = "營養師課程方案取得成功",
-                Date = new { nuPlan }
+                Data = new { Plan = nuPlan }
             };
             return Ok(result);
         }
@@ -219,9 +222,9 @@ namespace NuCares.Controllers
                 StatusCode = 200,
                 Status = "Success",
                 Message = "營養師課程方案更新成功",
-                Date = new
+                Data = new
                 {
-                    plan
+                    Plan = plan
                 }
             };
 
@@ -275,9 +278,9 @@ namespace NuCares.Controllers
                 StatusCode = 200,
                 Status = "Success",
                 Message = "營養師課程方案刪除成功",
-                Date = new
+                Data = new
                 {
-                    plan
+                    Plan = plan
                 }
             };
 

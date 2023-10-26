@@ -46,7 +46,7 @@ namespace NuCares.Controllers
                 StatusCode = 200,
                 Status = "Success",
                 Message = "取得營養師資料成功",
-                Date = new
+                Data = new
                 {
                     nu.Id,
                     nu.IsPublic,
@@ -154,7 +154,7 @@ namespace NuCares.Controllers
                 StatusCode = 200,
                 Status = "Success",
                 Message = "營養師資料更新成功",
-                Date = new
+                Data = new
                 {
                     nu.Id,
                     nu.IsPublic,
