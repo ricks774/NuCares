@@ -15,7 +15,7 @@ namespace NuCares.Controllers
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();
 
-        #region  "新增API"
+        #region  "新增課程方案API"
         /// <summary>
         /// 新增營養師課程方案
         /// </summary>
@@ -78,10 +78,7 @@ namespace NuCares.Controllers
                 StatusCode = 200,
                 Status = "Success",
                 Message = "營養師課程方案成功",
-                Data = new
-                {
-                    Plan = newPlan
-                }
+                Data = newPlan
             };
             return Ok(result);
         }
@@ -122,7 +119,7 @@ namespace NuCares.Controllers
                 StatusCode = 200,
                 Status = "Success",
                 Message = "營養師課程方案取得成功",
-                Data = new { Plan = nuPlan }
+                Data = nuPlan
             };
             return Ok(result);
         }
@@ -222,10 +219,7 @@ namespace NuCares.Controllers
                 StatusCode = 200,
                 Status = "Success",
                 Message = "營養師課程方案更新成功",
-                Data = new
-                {
-                    Plan = plan
-                }
+                Data = plan
             };
 
             return Ok(result);
@@ -278,10 +272,7 @@ namespace NuCares.Controllers
                 StatusCode = 200,
                 Status = "Success",
                 Message = "營養師課程方案刪除成功",
-                Data = new
-                {
-                    Plan = plan
-                }
+                Data = plan
             };
 
             return Ok(result);
