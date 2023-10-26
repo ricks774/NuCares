@@ -1,28 +1,17 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using static NuCares.Models.EnumList;
 
 namespace NuCares.Models
 {
-    public class Nutritionist
+    public class NutritionistView
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Display(Name = "編號")]
-        public int Id { get; set; }
-
-        [Required(ErrorMessage = "{0}必填")]
-        [Display(Name = "會員編號")]
-        public int UserId { get; set; }
-
         /// <summary>
         /// 是否公開
         /// </summary>
-        [Required(ErrorMessage = "{0}必填")]
         [Display(Name = "是否公開")]
         public bool IsPublic { get; set; } = false;
 
@@ -36,26 +25,21 @@ namespace NuCares.Models
         /// <summary>
         /// 顯示名稱
         /// </summary>
-        [Required(ErrorMessage = "{0}必填")]
-        [MaxLength(50)]
+        [StringLength(50, MinimumLength = 1, ErrorMessage = "{0}長度必需介于 1 到 50 字")]
         [Display(Name = "顯示名稱")]
         public string Title { get; set; }
 
         /// <summary>
-        /// 所在縣市
+        /// 所在縣市 0 ~ 22 由北到南
         /// </summary>
-        [MaxLength(50)]
-        [Required(ErrorMessage = "{0}必填")]
         [Display(Name = "所在縣市")]
         public string City { get; set; }
 
         /// <summary>
         /// 專長
         /// </summary>
-        [MaxLength(500)]
-        [Required(ErrorMessage = "{0}必填")]
         [Display(Name = "專長")]
-        public string Expertise { get; set; }
+        public List<string> Expertise { get; set; }
 
         /// <summary>
         /// 學歷
@@ -87,7 +71,7 @@ namespace NuCares.Models
 
         [MaxLength(100)]
         [Display(Name = "其他通訊軟體 1")]
-        public string Option1{ get; set; }
+        public string Option1 { get; set; }
 
         [MaxLength(100)]
         [Display(Name = "其他通訊軟體 1 ID")]
@@ -108,15 +92,5 @@ namespace NuCares.Models
         [MaxLength(100)]
         [Display(Name = "其他通訊軟體 3 ID")]
         public string OptionId3 { get; set; }
-
-        [JsonIgnore]
-        [Display(Name = "營養師課程方案")]
-        public virtual ICollection<Plan> Plans { get; set; }
-
-        [JsonIgnore]
-        [Display(Name = "追蹤營養師")]
-        public virtual ICollection<FavoriteList> FavoriteLists { get; set; }
-
-        public DateTime CreateDate { get; set; } = DateTime.Now;
     }
 }

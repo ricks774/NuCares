@@ -228,6 +228,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\NutritionistController.cs" />
     <Compile Include="Controllers\SingUpController.cs" />
     <Compile Include="Controllers\UploadController.cs" />
     <Compile Include="Global.asax.cs">
@@ -240,6 +241,7 @@
     <Compile Include="Models\DailyMealTime.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\FavoriteList.cs" />
+    <Compile Include="Models\NutritionistView.cs" />
     <Compile Include="Models\Plan.cs" />
     <Compile Include="Models\EnumDisplayNameAttribute.cs" />
     <Compile Include="Models\EnumList.cs" />

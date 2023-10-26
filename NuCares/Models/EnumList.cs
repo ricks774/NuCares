@@ -38,19 +38,6 @@ namespace NuCares.Models
             金門縣,
             連江縣,
         }
-        public enum ExpertiseType
-        {
-            體重控制,
-            上班族營養,
-            孕期營養,
-            樂齡營養與保健
-        }
-
-        public enum PlanTag
-        {
-            入門首選,
-            最超值
-        }
 
         public enum CourseState
         {
