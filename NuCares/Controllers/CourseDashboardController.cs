@@ -54,9 +54,9 @@ namespace NuCares.Controllers
                 {
                     CourseId = courseId,
                     MenuDate = date.Value,
-                    Starch = "0, 0, 0",
-                    Protein = "0, 0, 0",
-                    Vegetable = "0, 0, 0",
+                    Starch = "0,0,0",
+                    Protein = "0,0,0",
+                    Vegetable = "0,0,0",
                     Oil = 0,
                     Fruit = 0,
                     Water = 0,
@@ -394,7 +394,7 @@ namespace NuCares.Controllers
                 {
                     CourseName = coursesData.Order.Plan.CourseName,
                     UserName = coursesData.Order.UserName,
-                    Gender = coursesData.Order.User.Gender,
+                    Gender = coursesData.Order.User.Gender.ToString(),
                     Age = age,
                     ImgUrl = coursesData.Order.User.ImgUrl,
                     Email = coursesData.Order.UserEmail,
