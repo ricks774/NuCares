@@ -114,6 +114,8 @@ namespace NuCares.Controllers
                 Message = "取得三餐總量資料成功",
                 Data = new
                 {
+
+                    CourseId = menuData.CourseId,
                     DailyCourseMenuId = menuData.Id,
                     InsertDate = menuData.CreateDate.ToString("yyyy-MM-dd"),
                     MenuDate = menuData.MenuDate.ToString("yyyy-MM-dd"),
