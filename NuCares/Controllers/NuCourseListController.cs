@@ -54,11 +54,11 @@ namespace NuCares.Controllers
                 {
                     c.Id,
                     c.Order.OrderNumber,
-                    c.Order.Plan.Nutritionist.Title,
                     c.Order.Plan.CourseName,
+                    c.Order.UserName,
                     c.CourseStartDate,
                     c.CourseEndDate,
-                    c.CourseState,
+                    CourseState = c.CourseState.ToString(),
                     c.IsQuest,
                 });
 
@@ -78,5 +78,141 @@ namespace NuCares.Controllers
         }
         #endregion "營養師 - 我的學員列表 API"
 
+        #region "取得課程期間"
+        /// <summary>
+        /// 取得課程期間
+        /// </summary>
+        /// <param name="courseId">課程 Id</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("course/{courseId}/time")]
+        [JwtAuthFilter]
+        public IHttpActionResult GetCourseTime(int courseId)
+        {
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int id = (int)userToken["Id"];
+            bool isNutritionist = (bool)userToken["IsNutritionist"];
+            bool checkUser = db.Nutritionists.Any(n => n.UserId == id);
+            if (!isNutritionist || !checkUser)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 403,
+                    Status = "Error",
+                    Message = new { Auth = "您沒有營養師權限" }
+                });
+            }
+            var coursesData = db.Courses
+                .FirstOrDefault(c => c.Order.Plan.Nutritionist.UserId == id && c.Order.IsPayment && c.Id == courseId);
+            if (coursesData == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { Course = "查無此課程" }
+                });
+            }
+            var CourseStartDate = DateTime.Now.ToString("yyyy/MM/dd");
+            var CourseEndDate = DateTime.Now.AddDays(coursesData.Order.Plan.CourseWeek * 7).ToString("yyyy/MM/dd");
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "取得課程起訖日成功",
+                Data = new
+                {
+                    CourseName = coursesData.Order.Plan.CourseName,
+                    CourseStartDate,
+                    CourseEndDate,
+                }
+            };
+            return Ok(result);
+        }
+        #endregion "取得課程期間"
+
+        #region "課程開始"
+        /// <summary>
+        /// 課程開始
+        /// </summary>
+        /// <param name="courseId">課程 Id</param>
+        /// <param name="viewCourseTime">課程時間</param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("course/{courseId}/start")]
+        [JwtAuthFilter]
+        public IHttpActionResult EditCourseTime(int courseId, [FromBody] ViewCourseTime viewCourseTime)
+        {
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int id = (int)userToken["Id"];
+            bool isNutritionist = (bool)userToken["IsNutritionist"];
+            bool checkUser = db.Nutritionists.Any(n => n.UserId == id);
+            if (!isNutritionist || !checkUser)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 403,
+                    Status = "Error",
+                    Message = "您沒有營養師權限"
+                });
+            }
+            var coursesData = db.Courses
+                .FirstOrDefault(c => c.Order.Plan.Nutritionist.UserId == id && c.Order.IsPayment && c.Id == courseId);
+            if (coursesData == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { Course = "查無此課程" }
+                });
+            }
+            if (!coursesData.IsQuest)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { IsQuest = "課程尚未填寫問卷" }
+                });
+            }
+            if (coursesData.CourseState == EnumList.CourseState.進行中)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { CourseState = "課程已經開始" }
+                });
+            }
+            if (viewCourseTime == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { Course = "未輸入起訖日" }
+                });
+            }
+            coursesData.CourseStartDate = viewCourseTime.CourseStartDate;
+            coursesData.CourseEndDate = viewCourseTime.CourseEndDate;
+            coursesData.CourseState = EnumList.CourseState.進行中;
+            db.SaveChanges();
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "課程起訖日更新成功",
+                Data = new
+                {
+                    CourseName = coursesData.Order.Plan.CourseName,
+                    CourseStartDate = coursesData.CourseStartDate,
+                    CourseEndDate = coursesData.CourseEndDate,
+
+                }
+            };
+            return Ok(result);
+        }
+        #endregion "課程開始"
     }
 }

@@ -227,8 +227,10 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AllCourseListController.cs" />
+    <Compile Include="Controllers\CourseDashboardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\NuCourseController.cs" />
     <Compile Include="Controllers\NuCourseListController.cs" />
     <Compile Include="Controllers\NutritionistController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
@@ -247,6 +249,8 @@
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\FavoriteList.cs" />
     <Compile Include="Models\ViewDaily.cs" />
+    <Compile Include="Models\ViewCourse.cs" />
+    <Compile Include="Models\ViewDailyCourseMenu.cs" />
     <Compile Include="Models\ViewNutritionist.cs" />
     <Compile Include="Models\Plan.cs" />
     <Compile Include="Models\EnumDisplayNameAttribute.cs" />
