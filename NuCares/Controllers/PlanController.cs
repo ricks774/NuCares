@@ -58,8 +58,6 @@ namespace NuCares.Controllers
                     Message = errors
                 });
             }
-
-
             var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
             var newPlan = new Plan
             {
@@ -107,9 +105,9 @@ namespace NuCares.Controllers
                     Message = new { Auth = "您沒有營養師權限" }
                 });
             }
-            var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
+
             var nuPlan = db.Plans
-            .Where(plan => plan.NutritionistId == nu.Id && !plan.IsDelete)
+            .Where(plan => plan.Nutritionist.UserId == id && !plan.IsDelete)
             .OrderBy(plan => (int)plan.Rank)
             .ThenBy(plan => plan.CreateDate)
             .ToList();
@@ -170,8 +168,7 @@ namespace NuCares.Controllers
                     Message = errors
                 });
             }
-            var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
-            var plan = db.Plans.FirstOrDefault(p => p.Id == planId && p.NutritionistId == nu.Id && !p.IsDelete);
+            var plan = db.Plans.FirstOrDefault(p => p.Id == planId && p.Nutritionist.UserId == id && !p.IsDelete);
             if (plan == null)
             {
                 return Content(HttpStatusCode.BadRequest, new
@@ -253,8 +250,7 @@ namespace NuCares.Controllers
                 });
             }
 
-            var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
-            var plan = db.Plans.FirstOrDefault(p => p.Id == planId && p.NutritionistId == nu.Id && !p.IsDelete);
+            var plan = db.Plans.FirstOrDefault(p => p.Id == planId && p.Nutritionist.UserId == id && !p.IsDelete);
             if (plan == null)
             {
                 return Content(HttpStatusCode.BadRequest, new
