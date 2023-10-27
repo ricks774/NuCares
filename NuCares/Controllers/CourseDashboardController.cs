@@ -28,10 +28,18 @@ namespace NuCares.Controllers
         {
             var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
             int id = (int)userToken["Id"];
-            bool checkStudent = db.Courses.Any(s => s.Order.UserId == id);
-            bool checkNu = db.Courses.Any(n => n.Order.Plan.Nutritionist.UserId == id);
+            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId);
+            if (coursesData == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = "查無此課程"
+                });
+            }
 
-            if (!checkStudent && !checkNu)
+            if (!(coursesData.Order.Plan.Nutritionist.UserId == id || coursesData.Order.UserId == id))
             {
                 return Content(HttpStatusCode.Unauthorized, new
                 {
@@ -41,9 +49,24 @@ namespace NuCares.Controllers
                 });
             }
 
-            if (!date.HasValue)
+            var today = DateTime.Today;
+
+            if (date == null)
             {
-                date = DateTime.Today;
+                date = today;
+            }
+
+            if (date < coursesData.CourseStartDate || date > coursesData.CourseEndDate)
+            {
+                string courseStartDate = coursesData.CourseStartDate?.ToString("yyyy/MM/dd");
+                string courseEndDate = coursesData.CourseEndDate?.ToString("yyyy/MM/dd");
+
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { Course = $"課程期間 {courseStartDate} ~ {courseEndDate}" }
+                });
             }
             var menuData = db.DailyCourseMenus
                   .Where(m => m.MenuDate == date && m.CourseId == courseId)
@@ -91,7 +114,7 @@ namespace NuCares.Controllers
                 Message = "取得三餐總量資料成功",
                 Data = new
                 {
-                    Id = menuData.Id,
+                    DailyCourseMenuId = menuData.Id,
                     InsertDate = menuData.CreateDate.ToString("yyyy-MM-dd"),
                     MenuDate = menuData.MenuDate.ToString("yyyy-MM-dd"),
                     StarchSum = $"{totalStudentStarch}, {totalStarch}",
@@ -105,7 +128,7 @@ namespace NuCares.Controllers
                     VegetableSumAchieved = totalStudentVegetable >= totalVegetable,
                     Breakfast = new
                     {
-                        Id = breakfastData.Id,
+                        DailyMealTimeId = breakfastData.Id,
                         DailyLogId = studentLog.Id,
                         MealTime = breakfastData.MealTime,
                         MealDescription = breakfastData.MealDescription,
@@ -119,7 +142,7 @@ namespace NuCares.Controllers
                     },
                     Lunch = new
                     {
-                        Id = lunchData.Id,
+                        DailyMealTimeId = lunchData.Id,
                         DailyLogId = studentLog.Id,
                         MealTime = lunchData.MealTime,
                         MealDescription = lunchData.MealDescription,
@@ -133,7 +156,7 @@ namespace NuCares.Controllers
                     },
                     Dinner = new
                     {
-                        Id = dinnerData.Id,
+                        DailyMealTimeId = dinnerData.Id,
                         DailyLogId = studentLog.Id,
                         MealTime = dinnerData.MealTime,
                         MealDescription = dinnerData.MealDescription,
@@ -145,6 +168,7 @@ namespace NuCares.Controllers
                         ProteinAchieved = CalculateAchieved(dinnerData.Protein, menuProtein[2]),
                         VegetableAchieved = CalculateAchieved(dinnerData.Vegetable, menuVegetable[2])
                     },
+                    DailyLogId = studentLog.Id,
                     Fruit = $"{studentLog.Fruit}, {menuData.Fruit}",
                     FruitAchieved = studentLog.Fruit >= menuData.Fruit && studentLog.Fruit > 0,
                     FruitDescription = studentLog.FruitDescription,
@@ -233,10 +257,18 @@ namespace NuCares.Controllers
         {
             var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
             int id = (int)userToken["Id"];
-            bool checkStudent = db.Courses.Any(s => s.Order.UserId == id);
-            bool checkNu = db.Courses.Any(n => n.Order.Plan.Nutritionist.UserId == id);
+            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId);
+            if (coursesData == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = "查無此課程"
+                });
+            }
 
-            if (!checkStudent && !checkNu)
+            if (!(coursesData.Order.Plan.Nutritionist.UserId == id || coursesData.Order.UserId == id))
             {
                 return Content(HttpStatusCode.Unauthorized, new
                 {
@@ -286,10 +318,18 @@ namespace NuCares.Controllers
         {
             var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
             int id = (int)userToken["Id"];
-            bool checkStudent = db.Courses.Any(s => s.Order.UserId == id);
-            bool checkNu = db.Courses.Any(n => n.Order.Plan.Nutritionist.UserId == id);
+            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId);
+            if (coursesData == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = "查無此課程"
+                });
+            }
 
-            if (!checkStudent && !checkNu)
+            if (!(coursesData.Order.Plan.Nutritionist.UserId == id || coursesData.Order.UserId == id))
             {
                 return Content(HttpStatusCode.Unauthorized, new
                 {
@@ -298,33 +338,22 @@ namespace NuCares.Controllers
                     Message = new { Auth = "您沒有權限" }
                 });
             }
-            var course = db.Courses.FirstOrDefault(c => c.Id == courseId); // 假設 courseId 是課程的 ID
-
-            if (course == null)
-            {
-                return Content(HttpStatusCode.Unauthorized, new
-                {
-                    StatusCode = 403,
-                    Status = "Error",
-                    Message = new { Course = "查無課程" }
-                });
-            }
 
             var latestBodyInfo = db.BodyInfos
                 .Where(b => b.CourseId == courseId)
                 .OrderByDescending(b => b.CreateDate)
                 .FirstOrDefault();
 
-            var goalWeight = course.GoalWeight;
-            var goalBodyFat = course.GoalBodyFat;
+            var goalWeight = coursesData.GoalWeight ?? 0;
+            var goalBodyFat = coursesData.GoalBodyFat ?? 0;
             var latestWeight = latestBodyInfo?.Weight ?? 0;
             var latestBodyFat = latestBodyInfo?.BodyFat ?? 0;
             double weightProgress = ((double)latestWeight - (double)goalWeight) / (double)goalWeight;
             double bodyFatProgress = ((double)latestBodyFat - (double)goalBodyFat) / (double)goalBodyFat;
             double weightCompletionRate = 100 - (weightProgress * 100);
             double bodyFatCompletionRate = 100 - (bodyFatProgress * 100);
-            weightCompletionRate = (latestWeight == 0) ? 0 : weightCompletionRate;
-            bodyFatCompletionRate = (latestBodyFat == 0) ? 0 : bodyFatCompletionRate;
+            weightCompletionRate = (latestWeight == 0 || goalWeight == 0) ? 0 : weightCompletionRate;
+            bodyFatCompletionRate = (latestBodyFat == 0 || goalBodyFat == 0) ? 0 : bodyFatCompletionRate;
             var result = new
             {
                 StatusCode = 200,
@@ -358,32 +387,28 @@ namespace NuCares.Controllers
         {
             var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
             int id = (int)userToken["Id"];
-            bool isNutritionist = (bool)userToken["IsNutritionist"];
-            bool checkUser = db.Nutritionists.Any(n => n.UserId == id);
-            if (!isNutritionist || !checkUser)
-            {
-                return Content(HttpStatusCode.BadRequest, new
-                {
-                    StatusCode = 403,
-                    Status = "Error",
-                    Message = new { Auth = "您沒有營養師權限" }
-                });
-            }
-            var coursesData = db.Courses
-                .FirstOrDefault(c => c.Order.Plan.Nutritionist.UserId == id && c.Order.IsPayment && c.Id == courseId);
+            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId);
             if (coursesData == null)
             {
                 return Content(HttpStatusCode.BadRequest, new
                 {
                     StatusCode = 400,
                     Status = "Error",
-                    Message = new { Course = "查無此課程" }
+                    Message = "查無此課程"
                 });
             }
 
+            if (!(coursesData.Order.Plan.Nutritionist.UserId == id || coursesData.Order.UserId == id))
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 403,
+                    Status = "Error",
+                    Message = new { Auth = "您沒有權限" }
+                });
+            }
             DateTime birthDate = coursesData.Order.User.Birthday;
             int age = CalculateAge(birthDate);
-
 
             var result = new
             {
