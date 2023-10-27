@@ -108,14 +108,14 @@ namespace NuCares.Controllers
                 {
                     StatusCode = 400,
                     Status = "Error",
-                    Message = new { Password = "用戶已存在" }
+                    Message = new { Email = "用戶已存在" }
                 });
             }
 
             // 判斷Email格式是否正確
             if (!ModelState.IsValid)
             {
-                if (viewEmailCheck.Password != viewEmailCheck.PasswordConfirm)
+                if (viewEmailCheck.Password != viewEmailCheck.RePassword)
                 {
                     return Content(HttpStatusCode.BadRequest, new
                     {
