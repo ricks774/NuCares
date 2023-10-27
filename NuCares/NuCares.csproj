@@ -230,6 +230,7 @@
     <Compile Include="Controllers\CourseDashboardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\NuCourseController.cs" />
     <Compile Include="Controllers\NuCourseListController.cs" />
     <Compile Include="Controllers\NutritionistController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
