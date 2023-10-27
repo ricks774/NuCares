@@ -43,6 +43,9 @@ namespace NuCares.Controllers
                     return BadRequest("Email重複!");
                 }
 
+                // 將性別轉成數字
+                int gender = viewUser.Gender == "male" ? 0 : 1;
+
                 // 創建一個新的 User 物件，紀錄傳入的數值
                 var newUser = new User
                 {
@@ -51,7 +54,7 @@ namespace NuCares.Controllers
                     Salt = saltStr,
                     Email = viewUser.Email,
                     Birthday = viewUser.Birthday,
-                    Gender = viewUser.Gender,
+                    Gender = (EnumList.GenderType)gender,
                     Phone = viewUser.Phone
                 };
 
