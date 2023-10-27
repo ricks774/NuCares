@@ -93,7 +93,7 @@ namespace NuCares.Models
         [StringLength(100)]
         [DataType(DataType.Password)]
         [Display(Name = "密碼確認")]
-        public string PasswordConfirm { get; set; }
+        public string RePassword { get; set; }
     }
 
     public class ViewUserLogin

@@ -115,7 +115,7 @@ namespace NuCares.Controllers
             // 判斷Email格式是否正確
             if (!ModelState.IsValid)
             {
-                if (viewEmailCheck.Password != viewEmailCheck.PasswordConfirm)
+                if (viewEmailCheck.Password != viewEmailCheck.RePassword)
                 {
                     return Content(HttpStatusCode.BadRequest, new
                     {
