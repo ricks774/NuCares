@@ -99,12 +99,6 @@ namespace NuCares.Models
     public class ViewUserLogin
     {
         /// <summary>
-        /// Id
-        /// </summary>
-        [Display(Name = "編號")]
-        public int Id { get; set; }
-
-        /// <summary>
         /// Email
         /// </summary>
         [Required(ErrorMessage = "{0}必填")]
@@ -122,9 +116,5 @@ namespace NuCares.Models
         [DataType(DataType.Password)]
         [Display(Name = "密碼")]
         public string Password { get; set; }
-
-        [MaxLength(100)]
-        [Display(Name = "密碼鹽")]
-        public string Salt { get; set; }
     }
 }
