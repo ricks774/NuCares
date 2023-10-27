@@ -225,7 +225,6 @@ namespace NuCares.Controllers
         /// 查看學員身體指數
         /// </summary>
         /// <param name="courseId">課程 ID</param>
-        /// <param name="date">日期</param>
         /// <returns></returns>
         [HttpGet]
         [Route("course/{courseId}/bodyInfo")]
