@@ -236,6 +236,7 @@
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\PlanController.cs" />
     <Compile Include="Controllers\SingUpController.cs" />
+    <Compile Include="Controllers\StudentDailyEditController.cs" />
     <Compile Include="Controllers\UploadController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -247,6 +248,7 @@
     <Compile Include="Models\DailyMealTime.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\FavoriteList.cs" />
+    <Compile Include="Models\ViewDaily.cs" />
     <Compile Include="Models\ViewCourse.cs" />
     <Compile Include="Models\ViewDailyCourseMenu.cs" />
     <Compile Include="Models\ViewNutritionist.cs" />

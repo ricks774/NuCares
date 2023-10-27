@@ -106,7 +106,7 @@ namespace NuCares.Models
 
         /// <summary>
         /// 營養師證照圖
-        /////// </summary>
+        /// </summary>
         [MaxLength(500)]
         [Display(Name = "證照圖片")]
         public string CertificateImage { get; set; }
