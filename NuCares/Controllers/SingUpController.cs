@@ -92,7 +92,7 @@ namespace NuCares.Controllers
         #region "判斷信箱是否重複"
 
         /// <summary>
-        /// 信箱重複驗證
+        /// 信箱驗證
         /// </summary>
         /// <param name="viewEmailCheck">判斷信箱是否重複</param>
         /// <returns></returns>
@@ -112,19 +112,20 @@ namespace NuCares.Controllers
                 });
             }
 
-            // 判斷Email格式是否正確
+            // 判斷密碼是否相同
+            if (!string.Equals(viewEmailCheck.Password, viewEmailCheck.RePassword))
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { Password = "密碼不相同" }
+                });
+            }
+
+            // 判斷輸入的格式是否正確
             if (!ModelState.IsValid)
             {
-                if (viewEmailCheck.Password != viewEmailCheck.RePassword)
-                {
-                    return Content(HttpStatusCode.BadRequest, new
-                    {
-                        StatusCode = 400,
-                        Status = "Error",
-                        Message = new { Password = "密碼不相同" }
-                    });
-                }
-
                 // 回傳錯誤的訊息
                 var errors = ModelState.Keys
                     .Select(key =>
@@ -142,8 +143,6 @@ namespace NuCares.Controllers
                     Message = errors
                 });
             }
-
-            // 判斷密碼輸入是否正確
 
             return Ok(new
             {
