@@ -35,7 +35,7 @@ namespace NuCares.Controllers
                 {
                     StatusCode = 403,
                     Status = "Error",
-                    Message = "您沒有營養師權限"
+                    Message = new { Auth = "您沒有營養師權限" }
                 });
             }
             var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
@@ -91,7 +91,7 @@ namespace NuCares.Controllers
                 {
                     StatusCode = 403,
                     Status = "Error",
-                    Message = "您沒有營養師權限"
+                    Message = new { Auth = "您沒有營養師權限" }
                 });
             }
             if (!ModelState.IsValid)
