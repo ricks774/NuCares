@@ -31,7 +31,7 @@ namespace NuCares.Controllers
             bool checkStudent = db.Courses.Any(s => s.Order.UserId == id);
             bool checkNu = db.Courses.Any(n => n.Order.Plan.Nutritionist.UserId == id);
 
-            if (!checkStudent || !checkNu)
+            if (!checkStudent && !checkNu)
             {
                 return Content(HttpStatusCode.Unauthorized, new
                 {
@@ -88,7 +88,7 @@ namespace NuCares.Controllers
             {
                 StatusCode = 200,
                 Status = "Success",
-                Message = "取得資料成功",
+                Message = "取得三餐總量資料成功",
                 Data = new
                 {
                     Id = menuData.Id,
@@ -220,5 +220,57 @@ namespace NuCares.Controllers
 
         #endregion "查看學員三餐總量"
 
+        #region "查看學員身體指數"
+        /// <summary>
+        /// 查看學員身體指數
+        /// </summary>
+        /// <param name="courseId">課程 ID</param>
+        /// <param name="date">日期</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("course/{courseId}/bodyInfo")]
+        [JwtAuthFilter]
+        public IHttpActionResult GetbodyInfo(int courseId)
+        {
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int id = (int)userToken["Id"];
+            bool checkStudent = db.Courses.Any(s => s.Order.UserId == id);
+            bool checkNu = db.Courses.Any(n => n.Order.Plan.Nutritionist.UserId == id);
+
+            if (!checkStudent && !checkNu)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 403,
+                    Status = "Error",
+                    Message = new { Auth = "您沒有權限" }
+                });
+            }
+
+            var bodyInfo = db.BodyInfos.Where(b => b.CourseId == courseId)
+                .OrderByDescending(b => b.CreateDate)
+                .Select(b => new
+                {
+                    b.CreateDate,
+                    b.Height,
+                    b.Weight,
+                    b.BodyFat,
+                    b.VisceralFat,
+                    b.SMM,
+                    b.Bmr,
+                    b.Bmi
+                });
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "取得學員身體指數成功",
+                Data = bodyInfo
+            };
+
+            return Ok(result);
+
+        }
+        #endregion "查看學員身體指數"
     }
 }
