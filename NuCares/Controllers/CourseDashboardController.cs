@@ -271,5 +271,78 @@ namespace NuCares.Controllers
 
         }
         #endregion "查看學員身體指數"
+
+
+        #region "查看學員目標"
+        /// <summary>
+        /// 查看學員身體指數
+        /// </summary>
+        /// <param name="courseId">課程 ID</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("course/{courseId}/goal")]
+        [JwtAuthFilter]
+        public IHttpActionResult GetGoal(int courseId)
+        {
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int id = (int)userToken["Id"];
+            bool checkStudent = db.Courses.Any(s => s.Order.UserId == id);
+            bool checkNu = db.Courses.Any(n => n.Order.Plan.Nutritionist.UserId == id);
+
+            if (!checkStudent && !checkNu)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 403,
+                    Status = "Error",
+                    Message = new { Auth = "您沒有權限" }
+                });
+            }
+            var course = db.Courses.FirstOrDefault(c => c.Id == courseId); // 假設 courseId 是課程的 ID
+
+            if (course == null)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 403,
+                    Status = "Error",
+                    Message = new { Course = "查無課程" }
+                });
+            }
+
+            var latestBodyInfo = db.BodyInfos
+                .Where(b => b.CourseId == courseId)
+                .OrderByDescending(b => b.CreateDate)
+                .FirstOrDefault();
+
+            var goalWeight = course.GoalWeight;
+            var goalBodyFat = course.GoalBodyFat;
+            var latestWeight = latestBodyInfo?.Weight ?? 0;
+            var latestBodyFat = latestBodyInfo?.BodyFat ?? 0;
+            double weightProgress = ((double)latestWeight - (double)goalWeight) / (double)goalWeight;
+            double bodyFatProgress = ((double)latestBodyFat - (double)goalBodyFat) / (double)goalBodyFat;
+            double weightCompletionRate = 100 - (weightProgress * 100);
+            double bodyFatCompletionRate = 100 - (bodyFatProgress * 100);
+            weightCompletionRate = (latestWeight == 0) ? 0 : weightCompletionRate;
+            bodyFatCompletionRate = (latestBodyFat == 0) ? 0 : bodyFatCompletionRate;
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "取得學員身體指數資料成功",
+                Data = new
+                {
+                    GoalWeight = goalWeight,
+                    GoalBodyFat = goalBodyFat,
+                    Weight = latestWeight,
+                    BodyFoat = latestWeight,
+                    WeightCompletionRate = weightCompletionRate,
+                    BodyFatCompletionRate = bodyFatCompletionRate
+                }
+            };
+
+            return Ok(result);
+        }
+        #endregion "查看學員目標"
     }
 }
