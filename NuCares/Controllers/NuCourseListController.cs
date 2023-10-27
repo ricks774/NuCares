@@ -54,11 +54,11 @@ namespace NuCares.Controllers
                 {
                     c.Id,
                     c.Order.OrderNumber,
-                    c.Order.Plan.Nutritionist.Title,
                     c.Order.Plan.CourseName,
+                    c.Order.UserName,
                     c.CourseStartDate,
                     c.CourseEndDate,
-                    c.CourseState,
+                    CourseState = c.CourseState.ToString(),
                     c.IsQuest,
                 });
 
