@@ -51,6 +51,15 @@ namespace NuCares.Controllers
                     Message = new { CourseMenu = "查無此菜單" }
                 });
             }
+            if (courseMenu.MyCourse.Order.Plan.Nutritionist.UserId != id)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 403,
+                    Status = "Error",
+                    Message = new { CourseMenu = "您無權限" }
+                });
+            }
             string formattedDate = courseMenu.MenuDate.ToString("yyyy/MM/dd");
             var result = new
             {
