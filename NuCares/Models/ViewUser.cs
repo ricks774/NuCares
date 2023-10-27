@@ -53,7 +53,7 @@ namespace NuCares.Models
         /// </summary>
         [Required(ErrorMessage = "{0}必填")]
         [Display(Name = "生理性別")]
-        public EnumList.GenderType Gender { set; get; }
+        public string Gender { set; get; }
 
         /// <summary>
         /// 手機號碼
