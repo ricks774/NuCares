@@ -344,5 +344,78 @@ namespace NuCares.Controllers
             return Ok(result);
         }
         #endregion "查看學員目標"
+
+        #region "營養師 - 我的學員單一資料"
+        /// <summary>
+        /// 營養師 - 我的學員單一資料
+        /// </summary>
+        /// <param name="courseId">課程 Id</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("course/{courseId}/student")]
+        [JwtAuthFilter]
+        public IHttpActionResult GetCourseStudent(int courseId)
+        {
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int id = (int)userToken["Id"];
+            bool isNutritionist = (bool)userToken["IsNutritionist"];
+            bool checkUser = db.Nutritionists.Any(n => n.UserId == id);
+            if (!isNutritionist || !checkUser)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 403,
+                    Status = "Error",
+                    Message = new { Auth = "您沒有營養師權限" }
+                });
+            }
+            var coursesData = db.Courses
+                .FirstOrDefault(c => c.Order.Plan.Nutritionist.UserId == id && c.Order.IsPayment && c.Id == courseId);
+            if (coursesData == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { Course = "查無此課程" }
+                });
+            }
+
+            DateTime birthDate = coursesData.Order.User.Birthday;
+            int age = CalculateAge(birthDate);
+
+
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "取得學員資料成功",
+                Data = new
+                {
+                    CourseName = coursesData.Order.Plan.CourseName,
+                    UserName = coursesData.Order.UserName,
+                    Gender = coursesData.Order.User.Gender,
+                    Age = age,
+                    ImgUrl = coursesData.Order.User.ImgUrl,
+                    Email = coursesData.Order.UserEmail,
+                    Phone = coursesData.Order.UserPhone,
+                    LineId = coursesData.Order.UserLineId
+                }
+            };
+            return Ok(result);
+        }
+        private int CalculateAge(DateTime birthDate)
+        {
+            DateTime today = DateTime.Today;
+            int age = today.Year - birthDate.Year;
+
+            if (today < birthDate.AddYears(age))
+            {
+                age--;
+            }
+
+            return age;
+        }
+        #endregion "營養師 - 我的學員單一資料"
     }
 }
