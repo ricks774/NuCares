@@ -45,14 +45,13 @@ namespace NuCares.Controllers
                 .FirstOrDefault();
 
             // 取得資料庫中的資料
-            //string salt = userData.Salt;
-            string cps = userData.Password;
+            string salt = userData.Salt;
+            string hashPassword = userData.Password;
 
             // Argon2加鹽解密判斷
             //bool passwordCheck = ag2Verify.Argon2_Login(salt, password, cps);
 
-            string hashPassword = ag2Verify.PasswordHash(account, password);
-            bool passwordCheck = (cps == hashPassword);
+            var passwordCheck = ag2Verify.VerifyPassword(password, salt, hashPassword);
 
             if (userData != null)
             {

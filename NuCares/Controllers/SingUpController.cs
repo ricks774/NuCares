@@ -32,24 +32,18 @@ namespace NuCares.Controllers
         {
             if (ModelState.IsValid)
             {
+                #region "argon2加密"
+
                 //// Hash 加鹽加密
                 //var salt = ag2Verify.CreateSalt();
                 //string saltStr = Convert.ToBase64String(salt);
                 //var hash = ag2Verify.HashPassword(viewUser.Password, salt);
                 //string hashPassword = Convert.ToBase64String(hash);
 
-                //// 將密碼使用 SHA256 雜湊運算(不可逆)
-                //string salt = viewUser.Email.Substring(0, 1).ToLower(); //使用帳號前一碼當作密碼鹽
-                //SHA256 sha256 = SHA256.Create();
-                //byte[] bytes = Encoding.UTF8.GetBytes(salt + viewUser.Password); //將密碼鹽及原密碼組合
-                //byte[] hash = sha256.ComputeHash(bytes);
-                //StringBuilder newPassword = new StringBuilder();
-                //for (int i = 0; i < hash.Length; i++)
-                //{
-                //    newPassword.Append(hash[i].ToString("X2"));
-                //}
-                //string hashPassword = newPassword.ToString(); // 雜湊運算後密碼
-                string hashPassword = ag2Verify.PasswordHash(viewUser.Email, viewUser.Password);
+                #endregion "argon2加密"
+
+                // 密碼hash加密
+                var getHash = ag2Verify.PasswordHash(viewUser.Password);
 
                 // 判斷Email是否有重複
                 bool emailCheck = db.Users.Any(u => u.Email == viewUser.Email);
@@ -65,8 +59,8 @@ namespace NuCares.Controllers
                 var newUser = new User
                 {
                     UserName = viewUser.UserName,
-                    Password = hashPassword,
-                    //Salt = saltStr,
+                    Password = getHash.hashPassword,
+                    Salt = getHash.salt,
                     Email = viewUser.Email,
                     Birthday = viewUser.Birthday,
                     Gender = (EnumList.GenderType)gender,
