@@ -447,7 +447,7 @@ namespace NuCares.Controllers
 
         #region "編輯目標"
         /// <summary>
-        /// 營養師 - 我的學員列表
+        /// 營養師 - 編輯目標
         /// </summary>
         /// <param name="courseId">課程ID</param>
         /// <param name="viewCourseGoal">目標</param>
