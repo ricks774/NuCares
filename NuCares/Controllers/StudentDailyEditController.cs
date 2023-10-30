@@ -205,7 +205,13 @@ namespace NuCares.Controllers
                     {
                         d.OilDescription,
                         d.OilImgUrl,
-                        d.Oil
+                        d.Oil,
+                        d.FruitDescription,
+                        d.FruitImgUrl,
+                        d.Fruit,
+                        d.WaterDescription,
+                        d.WaterImgUrl,
+                        d.Water
                     })
                     .SingleOrDefault();
 
