@@ -60,25 +60,49 @@ namespace NuCares.Controllers
             }
             else
             {
-                var courseCheck = db.Courses.SingleOrDefault(c => c.Id == courseId);
-                //bool course
+                var courseCheck = db.Courses.Find(courseId);
 
-                // 創建一個新的 BodyInfo 物件，紀錄傳入的數值
-                var newUser = new BodyInfo
+                if (courseCheck == null)
                 {
-                    CourseId = courseId,
-                    Height = viewBodyInfo.Height,
-                    Weight = viewBodyInfo.Weight,
-                    BodyFat = viewBodyInfo.BodyFat,
-                    VisceralFat = viewBodyInfo.VisceralFat,
-                    SMM = viewBodyInfo.SMM,
-                    Bmi = viewBodyInfo.Bmi,
-                    Bmr = viewBodyInfo.Bmr,
-                    InsertDate = DateTime.Now
-                };
-            }
+                    return Content(HttpStatusCode.BadRequest, new
+                    {
+                        StatusCode = 400,
+                        Status = "Error",
+                        Message = "找不到這筆課程"
+                    });
+                }
+                else
+                {
+                    // 創建一個新的 BodyInfo 物件，紀錄傳入的數值
+                    var newUser = new BodyInfo
+                    {
+                        CourseId = courseId,
+                        Height = viewBodyInfo.Height,
+                        Weight = viewBodyInfo.Weight,
+                        BodyFat = viewBodyInfo.BodyFat,
+                        VisceralFat = viewBodyInfo.VisceralFat,
+                        SMM = viewBodyInfo.SMM,
+                        Bmi = viewBodyInfo.Bmi,
+                        Bmr = viewBodyInfo.Bmr,
+                        InsertDate = DateTime.Now
+                    };
 
-            return Ok();
+                    db.BodyInfos.Add(newUser);
+                    db.SaveChanges();
+
+                    var sussceData = db.BodyInfos.Find(courseId);
+
+                    var result = new
+                    {
+                        StatusCode = 200,
+                        Status = "Success",
+                        Message = "新增身體數值成功",
+                        Data = sussceData
+                    };
+
+                    return Ok(result);
+                }
+            }
         }
 
         #endregion "新增身體數值"
