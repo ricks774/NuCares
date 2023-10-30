@@ -50,24 +50,26 @@ namespace NuCares.Controllers
                 .OrderBy(c => c.Order.CreateDate) // 根據需要的屬性進行排序
                 .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
                 .Take(pageSize) // 每頁顯示的記錄數
-                .Select(c => new
-                {
-                    c.Id,
-                    c.Order.OrderNumber,
-                    c.Order.Plan.CourseName,
-                    c.Order.UserName,
-                    c.CourseStartDate,
-                    c.CourseEndDate,
-                    CourseState = c.CourseEndDate < today ? "已結束" : c.CourseState.ToString(),
-                    c.IsQuest,
-                });
+                .ToList();
+
+            var formattedData = coursesData.Select(c => new
+            {
+                c.Id,
+                c.Order.OrderNumber,
+                c.Order.Plan.CourseName,
+                c.Order.UserName,
+                CourseStartDate = c.CourseStartDate.HasValue ? c.CourseStartDate.Value.ToString("yyyy/MM/dd") : null,
+                CourseEndDate = c.CourseEndDate.HasValue ? c.CourseEndDate.Value.ToString("yyyy/MM/dd") : null,
+                CourseState = c.CourseEndDate < today ? "已結束" : c.CourseState.ToString(),
+                c.IsQuest,
+            });
 
             var result = new
             {
                 StatusCode = 200,
                 Status = "Success",
                 Message = "取得我的學員列表成功",
-                Data = coursesData,
+                Data = formattedData,
                 Pagination = new
                 {
                     Current_page = page,
