@@ -27,4 +27,34 @@ namespace NuCares.Models
         [Display(Name = "蔬菜")]
         public int? Vegetable { get; set; }
     }
+
+    public class ViewDaily
+    {
+        [Display(Name = "油脂")]
+        public int? Oil { get; set; }
+
+        [Display(Name = "油脂描述")]
+        public string OilDescription { get; set; }
+
+        [Display(Name = "油脂照片")]
+        public string OilImgUrl { get; set; }
+
+        [Display(Name = "水果")]
+        public int? Fruit { get; set; }
+
+        [Display(Name = "水果描述")]
+        public string FruitDescription { get; set; }
+
+        [Display(Name = "水果照片")]
+        public string FruitImgUrl { get; set; }
+
+        [Display(Name = "飲水")]
+        public int? Water { get; set; }
+
+        [Display(Name = "飲水描述")]
+        public string WaterDescription { get; set; }
+
+        [Display(Name = "飲水照片")]
+        public string WaterImgUrl { get; set; }
+    }
 }

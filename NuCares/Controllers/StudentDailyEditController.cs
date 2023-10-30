@@ -85,12 +85,12 @@ namespace NuCares.Controllers
                 });
             }
 
-            int breakfastId = db.DailyMealTimes
+            int lunchId = db.DailyMealTimes
                 .Where(dm => dm.DailyLogId == dailyLogId && dm.MealTime.Equals("午餐"))
                 .Select(dm => dm.Id)
                 .FirstOrDefault();
 
-            return MealTimeEdit(viewDailyMealTime, dailyCourseMealTimeId, breakfastId);
+            return MealTimeEdit(viewDailyMealTime, dailyCourseMealTimeId, lunchId);
         }
 
         #endregion "編輯午餐"
@@ -125,15 +125,106 @@ namespace NuCares.Controllers
                 });
             }
 
-            int breakfastId = db.DailyMealTimes
+            int dinnerId = db.DailyMealTimes
                 .Where(dm => dm.DailyLogId == dailyLogId && dm.MealTime.Equals("晚餐"))
                 .Select(dm => dm.Id)
                 .FirstOrDefault();
 
-            return MealTimeEdit(viewDailyMealTime, dailyCourseMealTimeId, breakfastId);
+            return MealTimeEdit(viewDailyMealTime, dailyCourseMealTimeId, dinnerId);
         }
 
         #endregion "編輯晚餐"
+
+        #region "編輯油脂、水果、水"
+
+        [HttpPut]
+        [Route("course/{courseId}/daily/{dailyLogId}")]
+        [JwtAuthFilter]
+        public IHttpActionResult OFWEdit(ViewDaily viewDaily, int courseId, int dailyLogId)
+        {
+            #region "JwtToken驗證"
+
+            // 取出請求內容，解密 JwtToken 取出資料
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int id = (int)userToken["Id"];
+
+            bool checkUser = db.Users.Any(n => n.Id == id);
+            if (!checkUser)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "請重新登入"
+                });
+            }
+
+            #endregion "JwtToken驗證"
+
+            var dailyData = db.DailyLogs.SingleOrDefault(dt => dt.Id == dailyLogId);
+
+            // 判斷書入的格式是否正確
+            if (!ModelState.IsValid)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "修改失敗，數值輸入錯誤"
+                });
+            }
+
+            // 將取得的資料更新到資料庫
+            dailyData.OilDescription = !string.IsNullOrEmpty(viewDaily.OilDescription) ? viewDaily.OilDescription : dailyData.OilDescription;
+            dailyData.OilImgUrl = !string.IsNullOrEmpty(viewDaily.OilImgUrl) ? viewDaily.OilImgUrl : dailyData.OilImgUrl;
+            dailyData.FruitDescription = !string.IsNullOrEmpty(viewDaily.FruitDescription) ? viewDaily.FruitDescription : dailyData.FruitDescription;
+            dailyData.FruitImgUrl = !string.IsNullOrEmpty(viewDaily.FruitImgUrl) ? viewDaily.FruitImgUrl : dailyData.FruitImgUrl;
+            dailyData.WaterDescription = !string.IsNullOrEmpty(viewDaily.WaterDescription) ? viewDaily.WaterDescription : dailyData.WaterDescription;
+            dailyData.WaterImgUrl = !string.IsNullOrEmpty(viewDaily.WaterImgUrl) ? viewDaily.WaterImgUrl : dailyData.WaterImgUrl;
+            dailyData.Oil = (int)(viewDaily.Oil.HasValue ? viewDaily.Oil : dailyData.Oil);
+            dailyData.Fruit = (int)(viewDaily.Fruit.HasValue ? viewDaily.Fruit : dailyData.Fruit);
+            dailyData.Water = (int)(viewDaily.Water.HasValue ? viewDaily.Water : dailyData.Water);
+
+            if (dailyData.Oil >= 100 || dailyData.Fruit >= 100 || dailyData.Water >= 100)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "修改失敗，數值過大"
+                });
+            }
+
+            try
+            {
+                db.SaveChanges();
+
+                // 要回傳的資料格式
+                var dailyLog = db.DailyLogs.Where(d => d.Id == dailyLogId)
+                    .Select(d => new
+                    {
+                        d.OilDescription,
+                        d.OilImgUrl,
+                        d.Oil
+                    })
+                    .SingleOrDefault();
+
+                var result = new
+                {
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "修改成功",
+                    Data = dailyLog
+                };
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
+            }
+        }
+
+        #endregion "編輯油脂、水果、水"
 
         #region "編輯三餐資料"
 
@@ -149,7 +240,7 @@ namespace NuCares.Controllers
                 });
             }
 
-            var breakfastData = db.DailyMealTimes.SingleOrDefault(dt => dt.Id == timesId);
+            var mealTimeData = db.DailyMealTimes.SingleOrDefault(dt => dt.Id == timesId);
 
             // 判斷書入的格式是否正確
             if (!ModelState.IsValid)
@@ -163,13 +254,13 @@ namespace NuCares.Controllers
             }
 
             // 將取得的資料更新到資料庫
-            breakfastData.MealDescription = !string.IsNullOrEmpty(viewDailyMealTime.MealDescription) ? viewDailyMealTime.MealDescription : breakfastData.MealDescription;
-            breakfastData.MealImgUrl = !string.IsNullOrEmpty(viewDailyMealTime.MealImgUrl) ? viewDailyMealTime.MealImgUrl : breakfastData.MealImgUrl;
-            breakfastData.Starch = (int)(viewDailyMealTime.Starch.HasValue ? viewDailyMealTime.Starch : breakfastData.Starch);
-            breakfastData.Protein = (int)(viewDailyMealTime.Protein.HasValue ? viewDailyMealTime.Protein : breakfastData.Protein);
-            breakfastData.Vegetable = (int)(viewDailyMealTime.Vegetable.HasValue ? viewDailyMealTime.Vegetable : breakfastData.Vegetable);
+            mealTimeData.MealDescription = !string.IsNullOrEmpty(viewDailyMealTime.MealDescription) ? viewDailyMealTime.MealDescription : mealTimeData.MealDescription;
+            mealTimeData.MealImgUrl = !string.IsNullOrEmpty(viewDailyMealTime.MealImgUrl) ? viewDailyMealTime.MealImgUrl : mealTimeData.MealImgUrl;
+            mealTimeData.Starch = (int)(viewDailyMealTime.Starch.HasValue ? viewDailyMealTime.Starch : mealTimeData.Starch);
+            mealTimeData.Protein = (int)(viewDailyMealTime.Protein.HasValue ? viewDailyMealTime.Protein : mealTimeData.Protein);
+            mealTimeData.Vegetable = (int)(viewDailyMealTime.Vegetable.HasValue ? viewDailyMealTime.Vegetable : mealTimeData.Vegetable);
 
-            if (breakfastData.Starch >= 100 || breakfastData.Protein >= 100 || breakfastData.Vegetable >= 100)
+            if (mealTimeData.Starch >= 100 || mealTimeData.Protein >= 100 || mealTimeData.Vegetable >= 100)
             {
                 return Content(HttpStatusCode.BadRequest, new
                 {
@@ -184,7 +275,7 @@ namespace NuCares.Controllers
                 db.SaveChanges();
 
                 // 要回傳的資料格式
-                var breakfastLog = db.DailyMealTimes.Where(so => so.Id == timesId)
+                var mealTimeLog = db.DailyMealTimes.Where(so => so.Id == timesId)
                     .Select(so => new
                     {
                         so.MealTime,
@@ -200,8 +291,8 @@ namespace NuCares.Controllers
                 {
                     StatusCode = 200,
                     Status = "Success",
-                    Message = "修改早餐成功",
-                    Data = breakfastLog
+                    Message = "修改成功",
+                    Data = mealTimeLog
                 };
                 return Ok(result);
             }
