@@ -52,7 +52,7 @@ namespace NuCares.Controllers
                 .OrderBy(c => c.Id) // 根據需要的屬性進行排序
                 .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
                 .Take(pageSize) // 每頁顯示的記錄數
-                .AsEnumerable()
+                .AsEnumerable() // 使查詢先執行,再在記憶體中處理
                 .Select(c => new
                 {
                     c.Id,
