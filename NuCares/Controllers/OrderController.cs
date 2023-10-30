@@ -171,7 +171,7 @@ namespace NuCares.Controllers
             string amt = newOrder.Plan.CoursePrice.ToString();
             string itemDesc = newOrder.Plan.CourseName + " / " + newOrder.Plan.Nutritionist.Title + " 營養師";
             string tradeLimit = "600"; // 交易限制秒數
-            string notifyURL = @"https://" + Request.RequestUri.Host + "/order/paymentResult";// NotifyURL 填後端接收藍新付款結果的 API 位置，如 : /api/users/getpaymentdata
+            string notifyURL = @"http://4.213.67.245" + "/order/paymentResult";// NotifyURL 填後端接收藍新付款結果的 API 位置，如 : /api/users/getpaymentdata
             string returnURL = "";  // 前端可用 Status: SUCCESS 來判斷付款成功，網址夾帶可拿來取得活動內容
             string email = newOrder.UserEmail; // 通知付款完成用
             string loginType = "0"; // 0不須登入藍新金流會員
