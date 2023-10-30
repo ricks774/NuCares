@@ -67,5 +67,25 @@ namespace NuCares.Security
         }
 
         #endregion "登入驗證"
+
+        #region "不透過Argon2加密密碼"
+
+        public string PasswordHash(string email, string password)
+        {
+            // 將密碼使用 SHA256 雜湊運算(不可逆)
+            string salt = email.Substring(0, 1).ToLower(); //使用帳號前一碼當作密碼鹽
+            SHA256 sha256 = SHA256.Create();
+            byte[] bytes = Encoding.UTF8.GetBytes(salt + password); //將密碼鹽及原密碼組合
+            byte[] hash = sha256.ComputeHash(bytes);
+            StringBuilder newPassword = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++)
+            {
+                newPassword.Append(hash[i].ToString("X2"));
+            }
+            string hashPassword = newPassword.ToString(); // 雜湊運算後密碼
+            return hashPassword;
+        }
+
+        #endregion "不透過Argon2加密密碼"
     }
 }
