@@ -60,7 +60,7 @@ namespace NuCares.Controllers
                     c.Order.Plan.CourseName,
                     c.CourseStartDate,
                     c.CourseEndDate,
-                    c.CourseState,
+                    CourseState = c.CourseState.ToString(), // 轉換枚舉為字串
                     c.IsQuest,
                     c.IsComment,
                 });
