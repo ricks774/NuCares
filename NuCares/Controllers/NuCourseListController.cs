@@ -199,21 +199,28 @@ namespace NuCares.Controllers
             coursesData.CourseStartDate = viewCourseTime.CourseStartDate;
             coursesData.CourseEndDate = viewCourseTime.CourseEndDate;
             coursesData.CourseState = EnumList.CourseState.進行中;
-            db.SaveChanges();
-            var result = new
+            try
             {
-                StatusCode = 200,
-                Status = "Success",
-                Message = "課程起訖日更新成功",
-                Data = new
+                db.SaveChanges();
+                var result = new
                 {
-                    CourseName = coursesData.Order.Plan.CourseName,
-                    CourseStartDate = coursesData.CourseStartDate,
-                    CourseEndDate = coursesData.CourseEndDate,
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "課程起訖日更新成功",
+                    Data = new
+                    {
+                        CourseName = coursesData.Order.Plan.CourseName,
+                        CourseStartDate = coursesData.CourseStartDate,
+                        CourseEndDate = coursesData.CourseEndDate,
 
-                }
-            };
-            return Ok(result);
+                    }
+                };
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
+            }
         }
         #endregion "課程開始"
     }

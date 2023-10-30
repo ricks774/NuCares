@@ -39,6 +39,15 @@ namespace NuCares.Controllers
                 });
             }
             var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
+            if (nu == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { Nutritionist = "查無營養師資料" }
+                });
+            }
             string[] expertiseArray = nu.Expertise.Split(',');
 
             var result = new
@@ -110,6 +119,15 @@ namespace NuCares.Controllers
             }
             //找到營養師
             var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
+            if (nu == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { Nutritionist = "查無營養師資料" }
+                });
+            }
 
             //變更資料比對
             nu.IsPublic = viewNutritionist.IsPublic;
@@ -145,36 +163,44 @@ namespace NuCares.Controllers
                 }
             }
 
-            //更新資料庫
-            db.SaveChanges();
-
-            var expertiseArray = nu.Expertise.Split(',');
-            var result = new
+            try
             {
-                StatusCode = 200,
-                Status = "Success",
-                Message = "營養師資料更新成功",
-                Data = new
+                //更新資料庫
+                db.SaveChanges();
+
+                var expertiseArray = nu.Expertise.Split(',');
+                var result = new
                 {
-                    nu.Id,
-                    nu.IsPublic,
-                    nu.PortraitImage,
-                    nu.Title,
-                    nu.City,
-                    Expertise = expertiseArray,
-                    nu.Education,
-                    nu.Experience,
-                    nu.AboutMe,
-                    nu.CourseIntro,
-                    nu.Option1,
-                    nu.OptionId1,
-                    nu.Option2,
-                    nu.OptionId2,
-                    nu.Option3,
-                    nu.OptionId3
-                }
-            };
-            return Ok(result);
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "營養師資料更新成功",
+                    Data = new
+                    {
+                        nu.Id,
+                        nu.IsPublic,
+                        nu.PortraitImage,
+                        nu.Title,
+                        nu.City,
+                        Expertise = expertiseArray,
+                        nu.Education,
+                        nu.Experience,
+                        nu.AboutMe,
+                        nu.CourseIntro,
+                        nu.Option1,
+                        nu.OptionId1,
+                        nu.Option2,
+                        nu.OptionId2,
+                        nu.Option3,
+                        nu.OptionId3
+                    }
+                };
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
+            }
+
         }
 
         #endregion "編輯營養師資料 API"
