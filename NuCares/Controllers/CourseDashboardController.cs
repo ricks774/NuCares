@@ -444,5 +444,77 @@ namespace NuCares.Controllers
             return age;
         }
         #endregion "營養師 - 我的學員單一資料"
+
+        #region "編輯目標"
+        /// <summary>
+        /// 營養師 - 編輯目標
+        /// </summary>
+        /// <param name="courseId">課程ID</param>
+        /// <param name="viewCourseGoal">目標</param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("course/{courseId}/goal")]
+        [JwtAuthFilter]
+        public IHttpActionResult EditCourseGoal(int courseId, [FromBody] ViewCourseGoal viewCourseGoal)
+        {
+
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int id = (int)userToken["Id"];
+            bool isNutritionist = (bool)userToken["IsNutritionist"];
+            bool checkUser = db.Nutritionists.Any(n => n.UserId == id);
+            if (!isNutritionist || !checkUser)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 403,
+                    Status = "Error",
+                    Message = "您沒有營養師權限"
+                });
+            }
+            var coursesData = db.Courses
+                .FirstOrDefault(c => c.Order.Plan.Nutritionist.UserId == id && c.Order.IsPayment && c.Id == courseId);
+            if (coursesData == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { Course = "查無此課程" }
+                });
+            }
+            coursesData.GoalWeight = (int)(viewCourseGoal.GoalWeight.HasValue ? viewCourseGoal.GoalWeight : coursesData.GoalWeight ?? 0);
+            coursesData.GoalBodyFat = (int)(viewCourseGoal.GoalBodyFat.HasValue ? viewCourseGoal.GoalBodyFat : coursesData.GoalBodyFat ?? 0);
+            if (coursesData.GoalWeight < 0 || coursesData.GoalBodyFat < 0)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = "修改失敗，數值大於 0"
+                });
+            }
+            try
+            {
+                db.SaveChanges();
+
+                var result = new
+                {
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "目標修改成功",
+                    Data = new
+                    {
+                        coursesData.GoalWeight,
+                        coursesData.GoalBodyFat
+                    }
+                };
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
+            }
+        }
+        #endregion"編輯目標"
     }
 }

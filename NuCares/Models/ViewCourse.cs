@@ -24,4 +24,19 @@ namespace NuCares.Models
         [Display(Name = "課程結束日")]
         public DateTime? CourseEndDate { get; set; }
     }
+
+    public class ViewCourseGoal
+    {
+        /// <summary>
+        /// 目標體重
+        /// </summary>
+        [Display(Name = "目標體重")]
+        public int? GoalWeight { get; set; }
+
+        /// <summary>
+        /// 目標體脂
+        /// </summary>
+        [Display(Name = "目標體脂")]
+        public int? GoalBodyFat { get; set; }
+    }
 }
