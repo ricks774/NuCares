@@ -63,7 +63,7 @@ namespace NuCares.Controllers
                     string jwtToken = jwtAuthUtil.GenerateToken(userData.Id);
 
                     // 判斷目前使用者身分
-                    string userStatus = userData.IsNutritionist ? "nutritionist" : "student";
+                    string userStatus = userData.IsNutritionist ? "nu" : "user";
 
                     var result = new
                     {
