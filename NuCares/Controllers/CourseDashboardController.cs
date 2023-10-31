@@ -181,15 +181,15 @@ namespace NuCares.Controllers
                     Fruit = $"{studentLog.Fruit},{menuData.Fruit}",
                     FruitAchieved = studentLog.Fruit >= menuData.Fruit && studentLog.Fruit > 0,
                     FruitDescription = studentLog.FruitDescription,
-                    FruitImgUrl = studentLog.FruitImgUrl != null ? $@"{Request.RequestUri.Scheme}://{Request.RequestUri.Host}/upload/images/{studentLog.FruitImgUrl}" : null,
+                    FruitImgUrl = studentLog.FruitImgUrl,
                     Oil = $"{studentLog.Oil},{menuData.Oil}",
                     OilAchieved = studentLog.Oil >= menuData.Oil && studentLog.Oil > 0,
                     OilDescription = studentLog.OilDescription,
-                    OilImgUrl = studentLog.OilImgUrl != null ? $@"{Request.RequestUri.Scheme}://{Request.RequestUri.Host}/upload/images/{studentLog.OilImgUrl}" : null,
+                    OilImgUrl = studentLog.OilImgUrl,
                     Water = $"{studentLog.Water},{menuData.Water}",
                     WaterAchieved = studentLog.Water >= menuData.Water && studentLog.Water > 0,
                     WaterDescription = studentLog.WaterDescription,
-                    WaterImgUrl = studentLog.WaterImgUrl != null ? $@"{Request.RequestUri.Scheme}://{Request.RequestUri.Host}/upload/images/{studentLog.WaterImgUrl}" : null
+                    WaterImgUrl = studentLog.WaterImgUrl
                 }
             };
             return Ok(response);
@@ -434,7 +434,7 @@ namespace NuCares.Controllers
                     UserName = coursesData.Order.UserName,
                     Gender = coursesData.Order.User.Gender.ToString(),
                     Age = age,
-                    ImgUrl = coursesData.Order.User.ImgUrl != null ? $@"{Request.RequestUri.Scheme}://{Request.RequestUri.Host}/upload/images/{coursesData.Order.User.ImgUrl}" : null,
+                    ImgUrl = coursesData.Order.User.ImgUrl,
                     Email = coursesData.Order.UserEmail,
                     Phone = coursesData.Order.UserPhone,
                     LineId = coursesData.Order.UserLineId
@@ -582,7 +582,7 @@ namespace NuCares.Controllers
                 {
                     coursesData.Order.Plan.Nutritionist.Id,
                     CourseTitle = coursesData.Order.Plan.CourseName,
-                    ImgUrl = coursesData.Order.Plan.Nutritionist.PortraitImage != null ? $@"{Request.RequestUri.Scheme}://{Request.RequestUri.Host}/upload/images/{coursesData.Order.Plan.Nutritionist.PortraitImage}" : null,
+                    ImgUrl = coursesData.Order.Plan.Nutritionist.PortraitImage,
                     coursesData.Order.Plan.Nutritionist.Title,
                     Email = coursesData.Order.Plan.Nutritionist.Option1,
                     Tel = coursesData.Order.Plan.Nutritionist.Option2,
