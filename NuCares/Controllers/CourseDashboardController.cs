@@ -580,8 +580,9 @@ namespace NuCares.Controllers
                 Message = "取得營養師資料成功",
                 Data = new
                 {
-                    coursesData.Order.Plan.CourseName,
-                    coursesData.Order.Plan.Nutritionist.PortraitImage,
+                    coursesData.Order.Plan.Nutritionist.Id,
+                    CourseTitle = coursesData.Order.Plan.CourseName,
+                    ImgUrl = coursesData.Order.Plan.Nutritionist.PortraitImage,
                     coursesData.Order.Plan.Nutritionist.Title,
                     Email = coursesData.Order.Plan.Nutritionist.Option1,
                     Tel = coursesData.Order.Plan.Nutritionist.Option2,
