@@ -59,7 +59,7 @@ namespace NuCares.Controllers
                 {
                     nu.Id,
                     nu.IsPublic,
-                    nu.PortraitImage,
+                    PortraitImage = nu.PortraitImage != null ? $@"{Request.RequestUri.Scheme}://{Request.RequestUri.Host}/upload/images/{nu.PortraitImage}" : null,
                     nu.Title,
                     nu.City,
                     Expertise = expertiseArray,
@@ -178,7 +178,7 @@ namespace NuCares.Controllers
                     {
                         nu.Id,
                         nu.IsPublic,
-                        nu.PortraitImage,
+                        PortraitImage = nu.PortraitImage != null ? $@"{Request.RequestUri.Scheme}://{Request.RequestUri.Host}/upload/images/{nu.PortraitImage}" : null,
                         nu.Title,
                         nu.City,
                         Expertise = expertiseArray,
