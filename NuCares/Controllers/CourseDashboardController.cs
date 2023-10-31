@@ -14,7 +14,9 @@ namespace NuCares.Controllers
     public class CourseDashboardController : ApiController
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();
+
         #region "查看學員三餐總量"
+
         /// <summary>
         /// 查看學員三餐總量
         /// </summary>
@@ -83,7 +85,6 @@ namespace NuCares.Controllers
                     Oil = 0,
                     Fruit = 0,
                     Water = 0,
-
                 };
                 db.DailyCourseMenus.Add(menuData);
                 try
@@ -121,7 +122,6 @@ namespace NuCares.Controllers
                 Message = "取得三餐總量資料成功",
                 Data = new
                 {
-
                     CourseId = menuData.CourseId,
                     DailyCourseMenuId = menuData.Id,
                     InsertDate = menuData.CreateDate.ToString("yyyy-MM-dd"),
@@ -194,6 +194,7 @@ namespace NuCares.Controllers
             };
             return Ok(response);
         }
+
         private bool CalculateAchieved(int value, int sumValue)
         {
             return value >= sumValue && value > 0;
@@ -254,6 +255,7 @@ namespace NuCares.Controllers
         #endregion "查看學員三餐總量"
 
         #region "查看學員身體指數"
+
         /// <summary>
         /// 查看學員身體指數
         /// </summary>
@@ -309,12 +311,12 @@ namespace NuCares.Controllers
             };
 
             return Ok(result);
-
         }
+
         #endregion "查看學員身體指數"
 
-
         #region "查看學員目標"
+
         /// <summary>
         /// 查看學員身體指數
         /// </summary>
@@ -381,9 +383,11 @@ namespace NuCares.Controllers
 
             return Ok(result);
         }
+
         #endregion "查看學員目標"
 
         #region "營養師 - 我的學員單一資料"
+
         /// <summary>
         /// 營養師 - 我的學員單一資料
         /// </summary>
@@ -438,6 +442,7 @@ namespace NuCares.Controllers
             };
             return Ok(result);
         }
+
         private int CalculateAge(DateTime birthDate)
         {
             DateTime today = DateTime.Today;
@@ -450,9 +455,11 @@ namespace NuCares.Controllers
 
             return age;
         }
+
         #endregion "營養師 - 我的學員單一資料"
 
         #region "編輯目標"
+
         /// <summary>
         /// 營養師 - 編輯目標
         /// </summary>
@@ -464,7 +471,6 @@ namespace NuCares.Controllers
         [JwtAuthFilter]
         public IHttpActionResult EditCourseGoal(int courseId, [FromBody] ViewCourseGoal viewCourseGoal)
         {
-
             var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
             int id = (int)userToken["Id"];
             bool isNutritionist = (bool)userToken["IsNutritionist"];
@@ -522,6 +528,70 @@ namespace NuCares.Controllers
                 return InternalServerError();
             }
         }
-        #endregion"編輯目標"
+
+        #endregion "編輯目標"
+
+        #region "學員 - 單一營養師資料"
+
+        /// <summary>
+        /// 學員 - 取得單一營養師資料
+        /// </summary>
+        /// <param name="courseId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("course/{courseId}/nu")]
+        [JwtAuthFilter]
+        public IHttpActionResult GetCourseNu(int courseId)
+        {
+            #region "JwtToken驗證"
+
+            // 取出請求內容，解密 JwtToken 取出資料
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int id = (int)userToken["Id"];
+
+            bool checkUser = db.Users.Any(n => n.Id == id);
+            if (!checkUser)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "請重新登入"
+                });
+            }
+
+            #endregion "JwtToken驗證"
+
+            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId);
+            if (coursesData == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = "查無此課程"
+                });
+            }
+
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "取得營養師資料成功",
+                Data = new
+                {
+                    coursesData.Order.Plan.Nutritionist.Id,
+                    CourseTitle = coursesData.Order.Plan.CourseName,
+                    ImgUrl = coursesData.Order.Plan.Nutritionist.PortraitImage,
+                    coursesData.Order.Plan.Nutritionist.Title,
+                    Email = coursesData.Order.Plan.Nutritionist.Option1,
+                    Tel = coursesData.Order.Plan.Nutritionist.Option2,
+                    LineId = coursesData.Order.Plan.Nutritionist.Option3
+                }
+            };
+            return Ok(result);
+        }
+
+        #endregion "學員 - 單一營養師資料"
     }
 }
