@@ -4,17 +4,25 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using NSwag.Annotations;
 using NuCares.Models;
 using NuCares.Security;
 
 namespace NuCares.Controllers
 {
+    [OpenApiTag("Stdent", Description = "學員")]
     public class BodyInfoController : ApiController
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();
 
         #region "新增身體數值"
 
+        /// <summary>
+        /// 新增當天身體數值
+        /// </summary>
+        /// <param name="viewBodyInfo"></param>
+        /// <param name="courseId"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("course/{courseId}/inbody")]
         [JwtAuthFilter]
