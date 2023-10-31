@@ -61,7 +61,7 @@ namespace NuCares.Controllers
                     c.Order.Plan.CourseName,
                     CourseStartDate = c.CourseStartDate.HasValue ? c.CourseStartDate.Value.ToString("yyyy-MM-dd") : null,
                     CourseEndDate = c.CourseEndDate.HasValue ? c.CourseStartDate.Value.ToString("yyyy-MM-dd") : null,
-                    c.CourseState,
+                    CourseState = c.CourseState.ToString(),
                     c.IsQuest,
                     c.IsComment,
                 });
