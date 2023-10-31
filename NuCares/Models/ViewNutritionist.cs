@@ -93,4 +93,29 @@ namespace NuCares.Models
         [Display(Name = "其他通訊軟體 3 ID")]
         public string OptionId3 { get; set; }
     }
+
+    public class ViewApplyNutritionist
+    {
+        /// <summary>
+        /// 姓名
+        /// </summary>
+        [Required(ErrorMessage = "{0}必填")]
+        [MaxLength(50)]
+        [Display(Name = "姓名")]
+        public string UserName { get; set; }
+
+        /// <summary>
+        /// 性別：0 男, 1 女
+        /// </summary>
+        [Required(ErrorMessage = "{0}必填")]
+        [Display(Name = "生理性別")]
+        public string Gender { set; get; }
+
+        /// <summary>
+        /// 形象照
+        /// </summary>
+        [MaxLength(500)]
+        [Display(Name = "形象照")]
+        public string CertificateImage { get; set; }
+    }
 }
