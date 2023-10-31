@@ -86,7 +86,14 @@ namespace NuCares.Controllers
 
                 };
                 db.DailyCourseMenus.Add(menuData);
-                db.SaveChanges();
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (Exception)
+                {
+                    return InternalServerError();
+                }
             }
 
             var studentLog = GetStudentLogData(menuData.Id);
@@ -119,12 +126,12 @@ namespace NuCares.Controllers
                     DailyCourseMenuId = menuData.Id,
                     InsertDate = menuData.CreateDate.ToString("yyyy-MM-dd"),
                     MenuDate = menuData.MenuDate.ToString("yyyy-MM-dd"),
-                    StarchSum = $"{totalStudentStarch}, {totalStarch}",
-                    ProteinSum = $"{totalStudentProtein}, {totalProtein}",
-                    VegetableSum = $"{totalStudentVegetable}, {totalVegetable}",
-                    OilSum = $"{studentLog.Oil}, {menuData.Oil}",
-                    FruitSum = $"{studentLog.Fruit}, {menuData.Fruit}",
-                    WaterSum = $"{studentLog.Water}, {menuData.Water}",
+                    StarchSum = $"{totalStudentStarch},{totalStarch}",
+                    ProteinSum = $"{totalStudentProtein},{totalProtein}",
+                    VegetableSum = $"{totalStudentVegetable},{totalVegetable}",
+                    OilSum = $"{studentLog.Oil},{menuData.Oil}",
+                    FruitSum = $"{studentLog.Fruit},{menuData.Fruit}",
+                    WaterSum = $"{studentLog.Water},{menuData.Water}",
                     StarchSumAchieved = totalStudentStarch >= totalStarch,
                     ProteinSumAchieved = totalStudentProtein >= totalProtein,
                     VegetableSumAchieved = totalStudentVegetable >= totalVegetable,
@@ -135,9 +142,9 @@ namespace NuCares.Controllers
                         MealTime = breakfastData.MealTime,
                         MealDescription = breakfastData.MealDescription,
                         Image = breakfastData.MealImgUrl,
-                        Starch = $"{breakfastData.Starch}, {menuStarch[0]}",
-                        Protein = $"{breakfastData.Protein}, {menuProtein[0]}",
-                        Vegetable = $"{breakfastData.Vegetable}, {menuVegetable[0]}",
+                        Starch = $"{breakfastData.Starch},{menuStarch[0]}",
+                        Protein = $"{breakfastData.Protein},{menuProtein[0]}",
+                        Vegetable = $"{breakfastData.Vegetable},{menuVegetable[0]}",
                         StarchAchieved = CalculateAchieved(breakfastData.Starch, menuStarch[0]),
                         ProteinAchieved = CalculateAchieved(breakfastData.Protein, menuProtein[0]),
                         VegetableAchieved = CalculateAchieved(breakfastData.Vegetable, menuVegetable[0])
@@ -149,9 +156,9 @@ namespace NuCares.Controllers
                         MealTime = lunchData.MealTime,
                         MealDescription = lunchData.MealDescription,
                         Image = lunchData.MealImgUrl,
-                        Starch = $"{lunchData.Starch}, {menuStarch[1]}",
-                        Protein = $"{lunchData.Protein}, {menuProtein[1]}",
-                        Vegetable = $"{lunchData.Vegetable}, {menuVegetable[1]}",
+                        Starch = $"{lunchData.Starch},{menuStarch[1]}",
+                        Protein = $"{lunchData.Protein},{menuProtein[1]}",
+                        Vegetable = $"{lunchData.Vegetable},{menuVegetable[1]}",
                         StarchAchieved = CalculateAchieved(lunchData.Starch, menuStarch[1]),
                         ProteinAchieved = CalculateAchieved(lunchData.Protein, menuProtein[1]),
                         VegetableAchieved = CalculateAchieved(lunchData.Vegetable, menuVegetable[1])
@@ -163,23 +170,23 @@ namespace NuCares.Controllers
                         MealTime = dinnerData.MealTime,
                         MealDescription = dinnerData.MealDescription,
                         Image = dinnerData.MealImgUrl,
-                        Starch = $"{dinnerData.Starch}, {menuStarch[2]}",
-                        Protein = $"{dinnerData.Protein}, {menuProtein[2]}",
-                        Vegetable = $"{dinnerData.Vegetable}, {menuVegetable[2]}",
+                        Starch = $"{dinnerData.Starch},{menuStarch[2]}",
+                        Protein = $"{dinnerData.Protein},{menuProtein[2]}",
+                        Vegetable = $"{dinnerData.Vegetable},{menuVegetable[2]}",
                         StarchAchieved = CalculateAchieved(dinnerData.Starch, menuStarch[2]),
                         ProteinAchieved = CalculateAchieved(dinnerData.Protein, menuProtein[2]),
                         VegetableAchieved = CalculateAchieved(dinnerData.Vegetable, menuVegetable[2])
                     },
                     DailyLogId = studentLog.Id,
-                    Fruit = $"{studentLog.Fruit}, {menuData.Fruit}",
+                    Fruit = $"{studentLog.Fruit},{menuData.Fruit}",
                     FruitAchieved = studentLog.Fruit >= menuData.Fruit && studentLog.Fruit > 0,
                     FruitDescription = studentLog.FruitDescription,
                     FruitImgUrl = studentLog.FruitImgUrl,
-                    Oil = $"{studentLog.Oil}, {menuData.Oil}",
+                    Oil = $"{studentLog.Oil},{menuData.Oil}",
                     OilAchieved = studentLog.Oil >= menuData.Oil && studentLog.Oil > 0,
                     OilDescription = studentLog.OilDescription,
                     OilImgUrl = studentLog.OilImgUrl,
-                    Water = $"{studentLog.Water}, {menuData.Water}",
+                    Water = $"{studentLog.Water},{menuData.Water}",
                     WaterAchieved = studentLog.Water >= menuData.Water && studentLog.Water > 0,
                     WaterDescription = studentLog.WaterDescription,
                     WaterImgUrl = studentLog.WaterImgUrl
