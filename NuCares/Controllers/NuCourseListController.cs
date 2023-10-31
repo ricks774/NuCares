@@ -223,5 +223,82 @@ namespace NuCares.Controllers
             }
         }
         #endregion "課程開始"
+        #region "取得課程問卷"
+        /// <summary>
+        /// 取得課程問卷
+        /// </summary>
+        /// <param name="courseId">課程 Id</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("course/{courseId}/survey")]
+        [JwtAuthFilter]
+        public IHttpActionResult GetCourseSurvey(int courseId)
+        {
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int id = (int)userToken["Id"];
+            bool isNutritionist = (bool)userToken["IsNutritionist"];
+            bool checkUser = db.Nutritionists.Any(n => n.UserId == id);
+            if (!isNutritionist || !checkUser)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 403,
+                    Status = "Error",
+                    Message = new { Auth = "您沒有營養師權限" }
+                });
+            }
+
+            var surveyData = db.Surveys.FirstOrDefault(s => s.CourseId == courseId && s.Course.IsQuest);
+
+            if (surveyData == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { SurveyData = "此課程尚未建立問卷" }
+                });
+            }
+            if(surveyData.Course.Order.Plan.Nutritionist.UserId != id)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 403,
+                    Status = "Error",
+                    Message = new { SurveyData = "您無權限" }
+                });
+            }
+            var questionsAndAnswers = new Dictionary<string, string[]>();
+            for (int i = 1; i <= 25; i++)
+            {
+                string question = $"Question{i}";
+                string answer = (string)surveyData.GetType().GetProperty(question).GetValue(surveyData);
+                questionsAndAnswers[question] = new string[] { answer };
+            }
+            var birthDate = surveyData.Course.Order.User.Birthday;
+            DateTime today = DateTime.Today;
+            int age = today.Year - birthDate.Year;
+
+            if (today < birthDate.AddYears(age))
+            {
+                age--;
+            }
+
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "課程問卷資料",
+                Data = new
+                {
+                    UserName = surveyData.Course.Order.UserName,
+                    Age = age,
+                    Gender = surveyData.Course.Order.User.Gender.ToString(),
+                    Answers = questionsAndAnswers
+                }
+            };
+            return Ok(result);
+        }
+        #endregion"取得課程問卷"
     }
 }
