@@ -4,11 +4,13 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using NSwag.Annotations;
 using NuCares.Models;
 using NuCares.Security;
 
 namespace NuCares.Controllers
 {
+    [OpenApiTag("Stdent", Description = "學員")]
     public class ApplyNutritionistController : ApiController
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();
