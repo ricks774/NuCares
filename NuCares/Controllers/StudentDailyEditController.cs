@@ -137,6 +137,13 @@ namespace NuCares.Controllers
 
         #region "編輯油脂、水果、水"
 
+        /// <summary>
+        /// 編輯油脂、水果、水
+        /// </summary>
+        /// <param name="viewDaily"></param>
+        /// <param name="courseId"></param>
+        /// <param name="dailyLogId"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("course/{courseId}/daily/{dailyLogId}")]
         [JwtAuthFilter]
