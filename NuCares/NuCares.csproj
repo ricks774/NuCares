@@ -228,6 +228,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AllCourseListController.cs" />
     <Compile Include="Controllers\BodyInfoController.cs" />
+    <Compile Include="Controllers\ApplyNutritionistController.cs" />
     <Compile Include="Controllers\CourseDashboardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
