@@ -534,7 +534,7 @@ namespace NuCares.Controllers
         #region "學員 - 單一營養師資料"
 
         /// <summary>
-        /// 取得單一營養師資料
+        /// 學員 - 取得單一營養師資料
         /// </summary>
         /// <param name="courseId"></param>
         /// <returns></returns>
