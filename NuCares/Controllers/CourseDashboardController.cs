@@ -14,7 +14,9 @@ namespace NuCares.Controllers
     public class CourseDashboardController : ApiController
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();
+
         #region "查看學員三餐總量"
+
         /// <summary>
         /// 查看學員三餐總量
         /// </summary>
@@ -83,10 +85,16 @@ namespace NuCares.Controllers
                     Oil = 0,
                     Fruit = 0,
                     Water = 0,
-
                 };
                 db.DailyCourseMenus.Add(menuData);
-                db.SaveChanges();
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (Exception)
+                {
+                    return InternalServerError();
+                }
             }
 
             var studentLog = GetStudentLogData(menuData.Id);
@@ -114,17 +122,16 @@ namespace NuCares.Controllers
                 Message = "取得三餐總量資料成功",
                 Data = new
                 {
-
                     CourseId = menuData.CourseId,
                     DailyCourseMenuId = menuData.Id,
                     InsertDate = menuData.CreateDate.ToString("yyyy-MM-dd"),
                     MenuDate = menuData.MenuDate.ToString("yyyy-MM-dd"),
-                    StarchSum = $"{totalStudentStarch}, {totalStarch}",
-                    ProteinSum = $"{totalStudentProtein}, {totalProtein}",
-                    VegetableSum = $"{totalStudentVegetable}, {totalVegetable}",
-                    OilSum = $"{studentLog.Oil}, {menuData.Oil}",
-                    FruitSum = $"{studentLog.Fruit}, {menuData.Fruit}",
-                    WaterSum = $"{studentLog.Water}, {menuData.Water}",
+                    StarchSum = $"{totalStudentStarch},{totalStarch}",
+                    ProteinSum = $"{totalStudentProtein},{totalProtein}",
+                    VegetableSum = $"{totalStudentVegetable},{totalVegetable}",
+                    OilSum = $"{studentLog.Oil},{menuData.Oil}",
+                    FruitSum = $"{studentLog.Fruit},{menuData.Fruit}",
+                    WaterSum = $"{studentLog.Water},{menuData.Water}",
                     StarchSumAchieved = totalStudentStarch >= totalStarch,
                     ProteinSumAchieved = totalStudentProtein >= totalProtein,
                     VegetableSumAchieved = totalStudentVegetable >= totalVegetable,
@@ -135,9 +142,9 @@ namespace NuCares.Controllers
                         MealTime = breakfastData.MealTime,
                         MealDescription = breakfastData.MealDescription,
                         Image = breakfastData.MealImgUrl,
-                        Starch = $"{breakfastData.Starch}, {menuStarch[0]}",
-                        Protein = $"{breakfastData.Protein}, {menuProtein[0]}",
-                        Vegetable = $"{breakfastData.Vegetable}, {menuVegetable[0]}",
+                        Starch = $"{breakfastData.Starch},{menuStarch[0]}",
+                        Protein = $"{breakfastData.Protein},{menuProtein[0]}",
+                        Vegetable = $"{breakfastData.Vegetable},{menuVegetable[0]}",
                         StarchAchieved = CalculateAchieved(breakfastData.Starch, menuStarch[0]),
                         ProteinAchieved = CalculateAchieved(breakfastData.Protein, menuProtein[0]),
                         VegetableAchieved = CalculateAchieved(breakfastData.Vegetable, menuVegetable[0])
@@ -149,9 +156,9 @@ namespace NuCares.Controllers
                         MealTime = lunchData.MealTime,
                         MealDescription = lunchData.MealDescription,
                         Image = lunchData.MealImgUrl,
-                        Starch = $"{lunchData.Starch}, {menuStarch[1]}",
-                        Protein = $"{lunchData.Protein}, {menuProtein[1]}",
-                        Vegetable = $"{lunchData.Vegetable}, {menuVegetable[1]}",
+                        Starch = $"{lunchData.Starch},{menuStarch[1]}",
+                        Protein = $"{lunchData.Protein},{menuProtein[1]}",
+                        Vegetable = $"{lunchData.Vegetable},{menuVegetable[1]}",
                         StarchAchieved = CalculateAchieved(lunchData.Starch, menuStarch[1]),
                         ProteinAchieved = CalculateAchieved(lunchData.Protein, menuProtein[1]),
                         VegetableAchieved = CalculateAchieved(lunchData.Vegetable, menuVegetable[1])
@@ -163,23 +170,23 @@ namespace NuCares.Controllers
                         MealTime = dinnerData.MealTime,
                         MealDescription = dinnerData.MealDescription,
                         Image = dinnerData.MealImgUrl,
-                        Starch = $"{dinnerData.Starch}, {menuStarch[2]}",
-                        Protein = $"{dinnerData.Protein}, {menuProtein[2]}",
-                        Vegetable = $"{dinnerData.Vegetable}, {menuVegetable[2]}",
+                        Starch = $"{dinnerData.Starch},{menuStarch[2]}",
+                        Protein = $"{dinnerData.Protein},{menuProtein[2]}",
+                        Vegetable = $"{dinnerData.Vegetable},{menuVegetable[2]}",
                         StarchAchieved = CalculateAchieved(dinnerData.Starch, menuStarch[2]),
                         ProteinAchieved = CalculateAchieved(dinnerData.Protein, menuProtein[2]),
                         VegetableAchieved = CalculateAchieved(dinnerData.Vegetable, menuVegetable[2])
                     },
                     DailyLogId = studentLog.Id,
-                    Fruit = $"{studentLog.Fruit}, {menuData.Fruit}",
+                    Fruit = $"{studentLog.Fruit},{menuData.Fruit}",
                     FruitAchieved = studentLog.Fruit >= menuData.Fruit && studentLog.Fruit > 0,
                     FruitDescription = studentLog.FruitDescription,
                     FruitImgUrl = studentLog.FruitImgUrl,
-                    Oil = $"{studentLog.Oil}, {menuData.Oil}",
+                    Oil = $"{studentLog.Oil},{menuData.Oil}",
                     OilAchieved = studentLog.Oil >= menuData.Oil && studentLog.Oil > 0,
                     OilDescription = studentLog.OilDescription,
                     OilImgUrl = studentLog.OilImgUrl,
-                    Water = $"{studentLog.Water}, {menuData.Water}",
+                    Water = $"{studentLog.Water},{menuData.Water}",
                     WaterAchieved = studentLog.Water >= menuData.Water && studentLog.Water > 0,
                     WaterDescription = studentLog.WaterDescription,
                     WaterImgUrl = studentLog.WaterImgUrl
@@ -187,6 +194,7 @@ namespace NuCares.Controllers
             };
             return Ok(response);
         }
+
         private bool CalculateAchieved(int value, int sumValue)
         {
             return value >= sumValue && value > 0;
@@ -247,6 +255,7 @@ namespace NuCares.Controllers
         #endregion "查看學員三餐總量"
 
         #region "查看學員身體指數"
+
         /// <summary>
         /// 查看學員身體指數
         /// </summary>
@@ -302,12 +311,12 @@ namespace NuCares.Controllers
             };
 
             return Ok(result);
-
         }
+
         #endregion "查看學員身體指數"
 
-
         #region "查看學員目標"
+
         /// <summary>
         /// 查看學員身體指數
         /// </summary>
@@ -374,9 +383,11 @@ namespace NuCares.Controllers
 
             return Ok(result);
         }
+
         #endregion "查看學員目標"
 
         #region "營養師 - 我的學員單一資料"
+
         /// <summary>
         /// 營養師 - 我的學員單一資料
         /// </summary>
@@ -431,6 +442,7 @@ namespace NuCares.Controllers
             };
             return Ok(result);
         }
+
         private int CalculateAge(DateTime birthDate)
         {
             DateTime today = DateTime.Today;
@@ -443,6 +455,143 @@ namespace NuCares.Controllers
 
             return age;
         }
+
         #endregion "營養師 - 我的學員單一資料"
+
+        #region "編輯目標"
+
+        /// <summary>
+        /// 營養師 - 編輯目標
+        /// </summary>
+        /// <param name="courseId">課程ID</param>
+        /// <param name="viewCourseGoal">目標</param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("course/{courseId}/goal")]
+        [JwtAuthFilter]
+        public IHttpActionResult EditCourseGoal(int courseId, [FromBody] ViewCourseGoal viewCourseGoal)
+        {
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int id = (int)userToken["Id"];
+            bool isNutritionist = (bool)userToken["IsNutritionist"];
+            bool checkUser = db.Nutritionists.Any(n => n.UserId == id);
+            if (!isNutritionist || !checkUser)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 403,
+                    Status = "Error",
+                    Message = "您沒有營養師權限"
+                });
+            }
+            var coursesData = db.Courses
+                .FirstOrDefault(c => c.Order.Plan.Nutritionist.UserId == id && c.Order.IsPayment && c.Id == courseId);
+            if (coursesData == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { Course = "查無此課程" }
+                });
+            }
+            coursesData.GoalWeight = (int)(viewCourseGoal.GoalWeight.HasValue ? viewCourseGoal.GoalWeight : coursesData.GoalWeight ?? 0);
+            coursesData.GoalBodyFat = (int)(viewCourseGoal.GoalBodyFat.HasValue ? viewCourseGoal.GoalBodyFat : coursesData.GoalBodyFat ?? 0);
+            if (coursesData.GoalWeight < 0 || coursesData.GoalBodyFat < 0)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = "修改失敗，數值大於 0"
+                });
+            }
+            try
+            {
+                db.SaveChanges();
+
+                var result = new
+                {
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "目標修改成功",
+                    Data = new
+                    {
+                        coursesData.GoalWeight,
+                        coursesData.GoalBodyFat
+                    }
+                };
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
+            }
+        }
+
+        #endregion "編輯目標"
+
+        #region "學員 - 單一營養師資料"
+
+        /// <summary>
+        /// 學員 - 取得單一營養師資料
+        /// </summary>
+        /// <param name="courseId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("course/{courseId}/nu")]
+        [JwtAuthFilter]
+        public IHttpActionResult GetCourseNu(int courseId)
+        {
+            #region "JwtToken驗證"
+
+            // 取出請求內容，解密 JwtToken 取出資料
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int id = (int)userToken["Id"];
+
+            bool checkUser = db.Users.Any(n => n.Id == id);
+            if (!checkUser)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "請重新登入"
+                });
+            }
+
+            #endregion "JwtToken驗證"
+
+            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId);
+            if (coursesData == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = "查無此課程"
+                });
+            }
+
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "取得營養師資料成功",
+                Data = new
+                {
+                    coursesData.Order.Plan.Nutritionist.Id,
+                    CourseTitle = coursesData.Order.Plan.CourseName,
+                    ImgUrl = coursesData.Order.Plan.Nutritionist.PortraitImage,
+                    coursesData.Order.Plan.Nutritionist.Title,
+                    Email = coursesData.Order.Plan.Nutritionist.Option1,
+                    Tel = coursesData.Order.Plan.Nutritionist.Option2,
+                    LineId = coursesData.Order.Plan.Nutritionist.Option3
+                }
+            };
+            return Ok(result);
+        }
+
+        #endregion "學員 - 單一營養師資料"
     }
 }

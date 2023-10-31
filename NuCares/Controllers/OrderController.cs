@@ -152,84 +152,92 @@ namespace NuCares.Controllers
                 OrderId = newOrder.Id
             };
             db.Courses.Add(newCourse);
-            db.SaveChanges();
-            // 整理金流串接資料
-            // 加密用金鑰
-            string hashKey = ConfigurationManager.AppSettings["HashKey"];
-            string hashIV = ConfigurationManager.AppSettings["HashIV"];
-
-            // 金流接收必填資料
-            string merchantID = ConfigurationManager.AppSettings["MerchantID"];
-            string tradeInfo = "";
-            string tradeSha = "";
-            string version = "2.0"; // 參考文件串接程式版本
-
-            // tradeInfo 內容，導回的網址都需為 https 
-            string respondType = "JSON"; // 回傳格式
-            string timeStamp = ((int)(newOrder.CreateDate - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds).ToString();
-            string merchantOrderNo = timeStamp + "_" + newOrder.Id; // 底線後方為訂單ID，解密比對用，不可重覆(規則參考文件)
-            string amt = newOrder.Plan.CoursePrice.ToString();
-            string itemDesc = newOrder.Plan.CourseName + " / " + newOrder.Plan.Nutritionist.Title + " 營養師";
-            string tradeLimit = "600"; // 交易限制秒數
-            string notifyURL = @"https://" + Request.RequestUri.Host + "/order/paymentResult";// NotifyURL 填後端接收藍新付款結果的 API 位置，如 : /api/users/getpaymentdata
-            string returnURL = "";  // 前端可用 Status: SUCCESS 來判斷付款成功，網址夾帶可拿來取得活動內容
-            string email = newOrder.UserEmail; // 通知付款完成用
-            string loginType = "0"; // 0不須登入藍新金流會員
-
-            // 將 model 轉換為List<KeyValuePair<string, string>>
-            List<KeyValuePair<string, string>> tradeData = new List<KeyValuePair<string, string>>() {
-            new KeyValuePair<string, string>("MerchantID", merchantID),
-            new KeyValuePair<string, string>("RespondType", respondType),
-            new KeyValuePair<string, string>("TimeStamp", timeStamp),
-            new KeyValuePair<string, string>("Version", version),
-            new KeyValuePair<string, string>("MerchantOrderNo", merchantOrderNo),
-            new KeyValuePair<string, string>("Amt", amt),
-            new KeyValuePair<string, string>("ItemDesc", itemDesc),
-            new KeyValuePair<string, string>("TradeLimit", tradeLimit),
-            new KeyValuePair<string, string>("NotifyURL", notifyURL),
-            new KeyValuePair<string, string>("ReturnURL", returnURL),
-            new KeyValuePair<string, string>("Email", email),
-            new KeyValuePair<string, string>("LoginType", loginType),
-            new KeyValuePair<string, string>("CREDIT", "1")
-        };
-
-            // 將 List<KeyValuePair<string, string>> 轉換為 key1=Value1&key2=Value2&key3=Value3...
-            var tradeQueryPara = string.Join("&", tradeData.Select(x => $"{x.Key}={x.Value}"));
-            // AES 加密
-            tradeInfo = CryptoUtil.EncryptAESHex(tradeQueryPara, hashKey, hashIV);
-            // SHA256 加密
-            tradeSha = CryptoUtil.EncryptSHA256($"HashKey={hashKey}&{tradeInfo}&HashIV={hashIV}");
-
-            var result = new
+            try
             {
-                StatusCode = 200,
-                Status = "Success",
-                Message = "訂單新增成功",
-                Data = new
+                db.SaveChanges();
+                // 整理金流串接資料
+                // 加密用金鑰
+                string hashKey = ConfigurationManager.AppSettings["HashKey"];
+                string hashIV = ConfigurationManager.AppSettings["HashIV"];
+
+                // 金流接收必填資料
+                string merchantID = ConfigurationManager.AppSettings["MerchantID"];
+                string tradeInfo = "";
+                string tradeSha = "";
+                string version = "2.0"; // 參考文件串接程式版本
+
+                // tradeInfo 內容，導回的網址都需為 https 
+                string respondType = "JSON"; // 回傳格式
+                string timeStamp = ((int)(newOrder.CreateDate - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds).ToString();
+                string merchantOrderNo = timeStamp + "_" + newOrder.Id; // 底線後方為訂單ID，解密比對用，不可重覆(規則參考文件)
+                string amt = newOrder.Plan.CoursePrice.ToString();
+                string itemDesc = newOrder.Plan.CourseName + " / " + newOrder.Plan.Nutritionist.Title + " 營養師";
+                string tradeLimit = "600"; // 交易限制秒數
+                string notifyURL = @"http://4.213.67.245" + "/order/paymentResult";// NotifyURL 填後端接收藍新付款結果的 API 位置，如 : /api/users/getpaymentdata
+                string returnURL = "";  // 前端可用 Status: SUCCESS 來判斷付款成功，網址夾帶可拿來取得活動內容
+                string email = newOrder.UserEmail; // 通知付款完成用
+                string loginType = "0"; // 0不須登入藍新金流會員
+
+                // 將 model 轉換為List<KeyValuePair<string, string>>
+                List<KeyValuePair<string, string>> tradeData = new List<KeyValuePair<string, string>>() {
+                    new KeyValuePair<string, string>("MerchantID", merchantID),
+                    new KeyValuePair<string, string>("RespondType", respondType),
+                    new KeyValuePair<string, string>("TimeStamp", timeStamp),
+                    new KeyValuePair<string, string>("Version", version),
+                    new KeyValuePair<string, string>("MerchantOrderNo", merchantOrderNo),
+                    new KeyValuePair<string, string>("Amt", amt),
+                    new KeyValuePair<string, string>("ItemDesc", itemDesc),
+                    new KeyValuePair<string, string>("TradeLimit", tradeLimit),
+                    new KeyValuePair<string, string>("NotifyURL", notifyURL),
+                    new KeyValuePair<string, string>("ReturnURL", returnURL),
+                    new KeyValuePair<string, string>("Email", email),
+                    new KeyValuePair<string, string>("LoginType", loginType),
+                    new KeyValuePair<string, string>("CREDIT", "1")
+                };
+
+                // 將 List<KeyValuePair<string, string>> 轉換為 key1=Value1&key2=Value2&key3=Value3...
+                var tradeQueryPara = string.Join("&", tradeData.Select(x => $"{x.Key}={x.Value}"));
+                // AES 加密
+                tradeInfo = CryptoUtil.EncryptAESHex(tradeQueryPara, hashKey, hashIV);
+                // SHA256 加密
+                tradeSha = CryptoUtil.EncryptSHA256($"HashKey={hashKey}&{tradeInfo}&HashIV={hashIV}");
+
+                var result = new
                 {
-                    newOrder.Id,
-                    newOrder.OrderNumber,
-                    newOrder.ContactTime,
-                    CourseName = newOrder.Plan.CourseName,
-                    Nutritionist = newOrder.Plan.Nutritionist.Title,
-                    CourseWeek = newOrder.Plan.CourseWeek,
-                    CoursePrice = newOrder.Plan.CoursePrice,
-                    newOrder.UserId,
-                    newOrder.UserName,
-                    newOrder.UserEmail,
-                    newOrder.UserPhone,
-                    newOrder.UserLineId,
-                    newOrder.PaymentMethod,
-                    newOrder.Invoice,
-                    newOrder.IsPayment,
-                    CourseId = newCourse.Id,
-                    MerchantID = merchantID,
-                    TradeInfo = tradeInfo,
-                    TradeSha = tradeSha,
-                    Version = version
-                }
-            };
-            return Ok(result);
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "訂單新增成功",
+                    Data = new
+                    {
+                        newOrder.Id,
+                        newOrder.OrderNumber,
+                        newOrder.ContactTime,
+                        CourseName = newOrder.Plan.CourseName,
+                        Nutritionist = newOrder.Plan.Nutritionist.Title,
+                        CourseWeek = newOrder.Plan.CourseWeek,
+                        CoursePrice = newOrder.Plan.CoursePrice,
+                        newOrder.UserId,
+                        newOrder.UserName,
+                        newOrder.UserEmail,
+                        newOrder.UserPhone,
+                        newOrder.UserLineId,
+                        newOrder.PaymentMethod,
+                        newOrder.Invoice,
+                        newOrder.IsPayment,
+                        CourseId = newCourse.Id,
+                        MerchantID = merchantID,
+                        TradeInfo = tradeInfo,
+                        TradeSha = tradeSha,
+                        Version = version
+                    }
+                };
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
+            }
+
         }
         #endregion "創建訂單（未付款）"
 

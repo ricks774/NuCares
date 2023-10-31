@@ -50,24 +50,26 @@ namespace NuCares.Controllers
                 .OrderBy(c => c.Order.CreateDate) // 根據需要的屬性進行排序
                 .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
                 .Take(pageSize) // 每頁顯示的記錄數
-                .Select(c => new
-                {
-                    c.Id,
-                    c.Order.OrderNumber,
-                    c.Order.Plan.CourseName,
-                    c.Order.UserName,
-                    c.CourseStartDate,
-                    c.CourseEndDate,
-                    CourseState = c.CourseEndDate < today ? "已結束" : c.CourseState.ToString(),
-                    c.IsQuest,
-                });
+                .ToList();
+
+            var formattedData = coursesData.Select(c => new
+            {
+                c.Id,
+                c.Order.OrderNumber,
+                c.Order.Plan.CourseName,
+                c.Order.UserName,
+                CourseStartDate = c.CourseStartDate.HasValue ? c.CourseStartDate.Value.ToString("yyyy/MM/dd") : null,
+                CourseEndDate = c.CourseEndDate.HasValue ? c.CourseEndDate.Value.ToString("yyyy/MM/dd") : null,
+                CourseState = c.CourseEndDate < today ? "已結束" : c.CourseState.ToString(),
+                c.IsQuest,
+            });
 
             var result = new
             {
                 StatusCode = 200,
                 Status = "Success",
                 Message = "取得我的學員列表成功",
-                Data = coursesData,
+                Data = formattedData,
                 Pagination = new
                 {
                     Current_page = page,
@@ -197,21 +199,28 @@ namespace NuCares.Controllers
             coursesData.CourseStartDate = viewCourseTime.CourseStartDate;
             coursesData.CourseEndDate = viewCourseTime.CourseEndDate;
             coursesData.CourseState = EnumList.CourseState.進行中;
-            db.SaveChanges();
-            var result = new
+            try
             {
-                StatusCode = 200,
-                Status = "Success",
-                Message = "課程起訖日更新成功",
-                Data = new
+                db.SaveChanges();
+                var result = new
                 {
-                    CourseName = coursesData.Order.Plan.CourseName,
-                    CourseStartDate = coursesData.CourseStartDate,
-                    CourseEndDate = coursesData.CourseEndDate,
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "課程起訖日更新成功",
+                    Data = new
+                    {
+                        CourseName = coursesData.Order.Plan.CourseName,
+                        CourseStartDate = coursesData.CourseStartDate,
+                        CourseEndDate = coursesData.CourseEndDate,
 
-                }
-            };
-            return Ok(result);
+                    }
+                };
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
+            }
         }
         #endregion "課程開始"
     }

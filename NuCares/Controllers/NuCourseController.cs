@@ -136,25 +136,32 @@ namespace NuCares.Controllers
             courseMenu.Oil = (viewDailyCourseMenu.Oil != 0) ? viewDailyCourseMenu.Oil : courseMenu.Oil;
             courseMenu.Water = (viewDailyCourseMenu.Water != 0) ? viewDailyCourseMenu.Water : courseMenu.Water;
 
-            db.SaveChanges();
-            var result = new
+            try
             {
-                StatusCode = 200,
-                Status = "Success",
-                Message = "更新學員菜單資料成功",
-                Data = new
+                db.SaveChanges();
+                var result = new
                 {
-                    CourseId = courseMenu.CourseId,
-                    courseMenu.Id,
-                    courseMenu.Starch,
-                    courseMenu.Protein,
-                    courseMenu.Vegetable,
-                    courseMenu.Fruit,
-                    courseMenu.Oil,
-                    courseMenu.Water
-                }
-            };
-            return Ok(result);
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "更新學員菜單資料成功",
+                    Data = new
+                    {
+                        CourseId = courseMenu.CourseId,
+                        courseMenu.Id,
+                        courseMenu.Starch,
+                        courseMenu.Protein,
+                        courseMenu.Vegetable,
+                        courseMenu.Fruit,
+                        courseMenu.Oil,
+                        courseMenu.Water
+                    }
+                };
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
+            }
         }
         #endregion "編輯學員課程菜單"
     }
