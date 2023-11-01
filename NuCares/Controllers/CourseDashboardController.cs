@@ -291,9 +291,10 @@ namespace NuCares.Controllers
 
             var bodyInfo = db.BodyInfos.Where(b => b.CourseId == courseId)
                 .OrderByDescending(b => b.CreateDate)
+                .AsEnumerable()
                 .Select(b => new
                 {
-                    b.CreateDate,
+                    CreateDate = b.CreateDate.ToString("yyyy/MM/dd"),
                     b.Height,
                     b.Weight,
                     b.BodyFat,
