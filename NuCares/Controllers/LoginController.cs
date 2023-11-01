@@ -30,7 +30,7 @@ namespace NuCares.Controllers
             string account = viewUserLogin.Email;
             string password = viewUserLogin.Password;
 
-            // 先判斷信箱是否存在
+            // 先判斷信箱是否存在，以免發生找不到Salt的錯誤
             bool checkEmail = db.Users.Any(u => u.Email.Equals(account));
             if (!checkEmail)
             {
