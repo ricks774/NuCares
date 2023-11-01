@@ -30,6 +30,19 @@ namespace NuCares.Controllers
             string account = viewUserLogin.Email;
             string password = viewUserLogin.Password;
 
+            // 先判斷信箱是否存在
+            bool checkEmail = db.Users.Any(u => u.Email.Equals(account));
+            if (!checkEmail)
+            {
+                return Content(
+                    HttpStatusCode.BadRequest, new
+                    {
+                        StatusCode = 400,
+                        Status = "Error",
+                        Message = new { Email = "信箱不存在" }
+                    });
+            }
+
             // 篩選特定資料
             var userData = db.Users
                 .Where(u => u.Email == viewUserLogin.Email)
