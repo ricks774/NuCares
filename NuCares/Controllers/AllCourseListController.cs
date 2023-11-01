@@ -58,6 +58,7 @@ namespace NuCares.Controllers
                     c.Id,
                     c.Order.OrderNumber,
                     c.Order.Plan.Nutritionist.Title,
+                    c.Order.Plan.CourseWeek,
                     c.Order.Plan.CourseName,
                     CourseStartDate = c.CourseStartDate.HasValue ? c.CourseStartDate.Value.ToString("yyyy-MM-dd") : null,
                     CourseEndDate = c.CourseEndDate.HasValue ? c.CourseStartDate.Value.ToString("yyyy-MM-dd") : null,
