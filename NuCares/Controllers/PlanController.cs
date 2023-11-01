@@ -58,8 +58,6 @@ namespace NuCares.Controllers
                     Message = errors
                 });
             }
-
-
             var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
             var newPlan = new Plan
             {
@@ -72,15 +70,22 @@ namespace NuCares.Controllers
                 Tag = viewPlan.Tag
             };
             db.Plans.Add(newPlan);
-            db.SaveChanges();
-            var result = new
+            try
             {
-                StatusCode = 200,
-                Status = "Success",
-                Message = "營養師課程方案成功",
-                Data = newPlan
-            };
-            return Ok(result);
+                db.SaveChanges();
+                var result = new
+                {
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "營養師課程方案成功",
+                    Data = newPlan
+                };
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
+            }
         }
         #endregion "新增API"
 
@@ -107,9 +112,9 @@ namespace NuCares.Controllers
                     Message = new { Auth = "您沒有營養師權限" }
                 });
             }
-            var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
+
             var nuPlan = db.Plans
-            .Where(plan => plan.NutritionistId == nu.Id && !plan.IsDelete)
+            .Where(plan => plan.Nutritionist.UserId == id && !plan.IsDelete)
             .OrderBy(plan => (int)plan.Rank)
             .ThenBy(plan => plan.CreateDate)
             .ToList();
@@ -170,8 +175,7 @@ namespace NuCares.Controllers
                     Message = errors
                 });
             }
-            var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
-            var plan = db.Plans.FirstOrDefault(p => p.Id == planId && p.NutritionistId == nu.Id && !p.IsDelete);
+            var plan = db.Plans.FirstOrDefault(p => p.Id == planId && p.Nutritionist.UserId == id && !p.IsDelete);
             if (plan == null)
             {
                 return Content(HttpStatusCode.BadRequest, new
@@ -212,17 +216,23 @@ namespace NuCares.Controllers
                     plan.GetType().GetProperty(property).SetValue(plan, propertyValue);
                 }
             }
-
-            db.SaveChanges();
-            var result = new
+            try
             {
-                StatusCode = 200,
-                Status = "Success",
-                Message = "營養師課程方案更新成功",
-                Data = plan
-            };
+                db.SaveChanges();
+                var result = new
+                {
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "營養師課程方案更新成功",
+                    Data = plan
+                };
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
+            }
         }
 
         #endregion "修改課程方案"
@@ -253,8 +263,7 @@ namespace NuCares.Controllers
                 });
             }
 
-            var nu = db.Nutritionists.FirstOrDefault(n => n.UserId == id);
-            var plan = db.Plans.FirstOrDefault(p => p.Id == planId && p.NutritionistId == nu.Id && !p.IsDelete);
+            var plan = db.Plans.FirstOrDefault(p => p.Id == planId && p.Nutritionist.UserId == id && !p.IsDelete);
             if (plan == null)
             {
                 return Content(HttpStatusCode.BadRequest, new
@@ -266,19 +275,24 @@ namespace NuCares.Controllers
             }
 
             plan.IsDelete = true;
-            db.SaveChanges();
-            var result = new
+            try
             {
-                StatusCode = 200,
-                Status = "Success",
-                Message = "營養師課程方案刪除成功",
-                Data = plan
-            };
+                db.SaveChanges();
+                var result = new
+                {
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "營養師課程方案刪除成功",
+                    Data = plan
+                };
 
-            return Ok(result);
-
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
+            }
         }
-
         #endregion"刪除課程方案"
     }
 }

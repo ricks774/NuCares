@@ -227,13 +227,18 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AllCourseListController.cs" />
+    <Compile Include="Controllers\BodyInfoController.cs" />
+    <Compile Include="Controllers\ApplyNutritionistController.cs" />
+    <Compile Include="Controllers\CourseDashboardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\NuCourseController.cs" />
     <Compile Include="Controllers\NuCourseListController.cs" />
     <Compile Include="Controllers\NutritionistController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\PlanController.cs" />
     <Compile Include="Controllers\SingUpController.cs" />
+    <Compile Include="Controllers\StudentDailyEditController.cs" />
     <Compile Include="Controllers\UploadController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -245,6 +250,10 @@
     <Compile Include="Models\DailyMealTime.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\FavoriteList.cs" />
+    <Compile Include="Models\ViewBodyInfo.cs" />
+    <Compile Include="Models\ViewDaily.cs" />
+    <Compile Include="Models\ViewCourse.cs" />
+    <Compile Include="Models\ViewDailyCourseMenu.cs" />
     <Compile Include="Models\ViewNutritionist.cs" />
     <Compile Include="Models\Plan.cs" />
     <Compile Include="Models\EnumDisplayNameAttribute.cs" />
@@ -260,6 +269,7 @@
     <Compile Include="Models\ViewUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\Argon2Verify.cs" />
+    <Compile Include="Security\CryptoUtil.cs" />
     <Compile Include="Security\JwtAuthFilter.cs" />
     <Compile Include="Security\JwtAuthUtil.cs" />
     <Compile Include="Startup.cs" />
@@ -320,7 +330,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\ViewOrder\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
