@@ -56,6 +56,7 @@ namespace NuCares.Controllers
             {
                 c.Id,
                 c.Order.OrderNumber,
+                c.Order.Plan.CourseWeek,
                 c.Order.Plan.CourseName,
                 c.Order.UserName,
                 CourseStartDate = c.CourseStartDate.HasValue ? c.CourseStartDate.Value.ToString("yyyy/MM/dd") : null,
