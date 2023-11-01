@@ -47,6 +47,8 @@ namespace NuCares.Controllers
 
             #endregion "JwtToken驗證"
 
+            #region "可能有多筆錯誤發生時的錯誤訊息"
+
             if (!ModelState.IsValid)
             {
                 // 回傳錯誤的訊息
@@ -66,90 +68,90 @@ namespace NuCares.Controllers
                     Message = errors
                 });
             }
+
+            #endregion "可能有多筆錯誤發生時的錯誤訊息"
+
+            var courseCheck = db.Courses.Find(courseId);
+
+            if (courseCheck == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = "找不到這筆課程"
+                });
+            }
             else
             {
-                var courseCheck = db.Courses.Find(courseId);
+                bool bodyData = db.BodyInfos.Any(bi => bi.InsertDate == DateTime.Today && bi.CourseId == courseId);
 
-                if (courseCheck == null)
+                if (bodyData)
                 {
                     return Content(HttpStatusCode.BadRequest, new
                     {
                         StatusCode = 400,
                         Status = "Error",
-                        Message = "找不到這筆課程"
+                        Message = "新增失敗，今天已經有紀錄"
                     });
+                }
+
+                #region "計算BMI & BMR公式"
+
+                // 計算BMI
+                double bmiHeight = (double)(viewBodyInfo.Height / 100);
+                double bmiWeight = (double)viewBodyInfo.Weight;
+                double bmi = bmiWeight / (bmiHeight * bmiHeight);
+
+                // 計算BMR
+                // 取得年齡
+                var userdate = db.Users.SingleOrDefault(u => u.Id == id);
+                DateTime today = DateTime.Today;
+                int age = today.Year - userdate.Birthday.Year;
+                if (today < userdate.Birthday.AddYears(age))
+                {
+                    age--;
+                }
+
+                // BMR公式
+                double bmrHeight = (double)viewBodyInfo.Height;
+                int bmr = 0;
+                if (userdate.Gender == 0)
+                {
+                    bmr = (int)(66 + (13.7 * bmiWeight + 5 * bmrHeight - 6.8 * age));
                 }
                 else
                 {
-                    bool bodyData = db.BodyInfos.Any(bi => bi.InsertDate == DateTime.Today);
-
-                    if (bodyData)
-                    {
-                        return Content(HttpStatusCode.BadRequest, new
-                        {
-                            StatusCode = 400,
-                            Status = "Error",
-                            Message = "新增失敗，今天已經有紀錄"
-                        });
-                    }
-
-                    #region "計算BMI & BMR公式"
-
-                    // 計算BMI
-                    double bmiHeight = (double)(viewBodyInfo.Height / 100);
-                    double bmiWeight = (double)viewBodyInfo.Weight;
-                    double bmi = bmiWeight / (bmiHeight * bmiHeight);
-
-                    // 計算BMR
-                    // 取得年齡
-                    var userdate = db.Users.SingleOrDefault(u => u.Id == id);
-                    DateTime today = DateTime.Today;
-                    int age = today.Year - userdate.Birthday.Year;
-                    if (today < userdate.Birthday.AddYears(age))
-                    {
-                        age--;
-                    }
-
-                    // BMR公式
-                    double bmrHeight = (double)viewBodyInfo.Height;
-                    int bmr = 0;
-                    if (userdate.Gender == 0)
-                    {
-                        bmr = (int)(66 + (13.7 * bmiWeight + 5 * bmrHeight - 6.8 * age));
-                    }
-                    else
-                    {
-                        bmr = (int)(655 + (9.6 * bmiWeight + 1.8 * bmrHeight - 4.7 * age));
-                    }
-
-                    #endregion "計算BMI & BMR公式"
-
-                    // 創建一個新的 BodyInfo 物件，紀錄傳入的數值
-                    var newUser = new BodyInfo
-                    {
-                        CourseId = courseId,
-                        Height = viewBodyInfo.Height,
-                        Weight = viewBodyInfo.Weight,
-                        BodyFat = viewBodyInfo.BodyFat,
-                        VisceralFat = viewBodyInfo.VisceralFat,
-                        SMM = viewBodyInfo.SMM,
-                        Bmi = (decimal?)bmi,
-                        Bmr = bmr,
-                        InsertDate = DateTime.Today
-                    };
-
-                    db.BodyInfos.Add(newUser);
-                    db.SaveChanges();
-
-                    var result = new
-                    {
-                        StatusCode = 200,
-                        Status = "Success",
-                        Message = "新增身體數值成功",
-                    };
-
-                    return Ok(result);
+                    bmr = (int)(655 + (9.6 * bmiWeight + 1.8 * bmrHeight - 4.7 * age));
                 }
+
+                #endregion "計算BMI & BMR公式"
+
+                // 創建一個新的 BodyInfo 物件，紀錄傳入的數值
+                var newUser = new BodyInfo
+                {
+                    CourseId = courseId,
+                    Height = viewBodyInfo.Height,
+                    Weight = viewBodyInfo.Weight,
+                    BodyFat = viewBodyInfo.BodyFat,
+                    VisceralFat = viewBodyInfo.VisceralFat,
+                    SMM = viewBodyInfo.SMM,
+                    Bmi = (decimal?)bmi,
+                    Bmr = bmr,
+                    InsertDate = DateTime.Today
+                };
+
+                db.BodyInfos.Add(newUser);
+                db.SaveChanges();
+
+                var result = new
+                {
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "新增身體數值成功",
+                };
+
+                return Ok(result);
             }
         }
 
