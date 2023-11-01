@@ -49,7 +49,12 @@ namespace NuCares.Controllers
                 bool emailCheck = db.Users.Any(u => u.Email == viewUser.Email);
                 if (emailCheck)
                 {
-                    return BadRequest("Email重複!");
+                    return Content(HttpStatusCode.BadRequest, new
+                    {
+                        StatusCode = 400,
+                        Status = "Error",
+                        Message = new { Email = "信箱重複" }
+                    });
                 }
 
                 // 將性別轉成數字

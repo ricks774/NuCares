@@ -102,7 +102,7 @@ namespace NuCares.Controllers
                         {
                             StatusCode = 400,
                             Status = "Error",
-                            Message = "密碼錯誤"
+                            Message = new { Password = "密碼錯誤" }
                         });
                 }
             }
@@ -113,7 +113,7 @@ namespace NuCares.Controllers
                     {
                         StatusCode = 400,
                         Status = "Error",
-                        Message = "信箱不存在"
+                        Message = new { Email = "信箱不存在" }
                     });
             }
         }
