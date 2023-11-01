@@ -4,17 +4,25 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using NSwag.Annotations;
 using NuCares.Models;
 using NuCares.Security;
 
 namespace NuCares.Controllers
 {
+    [OpenApiTag("Survey", Description = "問卷")]
+
     public class SurveyController : ApiController
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();
 
         #region "新增問卷API"
-
+        /// <summary>
+        /// 新增問卷
+        /// </summary>
+        /// <param name="viewAddSurvey"></param>
+        /// <param name="courseId"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("course/{courseId}/survey")]
         [JwtAuthFilter]
