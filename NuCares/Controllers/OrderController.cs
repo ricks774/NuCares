@@ -20,6 +20,7 @@ namespace NuCares.Controllers
         private readonly NuCaresDBContext db = new NuCaresDBContext();
 
         #region "取得方案"
+
         /// <summary>
         /// 取得方案
         /// </summary>
@@ -72,9 +73,11 @@ namespace NuCares.Controllers
             };
             return Ok(result);
         }
+
         #endregion "取得方案"
 
-        #region  "創建訂單（未付款）"
+        #region "創建訂單（未付款）"
+
         /// <summary>
         /// 新增訂單
         /// </summary>
@@ -166,7 +169,7 @@ namespace NuCares.Controllers
                 string tradeSha = "";
                 string version = "2.0"; // 參考文件串接程式版本
 
-                // tradeInfo 內容，導回的網址都需為 https 
+                // tradeInfo 內容，導回的網址都需為 https
                 string respondType = "JSON"; // 回傳格式
                 string timeStamp = ((int)(newOrder.CreateDate - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds).ToString();
                 string merchantOrderNo = timeStamp + "_" + newOrder.Id; // 底線後方為訂單ID，解密比對用，不可重覆(規則參考文件)
@@ -237,11 +240,12 @@ namespace NuCares.Controllers
             {
                 return InternalServerError();
             }
-
         }
+
         #endregion "創建訂單（未付款）"
 
         #region "藍新回傳付款結果"
+
         /// <summary>
         /// 藍新回傳付款結果
         /// </summary>
@@ -275,7 +279,70 @@ namespace NuCares.Controllers
 
             return response;
         }
+
         #endregion "藍新回傳付款結果"
 
+        #region "學員 - 查詢訂單列表"
+
+        [HttpGet]
+        [Route("user/orders")]
+        public IHttpActionResult GetOrderList(int page = 1)
+        {
+            #region "JwtToken驗證"
+
+            // 取出請求內容，解密 JwtToken 取出資料
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int id = (int)userToken["Id"];
+
+            bool checkUser = db.Users.Any(n => n.Id == id);
+            if (!checkUser)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "請重新登入"
+                });
+            }
+
+            #endregion "JwtToken驗證"
+
+            // 分頁設定
+            int pageSize = 10; // 每頁顯示的記錄數
+            var totalRecords = db.Courses.Where(c => c.Order.UserId == id).Count(); // 計算符合條件的記錄總數
+            int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize); // 計算總頁數
+
+            var orderData = db.Orders
+                .Where(o => o.UserId == id)
+                .OrderBy(o => o.Id) // 根據需要的屬性進行排序
+                .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
+                .Take(pageSize) // 每頁顯示的記錄數
+                .AsEnumerable() // 使查詢先執行,再在記憶體中處理
+                .Select(o => new
+                {
+                    Date = o.CreateDate.ToString("yyyy/MM/dd"),
+                    o.OrderNumber,
+                    o.Plan.Nutritionist.Title,
+                    o.Plan.CourseName,
+                    o.Plan.CoursePrice,
+                    o.PaymentMethod
+                });
+
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "取得課程列表成功",
+                Data = orderData,
+                Pagination = new
+                {
+                    Current_page = page,
+                    Total_pages = totalPages
+                }
+            };
+            return Ok(result);
+        }
+
+        #endregion "學員 - 查詢訂單列表"
     }
 }
