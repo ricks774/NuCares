@@ -355,17 +355,45 @@ namespace NuCares.Controllers
                 .Where(b => b.CourseId == courseId)
                 .OrderByDescending(b => b.CreateDate)
                 .FirstOrDefault();
-
             var goalWeight = coursesData.GoalWeight ?? 0;
             var goalBodyFat = coursesData.GoalBodyFat ?? 0;
             var latestWeight = latestBodyInfo?.Weight ?? 0;
             var latestBodyFat = latestBodyInfo?.BodyFat ?? 0;
-            double weightProgress = ((double)latestWeight - (double)goalWeight) / (double)goalWeight;
-            double bodyFatProgress = ((double)latestBodyFat - (double)goalBodyFat) / (double)goalBodyFat;
-            double weightCompletionRate = 100 - (weightProgress * 100);
-            double bodyFatCompletionRate = 100 - (bodyFatProgress * 100);
-            weightCompletionRate = (latestWeight == 0 || goalWeight == 0) ? 0 : weightCompletionRate;
-            bodyFatCompletionRate = (latestBodyFat == 0 || goalBodyFat == 0) ? 0 : bodyFatCompletionRate;
+
+            double weightCompletionRate, bodyFatCompletionRate;
+
+            if (goalWeight >= latestWeight)
+            {
+                weightCompletionRate = ((double)latestWeight / (double)goalWeight) * 100;
+
+            }
+            else if (goalWeight < latestWeight)
+            {
+
+                weightCompletionRate = ((double)goalWeight / (double)latestWeight) * 100;
+            }
+            else
+            {
+                weightCompletionRate = 0;
+            }
+
+            if (goalBodyFat >= latestBodyFat)
+            {
+                bodyFatCompletionRate = ((double)latestBodyFat / (double)goalBodyFat) * 100;
+            }
+            else if (goalBodyFat < latestBodyFat)
+            {
+                bodyFatCompletionRate = ((double)goalBodyFat / (double)latestBodyFat) * 100;
+            }
+            else
+            {
+                bodyFatCompletionRate = 0;
+            }
+
+            var formattedWeightCompletionRate = Math.Abs(weightCompletionRate);
+            var formattedBodyFatCompletionRate = Math.Abs(bodyFatCompletionRate);
+
+
             var result = new
             {
                 StatusCode = 200,
@@ -377,8 +405,8 @@ namespace NuCares.Controllers
                     GoalBodyFat = goalBodyFat,
                     Weight = latestWeight,
                     BodyFoat = latestWeight,
-                    WeightCompletionRate = weightCompletionRate,
-                    BodyFatCompletionRate = bodyFatCompletionRate
+                    WeightCompletionRate = weightCompletionRate.ToString("F2"),
+                    BodyFatCompletionRate = bodyFatCompletionRate.ToString("F2")
                 }
             };
 
