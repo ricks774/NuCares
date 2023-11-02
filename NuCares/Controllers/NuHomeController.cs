@@ -41,7 +41,7 @@ namespace NuCares.Controllers
                 {
                     NutritionistId = n.Id,
                     n.Title,
-                    n.PortraitImage,
+                    PortraitImage = ImageUrl.GetImageUrl(n.PortraitImage),
                     Expertis = n.Expertise.Split(',').ToArray()
                 });
 
@@ -83,7 +83,7 @@ namespace NuCares.Controllers
                 .Select(n => new
                 {
                     n.Title,
-                    n.PortraitImage,
+                    PortraitImage = ImageUrl.GetImageUrl(n.PortraitImage),
                     Expertise = n.Expertise.Split(',').ToArray(),
                     Favorite = false,
                     Course = n.Plans.Select(p => new
