@@ -32,7 +32,7 @@ namespace NuCares.Controllers
         {
             var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
             int id = (int)userToken["Id"];
-            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId);
+            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId && c.Order.IsPayment);
             if (coursesData == null)
             {
                 return Content(HttpStatusCode.BadRequest, new
@@ -52,7 +52,16 @@ namespace NuCares.Controllers
                     Message = new { Auth = "您沒有權限" }
                 });
             }
-            string baseUrl = ConfigurationManager.AppSettings["BaseUrl"];
+            if (coursesData.CourseState == 0 || coursesData.CourseStartDate == null || coursesData.CourseEndDate == null)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { Course = "課程尚未開始" }
+                });
+            }
+
             var today = DateTime.Today;
 
             if (date == null)
@@ -269,7 +278,7 @@ namespace NuCares.Controllers
         {
             var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
             int id = (int)userToken["Id"];
-            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId);
+            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId && c.Order.IsPayment);
             if (coursesData == null)
             {
                 return Content(HttpStatusCode.BadRequest, new
@@ -430,7 +439,7 @@ namespace NuCares.Controllers
         {
             var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
             int id = (int)userToken["Id"];
-            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId);
+            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId & c.Order.IsPayment);
             if (coursesData == null)
             {
                 return Content(HttpStatusCode.BadRequest, new
@@ -515,7 +524,7 @@ namespace NuCares.Controllers
                 });
             }
             var coursesData = db.Courses
-                .FirstOrDefault(c => c.Order.Plan.Nutritionist.UserId == id && c.Order.IsPayment && c.Id == courseId);
+                .FirstOrDefault(c => c.Order.IsPayment && c.Id == courseId);
             if (coursesData == null)
             {
                 return Content(HttpStatusCode.BadRequest, new
@@ -523,6 +532,24 @@ namespace NuCares.Controllers
                     StatusCode = 400,
                     Status = "Error",
                     Message = new { Course = "查無此課程" }
+                });
+            }
+            if (coursesData.Order.Plan.Nutritionist.UserId != id)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { Auth = "您無權限" }
+                });
+            }
+            if (coursesData.CourseState == 0 || coursesData.CourseStartDate == null || coursesData.CourseEndDate == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { Course = "課程尚未開始" }
                 });
             }
             coursesData.GoalWeight = (int)(viewCourseGoal.GoalWeight.HasValue ? viewCourseGoal.GoalWeight : coursesData.GoalWeight ?? 0);
@@ -592,7 +619,7 @@ namespace NuCares.Controllers
 
             #endregion "JwtToken驗證"
 
-            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId);
+            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId && c.Order.IsPayment);
             if (coursesData == null)
             {
                 return Content(HttpStatusCode.BadRequest, new
