@@ -197,6 +197,7 @@ namespace NuCares.Controllers
                     OilAchieved = studentLog.Oil >= menuData.Oil && studentLog.Oil > 0,
                     OilDescription = studentLog.OilDescription,
                     OilImgUrl = ImageUrl.GetImageUrl(studentLog.OilImgUrl),
+                    Water = $"{studentLog.Water},{menuData.Water}",
                     WaterAchieved = studentLog.Water >= menuData.Water && studentLog.Water > 0,
                     WaterDescription = studentLog.WaterDescription,
                     WaterImgUrl = ImageUrl.GetImageUrl(studentLog.WaterImgUrl)
