@@ -245,6 +245,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="helper\ImageUrl.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BodyInfo.cs" />
     <Compile Include="Models\DailyCourseMenu.cs" />

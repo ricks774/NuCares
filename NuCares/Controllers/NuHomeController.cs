@@ -1,4 +1,5 @@
 ﻿using NSwag.Annotations;
+using NuCares.helper;
 using NuCares.Models;
 using NuCares.Security;
 using System;
@@ -39,7 +40,7 @@ namespace NuCares.Controllers
              {
                  NutritionistId = n.Id,
                  n.Title,
-                 n.PortraitImage,
+                 PortraitImage = ImageUrl.GetImageUrl(n.PortraitImage),
                  Expertis = n.Expertise.Split(',').ToArray()
              });
             var result = new
