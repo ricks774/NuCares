@@ -284,6 +284,11 @@ namespace NuCares.Controllers
 
         #region "學員 - 查詢訂單列表"
 
+        /// <summary>
+        /// 學員查詢訂單紀錄
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("user/orders")]
         public IHttpActionResult GetOrderList(int page = 1)
