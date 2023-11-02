@@ -59,6 +59,11 @@ namespace NuCares.Controllers
 
         #region "首頁 - 取得所有營養師"
 
+        /// <summary>
+        /// 取得所有營養師資訊
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("nutritionists")]
         public IHttpActionResult GetAllNu(int page = 1)
