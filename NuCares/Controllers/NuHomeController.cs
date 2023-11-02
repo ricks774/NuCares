@@ -136,8 +136,7 @@ namespace NuCares.Controllers
                     StatusCode = 200,
                     Status = "Success",
                     Message = "取得所有營養師",
-                    Data = "YA",
-                    userid
+                    Data = nuData
                 };
                 return Ok(result);
             }
