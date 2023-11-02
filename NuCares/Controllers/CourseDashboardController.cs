@@ -1,8 +1,10 @@
 ﻿using NSwag.Annotations;
+using NuCares.helper;
 using NuCares.Models;
 using NuCares.Security;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -50,7 +52,7 @@ namespace NuCares.Controllers
                     Message = new { Auth = "您沒有權限" }
                 });
             }
-
+            string baseUrl = ConfigurationManager.AppSettings["BaseUrl"];
             var today = DateTime.Today;
 
             if (date == null)
@@ -181,15 +183,14 @@ namespace NuCares.Controllers
                     Fruit = $"{studentLog.Fruit},{menuData.Fruit}",
                     FruitAchieved = studentLog.Fruit >= menuData.Fruit && studentLog.Fruit > 0,
                     FruitDescription = studentLog.FruitDescription,
-                    FruitImgUrl = studentLog.FruitImgUrl,
+                    FruitImgUrl = ImageUrl.GetImageUrl(studentLog.FruitImgUrl),
                     Oil = $"{studentLog.Oil},{menuData.Oil}",
                     OilAchieved = studentLog.Oil >= menuData.Oil && studentLog.Oil > 0,
                     OilDescription = studentLog.OilDescription,
-                    OilImgUrl = studentLog.OilImgUrl,
-                    Water = $"{studentLog.Water},{menuData.Water}",
+                    OilImgUrl = ImageUrl.GetImageUrl(studentLog.OilImgUrl),
                     WaterAchieved = studentLog.Water >= menuData.Water && studentLog.Water > 0,
                     WaterDescription = studentLog.WaterDescription,
-                    WaterImgUrl = studentLog.WaterImgUrl
+                    WaterImgUrl = ImageUrl.GetImageUrl(studentLog.WaterImgUrl)
                 }
             };
             return Ok(response);
@@ -451,7 +452,7 @@ namespace NuCares.Controllers
             }
             DateTime birthDate = coursesData.Order.User.Birthday;
             int age = CalculateAge(birthDate);
-
+            string baseUrl = ConfigurationManager.AppSettings["BaseUrl"];
             var result = new
             {
                 StatusCode = 200,
@@ -463,7 +464,7 @@ namespace NuCares.Controllers
                     UserName = coursesData.Order.UserName,
                     Gender = coursesData.Order.User.Gender.ToString(),
                     Age = age,
-                    ImgUrl = coursesData.Order.User.ImgUrl,
+                    ImgUrl = ImageUrl.GetImageUrl(coursesData.Order.User.ImgUrl),
                     Email = coursesData.Order.UserEmail,
                     Phone = coursesData.Order.UserPhone,
                     LineId = coursesData.Order.UserLineId
@@ -601,7 +602,7 @@ namespace NuCares.Controllers
                     Message = "查無此課程"
                 });
             }
-
+            string baseUrl = ConfigurationManager.AppSettings["BaseUrl"];
             var result = new
             {
                 StatusCode = 200,
@@ -611,7 +612,7 @@ namespace NuCares.Controllers
                 {
                     coursesData.Order.Plan.Nutritionist.Id,
                     CourseTitle = coursesData.Order.Plan.CourseName,
-                    ImgUrl = coursesData.Order.Plan.Nutritionist.PortraitImage,
+                    ImgUrl = ImageUrl.GetImageUrl(coursesData.Order.Plan.Nutritionist.PortraitImage),
                     coursesData.Order.Plan.Nutritionist.Title,
                     Email = coursesData.Order.Plan.Nutritionist.Option1,
                     Tel = coursesData.Order.Plan.Nutritionist.Option2,

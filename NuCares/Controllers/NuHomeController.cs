@@ -1,4 +1,5 @@
 ﻿using NSwag.Annotations;
+using NuCares.helper;
 using NuCares.Models;
 using NuCares.Security;
 using System;
@@ -32,6 +33,7 @@ namespace NuCares.Controllers
                 .ToList();
 
             var topNutritionists = nutritionistsData
+
                 .OrderByDescending(n => n.Plans.Average(p => p.Comments.Average(c => (double?)c.Rate) ?? 0))
                 .ThenBy(n => random.NextDouble())
                 .AsEnumerable()
@@ -42,6 +44,7 @@ namespace NuCares.Controllers
                     n.PortraitImage,
                     Expertis = n.Expertise.Split(',').ToArray()
                 });
+
             var result = new
             {
                 StatusCode = 200,
