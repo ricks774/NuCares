@@ -112,6 +112,7 @@ namespace NuCares.Controllers
                 // 登入時
                 var nuData = db.FavoriteLists
                     .Where(f => f.UserId == userid)
+                    .OrderBy(f => f.Id) // 主要排序條件
                     .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
                     .Take(pageSize) // 每頁顯示的記錄數
                     .AsEnumerable() // 使查詢先執行,再在記憶體中處理
@@ -120,7 +121,7 @@ namespace NuCares.Controllers
                         f.Nutritionist.Title,
                         PortraitImage = ImageUrl.GetImageUrl(f.Nutritionist.PortraitImage),
                         Expertise = f.Nutritionist.Expertise.Split(',').ToArray(),
-                        f.NutritionistId,
+                        Favorite = f.NutritionistId != 0 ? true : false,
                         Course = f.Nutritionist.Plans.Select(p => new
                         {
                             p.Rank,
