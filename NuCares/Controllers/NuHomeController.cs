@@ -88,7 +88,7 @@ namespace NuCares.Controllers
                     PortraitImage = ImageUrl.GetImageUrl(n.PortraitImage),
                     Expertise = n.Expertise.Split(',').ToArray(),
                     Favorite = false,
-                    Course = n.Plans.Select(p => new
+                    Course = n.Plans.Where(p => !p.IsDelete).Select(p => new
                     {
                         p.Rank,
                         p.CourseName,
@@ -122,7 +122,7 @@ namespace NuCares.Controllers
                         PortraitImage = ImageUrl.GetImageUrl(n.PortraitImage),
                         Expertise = n.Expertise.Split(',').ToArray(),
                         Favorite = n.FavoriteLists.Where(f => f.UserId == userid).Any(),
-                        Course = n.Plans.Select(p => new
+                        Course = n.Plans.Where(p => !p.IsDelete).Select(p => new
                         {
                             p.Rank,
                             p.CourseName,
