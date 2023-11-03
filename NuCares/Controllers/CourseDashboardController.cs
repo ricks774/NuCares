@@ -54,7 +54,7 @@ namespace NuCares.Controllers
             }
             if (coursesData.CourseState == 0 || coursesData.CourseStartDate == null || coursesData.CourseEndDate == null)
             {
-                return Content(HttpStatusCode.Unauthorized, new
+                return Content(HttpStatusCode.BadRequest, new
                 {
                     StatusCode = 400,
                     Status = "Error",
@@ -135,17 +135,17 @@ namespace NuCares.Controllers
                 {
                     CourseId = menuData.CourseId,
                     DailyCourseMenuId = menuData.Id,
-                    InsertDate = menuData.CreateDate.ToString("yyyy-MM-dd"),
-                    MenuDate = menuData.MenuDate.ToString("yyyy-MM-dd"),
+                    InsertDate = menuData.CreateDate.ToString("yyyy/MM/dd"),
+                    MenuDate = menuData.MenuDate.ToString("yyyy/MM/dd"),
                     StarchSum = $"{totalStudentStarch},{totalStarch}",
                     ProteinSum = $"{totalStudentProtein},{totalProtein}",
                     VegetableSum = $"{totalStudentVegetable},{totalVegetable}",
                     OilSum = $"{studentLog.Oil},{menuData.Oil}",
                     FruitSum = $"{studentLog.Fruit},{menuData.Fruit}",
                     WaterSum = $"{studentLog.Water},{menuData.Water}",
-                    StarchSumAchieved = totalStudentStarch >= totalStarch,
-                    ProteinSumAchieved = totalStudentProtein >= totalProtein,
-                    VegetableSumAchieved = totalStudentVegetable >= totalVegetable,
+                    StarchSumAchieved = totalStudentStarch >= totalStarch && totalStudentStarch > 0,
+                    ProteinSumAchieved = totalStudentProtein >= totalProtein && totalStudentProtein > 0,
+                    VegetableSumAchieved = totalStudentVegetable >= totalVegetable && totalStudentVegetable > 0,
                     Breakfast = new
                     {
                         DailyMealTimeId = breakfastData.Id,
@@ -251,7 +251,6 @@ namespace NuCares.Controllers
                     DailyLogId = dailyLogId,
                     MealTime = mealTime,
                     MealDescription = "",
-                    MealImgUrl = "",
                     Starch = 0,
                     Protein = 0,
                     Vegetable = 0
@@ -341,7 +340,7 @@ namespace NuCares.Controllers
         {
             var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
             int id = (int)userToken["Id"];
-            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId);
+            var coursesData = db.Courses.FirstOrDefault(c => c.Id == courseId && c.Order.IsPayment);
             if (coursesData == null)
             {
                 return Content(HttpStatusCode.BadRequest, new
@@ -361,6 +360,15 @@ namespace NuCares.Controllers
                     Message = new { Auth = "您沒有權限" }
                 });
             }
+            if (coursesData.CourseState == 0 || coursesData.CourseStartDate == null || coursesData.CourseEndDate == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new { Course = "課程尚未開始" }
+                });
+            }
 
             var latestBodyInfo = db.BodyInfos
                 .Where(b => b.CourseId == courseId)
@@ -373,28 +381,32 @@ namespace NuCares.Controllers
 
             double weightCompletionRate, bodyFatCompletionRate;
 
-            if (goalWeight >= latestWeight)
+            if (goalWeight > 0 && latestWeight > 0)
             {
-                weightCompletionRate = ((double)latestWeight / (double)goalWeight) * 100;
-
-            }
-            else if (goalWeight < latestWeight)
-            {
-
-                weightCompletionRate = ((double)goalWeight / (double)latestWeight) * 100;
+                if (goalWeight >= latestWeight)
+                {
+                    weightCompletionRate = ((double)latestWeight / (double)goalWeight) * 100;
+                }
+                else
+                {
+                    weightCompletionRate = ((double)goalWeight / (double)latestWeight) * 100;
+                }
             }
             else
             {
                 weightCompletionRate = 0;
             }
 
-            if (goalBodyFat >= latestBodyFat)
+            if (goalBodyFat > 0 && latestBodyFat > 0)
             {
-                bodyFatCompletionRate = ((double)latestBodyFat / (double)goalBodyFat) * 100;
-            }
-            else if (goalBodyFat < latestBodyFat)
-            {
-                bodyFatCompletionRate = ((double)goalBodyFat / (double)latestBodyFat) * 100;
+                if (goalBodyFat >= latestBodyFat)
+                {
+                    bodyFatCompletionRate = ((double)latestBodyFat / (double)goalBodyFat) * 100;
+                }
+                else
+                {
+                    bodyFatCompletionRate = ((double)goalBodyFat / (double)latestBodyFat) * 100;
+                }
             }
             else
             {
@@ -403,7 +415,6 @@ namespace NuCares.Controllers
 
             var formattedWeightCompletionRate = Math.Abs(weightCompletionRate);
             var formattedBodyFatCompletionRate = Math.Abs(bodyFatCompletionRate);
-
 
             var result = new
             {
@@ -416,8 +427,8 @@ namespace NuCares.Controllers
                     GoalBodyFat = goalBodyFat,
                     Weight = latestWeight,
                     BodyFoat = latestWeight,
-                    WeightCompletionRate = weightCompletionRate.ToString("F2"),
-                    BodyFatCompletionRate = bodyFatCompletionRate.ToString("F2")
+                    WeightCompletionRate = weightCompletionRate.ToString("F0"),
+                    BodyFatCompletionRate = bodyFatCompletionRate.ToString("F0")
                 }
             };
 
@@ -462,7 +473,6 @@ namespace NuCares.Controllers
             }
             DateTime birthDate = coursesData.Order.User.Birthday;
             int age = CalculateAge(birthDate);
-            string baseUrl = ConfigurationManager.AppSettings["BaseUrl"];
             var result = new
             {
                 StatusCode = 200,
@@ -561,7 +571,7 @@ namespace NuCares.Controllers
                 {
                     StatusCode = 400,
                     Status = "Error",
-                    Message = "修改失敗，數值大於 0"
+                    Message = new { Error = "修改失敗，數值大於 0" }
                 });
             }
             try
@@ -630,7 +640,6 @@ namespace NuCares.Controllers
                     Message = "查無此課程"
                 });
             }
-            string baseUrl = ConfigurationManager.AppSettings["BaseUrl"];
             var result = new
             {
                 StatusCode = 200,
