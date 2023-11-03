@@ -144,5 +144,72 @@ namespace NuCares.Controllers
         }
 
         #endregion "首頁 - 取得所有營養師"
+
+        #region "首頁 - 取得單一營養師"
+
+        [HttpGet]
+        [Route("nutritionist")]
+        public IHttpActionResult GetNu(int nutritionistid, int userid = 0)
+        {
+            var nuData = (
+                from n in db.Nutritionists
+                join u in db.Users on n.UserId equals u.Id
+                where n.Id == nutritionistid
+                select new { Nutritionist = n, User = u });   // select出2張表的所有欄位
+
+            // 未登入時
+            if (userid == 0)
+            {
+                var newNuData = nuData
+                    .AsEnumerable()
+                    .Select(nd => new
+                    {
+                        nd.Nutritionist.Title,
+                        PortraitImage = ImageUrl.GetImageUrl(nd.Nutritionist.PortraitImage),
+                        Expertise = nd.Nutritionist.Expertise.Split(',').ToArray(),
+                        Favorite = nd.User.FavoriteLists.Where(f => f.UserId == userid).Any(),
+                        Gender = nd.User.Gender == 0 ? "男" : "女",
+                        nd.Nutritionist.City,
+                        nd.Nutritionist.Education,
+                        nd.Nutritionist.Experience,
+                        nd.Nutritionist.AboutMe,
+                        nd.Nutritionist.CourseIntro,
+                        Course = nd.Nutritionist.Plans.Where(p => !p.IsDelete).Select(p => new
+                        {
+                            p.Rank,
+                            p.CourseName,
+                            p.CourseWeek,
+                            p.CoursePrice,
+                            p.Tag
+                        }).OrderBy(p => p.Rank),
+                        Comment = nd.User.Comments.Select(c => new
+                        {
+                        })
+                    });
+
+                var result = new
+                {
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "取得所有營養師",
+                    Data = newNuData
+                };
+                return Ok(result);
+            }
+            else
+            {
+                // 登入時
+                var result = new
+                {
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "取得所有營養師",
+                    Data = ""
+                };
+                return Ok(result);
+            }
+        }
+
+        #endregion "首頁 - 取得單一營養師"
     }
 }
