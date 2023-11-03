@@ -63,18 +63,20 @@ namespace NuCares.Controllers
         /// 取得所有營養師資訊
         /// </summary>
         /// <param name="page"></param>
+        /// <param name="userid"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("nutritionists")]
-        public IHttpActionResult GetAllNu(int page = 1)
+        public IHttpActionResult GetAllNu(int page = 1, int userid = 0)
         {
-            //var nutritionistsData = db.Nutritionists.Where(n => n.IsPublic);
-
-            int pageSize = 20; // 每頁顯示的記錄數
+            int pageSize = 10; // 每頁顯示的記錄數
             var totalRecords = db.Nutritionists.Where(n => n.IsPublic).Count(); // 計算符合條件的記錄總數
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize); // 計算總頁數
 
-            var nutritionistsData = db.Nutritionists
+            if (userid == 0)
+            {
+                // 未登入時
+                var nuData = db.Nutritionists
                 .Where(n => n.IsPublic)
                 .OrderBy(n => n.Id) // 主要排序條件
                 .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
@@ -86,7 +88,7 @@ namespace NuCares.Controllers
                     PortraitImage = ImageUrl.GetImageUrl(n.PortraitImage),
                     Expertise = n.Expertise.Split(',').ToArray(),
                     Favorite = false,
-                    Course = n.Plans.Select(p => new
+                    Course = n.Plans.Where(p => !p.IsDelete).Select(p => new
                     {
                         p.Rank,
                         p.CourseName,
@@ -96,14 +98,49 @@ namespace NuCares.Controllers
                     }).OrderBy(p => p.Rank).Take(2)
                 });
 
-            var result = new
+                var result = new
+                {
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "取得所有營養師",
+                    Data = nuData
+                };
+                return Ok(result);
+            }
+            else
             {
-                StatusCode = 200,
-                Status = "Success",
-                Message = "取得所有營養師",
-                Data = nutritionistsData
-            };
-            return Ok(result);
+                // 登入時
+                var nuData = db.Nutritionists
+                    .Where(n => n.IsPublic)
+                    .OrderBy(n => n.Id) // 主要排序條件
+                    .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
+                    .Take(pageSize) // 每頁顯示的記錄數
+                    .AsEnumerable() // 使查詢先執行,再在記憶體中處理
+                    .Select(n => new
+                    {
+                        n.Title,
+                        PortraitImage = ImageUrl.GetImageUrl(n.PortraitImage),
+                        Expertise = n.Expertise.Split(',').ToArray(),
+                        Favorite = n.FavoriteLists.Where(f => f.UserId == userid).Any(),
+                        Course = n.Plans.Where(p => !p.IsDelete).Select(p => new
+                        {
+                            p.Rank,
+                            p.CourseName,
+                            p.CourseWeek,
+                            p.CoursePrice,
+                            p.Tag
+                        }).OrderBy(p => p.Rank).Take(2)
+                    });
+
+                var result = new
+                {
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "取得所有營養師",
+                    Data = nuData
+                };
+                return Ok(result);
+            }
         }
 
         #endregion "首頁 - 取得所有營養師"
