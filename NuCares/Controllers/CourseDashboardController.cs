@@ -426,7 +426,7 @@ namespace NuCares.Controllers
                     GoalWeight = goalWeight,
                     GoalBodyFat = goalBodyFat,
                     Weight = latestWeight,
-                    BodyFoat = latestWeight,
+                    BodyFat = latestWeight,
                     WeightCompletionRate = weightCompletionRate.ToString("F0"),
                     BodyFatCompletionRate = bodyFatCompletionRate.ToString("F0")
                 }
