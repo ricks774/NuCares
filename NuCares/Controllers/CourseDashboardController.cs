@@ -329,7 +329,7 @@ namespace NuCares.Controllers
         #region "查看學員目標"
 
         /// <summary>
-        /// 查看學員身體指數
+        /// 查看學員目標
         /// </summary>
         /// <param name="courseId">課程 ID</param>
         /// <returns></returns>
