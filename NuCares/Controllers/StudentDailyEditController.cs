@@ -169,7 +169,7 @@ namespace NuCares.Controllers
 
             #endregion "JwtToken驗證"
 
-            var dailyData = db.DailyLogs.SingleOrDefault(dt => dt.Id == dailyLogId);
+            var dailyData = db.DailyLogs.FirstOrDefault(dt => dt.Id == dailyLogId);
 
             // 判斷書入的格式是否正確
             if (!ModelState.IsValid)
@@ -209,6 +209,7 @@ namespace NuCares.Controllers
 
                 // 要回傳的資料格式
                 var dailyLog = db.DailyLogs.Where(d => d.Id == dailyLogId)
+                    .AsEnumerable() // 使查詢先執行,再在記憶體中處理
                     .Select(d => new
                     {
                         d.OilDescription,
@@ -221,7 +222,7 @@ namespace NuCares.Controllers
                         WaterImgUrl = ImageUrl.GetImageUrl(d.WaterImgUrl),
                         d.Water
                     })
-                    .SingleOrDefault();
+                    .FirstOrDefault();
 
                 var result = new
                 {
@@ -254,7 +255,7 @@ namespace NuCares.Controllers
                 });
             }
 
-            var mealTimeData = db.DailyMealTimes.SingleOrDefault(dt => dt.Id == timesId);
+            var mealTimeData = db.DailyMealTimes.FirstOrDefault(dt => dt.Id == timesId);
 
             // 判斷書入的格式是否正確
             if (!ModelState.IsValid)
@@ -290,6 +291,7 @@ namespace NuCares.Controllers
 
                 // 要回傳的資料格式
                 var mealTimeLog = db.DailyMealTimes.Where(so => so.Id == timesId)
+                    .AsEnumerable() // 使查詢先執行,再在記憶體中處理
                     .Select(so => new
                     {
                         so.MealTime,
@@ -299,7 +301,7 @@ namespace NuCares.Controllers
                         so.Protein,
                         so.Vegetable
                     })
-                    .SingleOrDefault();
+                    .FirstOrDefault();
 
                 var result = new
                 {
