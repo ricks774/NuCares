@@ -7,6 +7,7 @@ using System.Web.Http;
 using NSwag.Annotations;
 using NuCares.Models;
 using NuCares.Security;
+using NuCares.helper;
 
 namespace NuCares.Controllers
 {
@@ -211,13 +212,13 @@ namespace NuCares.Controllers
                     .Select(d => new
                     {
                         d.OilDescription,
-                        d.OilImgUrl,
+                        OilImgUrl = ImageUrl.GetImageUrl(d.OilImgUrl),
                         d.Oil,
                         d.FruitDescription,
-                        d.FruitImgUrl,
+                        FruitImgUrl = ImageUrl.GetImageUrl(d.FruitImgUrl),
                         d.Fruit,
                         d.WaterDescription,
-                        d.WaterImgUrl,
+                        WaterImgUrl = ImageUrl.GetImageUrl(d.WaterImgUrl),
                         d.Water
                     })
                     .SingleOrDefault();
@@ -293,7 +294,7 @@ namespace NuCares.Controllers
                     {
                         so.MealTime,
                         so.MealDescription,
-                        so.MealImgUrl,
+                        MealImgUrl = ImageUrl.GetImageUrl(so.MealImgUrl),
                         so.Starch,
                         so.Protein,
                         so.Vegetable
