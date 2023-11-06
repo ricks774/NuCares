@@ -102,9 +102,9 @@ namespace NuCares.Controllers
                 {
                     db.SaveChanges();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    return InternalServerError();
+                    return InternalServerError(e);
                 }
             }
 
@@ -135,6 +135,8 @@ namespace NuCares.Controllers
                 {
                     CourseId = menuData.CourseId,
                     DailyCourseMenuId = menuData.Id,
+                    CourseStartDate = menuData.MyCourse.CourseStartDate?.ToString("yyyy/MM/dd"),
+                    CourseEndDate = menuData.MyCourse.CourseEndDate?.ToString("yyyy/MM/dd"),
                     InsertDate = menuData.CreateDate.ToString("yyyy/MM/dd"),
                     MenuDate = menuData.MenuDate.ToString("yyyy/MM/dd"),
                     StarchSum = $"{totalStudentStarch},{totalStarch}",
@@ -591,9 +593,9 @@ namespace NuCares.Controllers
                 };
                 return Ok(result);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return InternalServerError();
+                return InternalServerError(e);
             }
         }
 
