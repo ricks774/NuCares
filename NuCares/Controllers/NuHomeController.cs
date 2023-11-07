@@ -154,8 +154,18 @@ namespace NuCares.Controllers
             var nuData = (
                 from n in db.Nutritionists
                 join u in db.Users on n.UserId equals u.Id
+                join o in db.Orders on u.Id equals o.UserId
+                join cs in db.Courses on o.Id equals cs.OrderId
+                join cm in db.Comments on cs.Id equals cm.CourseId
                 where n.Id == nutritionistid
-                select new { Nutritionist = n, User = u });   // select出2張表的所有欄位
+                select new { Nutritionist = n, User = u, Order = o, Course = cs, Comment = cm });   // select出2張表的所有欄位
+
+            //var commentsData = (
+            //    from p in db.Plans
+            //    join o in db.Orders on p.Id equals o.PlanId
+            //    join c in db.Courses on o.Id equals c.OrderId
+            //    where p.NutritionistId == nutritionistid
+            //    select new { Nutritionist = n, User = u });   // select出2張表的所有欄位
 
             // 未登入時
             if (userid == 0)
@@ -182,9 +192,14 @@ namespace NuCares.Controllers
                             p.CoursePrice,
                             p.Tag
                         }).OrderBy(p => p.Rank),
-                        Comment = nd.User.Comments.Select(c => new
+                        Comment = new
                         {
-                        })
+                            nd.User.UserName,
+                            nd.User.ImgUrl,
+                            nd.Comment.Rate,
+                            CreateDate = nd.Comment.CreateDate.ToString("yyyy/MM/dd"),
+                            nd.Comment.Content
+                        }
                     });
 
                 var result = new
@@ -206,7 +221,7 @@ namespace NuCares.Controllers
                     Message = "取得所有營養師",
                     Data = ""
                 };
-                return Ok(result);
+                return Ok("BAD");
             }
         }
 
