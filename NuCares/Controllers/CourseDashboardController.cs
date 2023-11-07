@@ -137,6 +137,7 @@ namespace NuCares.Controllers
                     DailyCourseMenuId = menuData.Id,
                     CourseStartDate = menuData.MyCourse.CourseStartDate?.ToString("yyyy/MM/dd"),
                     CourseEndDate = menuData.MyCourse.CourseEndDate?.ToString("yyyy/MM/dd"),
+                    CourseState = menuData.MyCourse.CourseEndDate < today ? "已結束" : menuData.MyCourse.CourseState.ToString(),
                     InsertDate = menuData.CreateDate.ToString("yyyy/MM/dd"),
                     MenuDate = menuData.MenuDate.ToString("yyyy/MM/dd"),
                     StarchSum = $"{totalStudentStarch},{totalStarch}",
