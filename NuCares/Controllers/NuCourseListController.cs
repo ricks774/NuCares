@@ -46,31 +46,32 @@ namespace NuCares.Controllers
             var today = DateTime.Today;
             var coursesData = db.Courses
                 .Where(c => c.Order.Plan.Nutritionist.UserId == id && c.Order.IsPayment)
-                .OrderBy(c => c.CourseState)
-                .ThenBy(c => c.CourseStartDate)// 根據需要的屬性進行排序
+                .OrderBy(c => c.CreateDate)
                 .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
                 .Take(pageSize) // 每頁顯示的記錄數
-                .ToList();
-
-            var formattedData = coursesData.Select(c => new
-            {
-                c.Id,
-                c.Order.OrderNumber,
-                c.Order.Plan.CourseWeek,
-                c.Order.Plan.CourseName,
-                c.Order.UserName,
-                CourseStartDate = c.CourseStartDate.HasValue ? c.CourseStartDate.Value.ToString("yyyy/MM/dd") : null,
-                CourseEndDate = c.CourseEndDate.HasValue ? c.CourseEndDate.Value.ToString("yyyy/MM/dd") : null,
-                CourseState = c.CourseEndDate < today ? "已結束" : c.CourseState.ToString(),
-                c.IsQuest,
-            });
+                .AsEnumerable()
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Order.OrderNumber,
+                    c.Order.Plan.CourseWeek,
+                    c.Order.Plan.CourseName,
+                    c.Order.UserName,
+                    CourseStartDate = c.CourseStartDate.HasValue ? c.CourseStartDate.Value.ToString("yyyy/MM/dd") : null,
+                    CourseEndDate = c.CourseEndDate.HasValue ? c.CourseEndDate.Value.ToString("yyyy/MM/dd") : null,
+                    CourseState = c.CourseEndDate < today ? "已結束" : c.CourseState.ToString(),
+                    c.IsQuest,
+                    SortOrder = c.CourseState == 0 ? 0 : c.CourseEndDate >= today ? 1 : 2
+                })
+                .OrderBy(c => c.SortOrder)
+                .ThenBy(c => c.CourseStartDate);
 
             var result = new
             {
                 StatusCode = 200,
                 Status = "Success",
                 Message = "取得我的學員列表成功",
-                Data = formattedData,
+                Data = coursesData,
                 Pagination = new
                 {
                     Current_page = page,
