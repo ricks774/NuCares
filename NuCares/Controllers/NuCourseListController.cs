@@ -46,7 +46,8 @@ namespace NuCares.Controllers
             var today = DateTime.Today;
             var coursesData = db.Courses
                 .Where(c => c.Order.Plan.Nutritionist.UserId == id && c.Order.IsPayment)
-                .OrderBy(c => c.Order.CreateDate) // 根據需要的屬性進行排序
+                .OrderBy(c => c.CourseState)
+                .ThenBy(c => c.CourseStartDate)// 根據需要的屬性進行排序
                 .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
                 .Take(pageSize) // 每頁顯示的記錄數
                 .ToList();
