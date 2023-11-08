@@ -149,6 +149,9 @@ namespace NuCares.Controllers
                     StarchSumAchieved = totalStudentStarch >= totalStarch && totalStudentStarch > 0,
                     ProteinSumAchieved = totalStudentProtein >= totalProtein && totalStudentProtein > 0,
                     VegetableSumAchieved = totalStudentVegetable >= totalVegetable && totalStudentVegetable > 0,
+                    FruitSumAchieved = studentLog.Fruit >= menuData.Fruit && studentLog.Fruit > 0,
+                    OilASumchieved = studentLog.Oil >= menuData.Oil && studentLog.Oil > 0,
+                    WaterSumAchieved = studentLog.Water >= menuData.Water && studentLog.Water > 0,
                     Breakfast = new
                     {
                         DailyMealTimeId = breakfastData.Id,
