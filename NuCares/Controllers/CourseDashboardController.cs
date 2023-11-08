@@ -306,7 +306,7 @@ namespace NuCares.Controllers
             }
 
             var bodyInfo = db.BodyInfos.Where(b => b.CourseId == courseId)
-                .OrderByDescending(b => b.CreateDate)
+                .OrderBy(b => b.CreateDate)
                 .AsEnumerable()
                 .Select(b => new
                 {
