@@ -154,22 +154,39 @@ namespace NuCares.Controllers
             var nuData = (
                 from n in db.Nutritionists
                 join u in db.Users on n.UserId equals u.Id
-                join o in db.Orders on u.Id equals o.UserId
-                join cs in db.Courses on o.Id equals cs.OrderId
-                join cm in db.Comments on cs.Id equals cm.CourseId
+                //join o in db.Orders on u.Id equals o.UserId
+                //join cs in db.Courses on o.Id equals cs.OrderId
                 where n.Id == nutritionistid
-                select new { Nutritionist = n, User = u, Order = o, Course = cs, Comment = cm });   // select出2張表的所有欄位
+                select new { Nutritionist = n, User = u });   // select出2張表的所有欄位
 
-            //var commentsData = (
-            //    from p in db.Plans
-            //    join o in db.Orders on p.Id equals o.PlanId
-            //    join c in db.Courses on o.Id equals c.OrderId
-            //    where p.NutritionistId == nutritionistid
-            //    select new { Nutritionist = n, User = u });   // select出2張表的所有欄位
+            var commentsData = (
+                from p in db.Plans
+                join o in db.Orders on p.Id equals o.PlanId
+                join c in db.Courses on o.Id equals c.OrderId
+                join cm in db.Comments on c.Id equals cm.CourseId
+                join u in db.Users on o.UserId equals u.Id
+                where p.NutritionistId == nutritionistid
+                select new { User = u, Comment = cm });   // select出2張表的所有欄位
 
             // 未登入時
             if (userid == 0)
             {
+                //// 取得營養師已被購買的 課程id
+                //var coursesData = db.Plans.Where(p => p.NutritionistId == nutritionistid)
+                //.SelectMany(p => p.Orders)
+                //.SelectMany(o => o.Courses)
+                //.Select(c => c.Id);
+
+                //// 透過 課程id 取得該營養師課程的評價
+                //var commentsData = db.Comments.Where(c => coursesData.Contains(c.CourseId)).AsEnumerable();
+
+                //// 取得 Orders id
+                //var orderIds = db.Courses.Where(c => coursesData.Contains(c.Id)).Select(c => c.OrderId);
+                //// 取得 Users id
+                //var userIds = db.Orders.Where(o => orderIds.Contains(o.Id)).Select(o => o.UserId);
+                //// 取得 Users UserName
+                //var userNameData = db.Users.Where(u => userIds.Contains(u.Id)).Select(u => u.UserName);
+
                 var newNuData = nuData
                     .AsEnumerable()
                     .Select(nd => new
@@ -192,14 +209,13 @@ namespace NuCares.Controllers
                             p.CoursePrice,
                             p.Tag
                         }).OrderBy(p => p.Rank),
-                        Comment = new
+                        Comment = commentsData.AsEnumerable().Select(c => new
                         {
-                            nd.User.UserName,
-                            nd.User.ImgUrl,
-                            nd.Comment.Rate,
-                            CreateDate = nd.Comment.CreateDate.ToString("yyyy/MM/dd"),
-                            nd.Comment.Content
-                        }
+                            c.User.UserName,
+                            c.Comment.Content,
+                            c.Comment.Rate,
+                            CreateDate = c.Comment.CreateDate.ToString("yyyy/MM/dd")
+                        })
                     });
 
                 var result = new
