@@ -147,85 +147,87 @@ namespace NuCares.Controllers
 
         #region "首頁 - 取得單一營養師"
 
+        /// <summary>
+        /// 取得單一營養師資訊
+        /// </summary>
+        /// <param name="nutritionistid"></param>
+        /// <param name="userid"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("nutritionist")]
-        public IHttpActionResult GetNu(int nutritionistid, int userid = 0)
+        public IHttpActionResult GetSingleNu(int nutritionistid, int userid = 0)
         {
-            var nuData = (
+            try
+            {
+                // 取得營養師資料
+                var nuData = (
                 from n in db.Nutritionists
                 join u in db.Users on n.UserId equals u.Id
                 where n.Id == nutritionistid
                 select new { Nutritionist = n, User = u });   // select出2張表的所有欄位
 
-            var commentsData = (
-                from p in db.Plans
-                join o in db.Orders on p.Id equals o.PlanId
-                join c in db.Courses on o.Id equals c.OrderId
-                join cm in db.Comments on c.Id equals cm.CourseId
-                join u in db.Users on o.UserId equals u.Id
-                where p.NutritionistId == nutritionistid
-                select new { User = u, Comment = cm });   // select出2張表的所有欄位
+                // 取得是否為收藏的營養師
+                bool isFavorite = db.FavoriteLists.Where(f => f.UserId == userid && f.NutritionistId == nutritionistid).Any();
 
-            double rateAvg = commentsData.Select(r => (double)r.Comment.Rate).Average();
+                // 取得評價資料
+                var commentsData = (
+                    from p in db.Plans
+                    join o in db.Orders on p.Id equals o.PlanId
+                    join c in db.Courses on o.Id equals c.OrderId
+                    join cm in db.Comments on c.Id equals cm.CourseId
+                    join u in db.Users on o.UserId equals u.Id
+                    where p.NutritionistId == nutritionistid
+                    select new { User = u, Comment = cm });   // select出2張表的所有欄位
 
-            // 未登入時
-            //if (userid == 0)
-            //{
-            var newNuData = nuData
-                .AsEnumerable()
-                .Select(nd => new
+                // 計算評價的總平均
+                double rateAvg = commentsData.Select(r => (double)r.Comment.Rate).Average();
+
+                // 要輸出的資料
+                var newNuData = nuData
+                    .AsEnumerable()
+                    .Select(nd => new
+                    {
+                        nd.Nutritionist.Title,
+                        PortraitImage = ImageUrl.GetImageUrl(nd.Nutritionist.PortraitImage),
+                        Expertise = nd.Nutritionist.Expertise.Split(',').ToArray(),
+                        Favorite = isFavorite,
+                        Gender = nd.User.Gender == 0 ? "男" : "女",
+                        nd.Nutritionist.City,
+                        nd.Nutritionist.Education,
+                        nd.Nutritionist.Experience,
+                        nd.Nutritionist.AboutMe,
+                        nd.Nutritionist.CourseIntro,
+                        Course = nd.Nutritionist.Plans.Where(p => !p.IsDelete).Select(p => new
+                        {
+                            p.Rank,
+                            p.CourseName,
+                            p.CourseWeek,
+                            p.CoursePrice,
+                            p.Tag
+                        }).OrderBy(p => p.Rank),
+                        Comment = commentsData.AsEnumerable().Select(c => new
+                        {
+                            c.User.UserName,
+                            c.Comment.Content,
+                            c.Comment.Rate,
+                            CreateDate = c.Comment.CreateDate.ToString("yyyy/MM/dd")
+                        }),
+                        RateAVG = rateAvg
+                    });
+
+                var result = new
                 {
-                    nd.User.FavoriteLists,
-                    nd.Nutritionist.Title,
-                    PortraitImage = ImageUrl.GetImageUrl(nd.Nutritionist.PortraitImage),
-                    Expertise = nd.Nutritionist.Expertise.Split(',').ToArray(),
-                    Favorite = nd.User.FavoriteLists.Where(f => f.UserId == userid).FirstOrDefault() == null ? false : true,
-                    Favorite2 = nd.User.FavoriteLists.Where(f => f.UserId == userid).FirstOrDefault(),
-                    Gender = nd.User.Gender == 0 ? "男" : "女",
-                    nd.Nutritionist.City,
-                    nd.Nutritionist.Education,
-                    nd.Nutritionist.Experience,
-                    nd.Nutritionist.AboutMe,
-                    nd.Nutritionist.CourseIntro,
-                    Course = nd.Nutritionist.Plans.Where(p => !p.IsDelete).Select(p => new
-                    {
-                        p.Rank,
-                        p.CourseName,
-                        p.CourseWeek,
-                        p.CoursePrice,
-                        p.Tag
-                    }).OrderBy(p => p.Rank),
-                    Comment = commentsData.AsEnumerable().Select(c => new
-                    {
-                        c.User.UserName,
-                        c.Comment.Content,
-                        c.Comment.Rate,
-                        CreateDate = c.Comment.CreateDate.ToString("yyyy/MM/dd")
-                    }),
-                    RateAVG = rateAvg
-                });
-
-            var result = new
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "取得所有營養師",
+                    Data = newNuData
+                };
+                return Ok(result);
+            }
+            catch (Exception ex)
             {
-                StatusCode = 200,
-                Status = "Success",
-                Message = "取得所有營養師",
-                Data = newNuData
-            };
-            return Ok(result);
-            //}
-            //else
-            //{
-            //    // 登入時
-            //    var result = new
-            //    {
-            //        StatusCode = 200,
-            //        Status = "Success",
-            //        Message = "取得所有營養師",
-            //        Data = ""
-            //    };
-            //    return Ok("BAD");
-            //}
+                return InternalServerError(ex);
+            }
         }
 
         #endregion "首頁 - 取得單一營養師"
