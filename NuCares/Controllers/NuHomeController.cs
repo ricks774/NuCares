@@ -177,7 +177,8 @@ namespace NuCares.Controllers
                     join cm in db.Comments on c.Id equals cm.CourseId
                     join u in db.Users on o.UserId equals u.Id
                     where p.NutritionistId == nutritionistid
-                    select new { User = u, Comment = cm });   // select出2張表的所有欄位
+                    select new { User = u, Comment = cm })   // select出2張表的所有欄位
+                    .OrderByDescending(cm => cm.Comment.CreateDate); // 根據CreateDate升序排序
 
                 // 計算評價的總平均
                 double rateAvg = commentsData.Select(r => (double)r.Comment.Rate).Average();
