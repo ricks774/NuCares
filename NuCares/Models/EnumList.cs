@@ -41,9 +41,9 @@ namespace NuCares.Models
 
         public enum CourseState
         {
-            未開始,
+            開始,
             進行中,
-            已結束
+            結束
         }
     }
 }
