@@ -59,7 +59,7 @@ namespace NuCares.Controllers
                     c.Order.UserName,
                     CourseStartDate = c.CourseStartDate.HasValue ? c.CourseStartDate.Value.ToString("yyyy/MM/dd") : null,
                     CourseEndDate = c.CourseEndDate.HasValue ? c.CourseEndDate.Value.ToString("yyyy/MM/dd") : null,
-                    CourseState = c.CourseEndDate < today ? "已結束" : c.CourseState.ToString(),
+                    CourseState = c.CourseEndDate < today ? "結束" : c.CourseState.ToString(),
                     c.IsQuest,
                     SortOrder = c.CourseState == 0 ? 0 : c.CourseEndDate >= today ? 1 : 2
                 })
