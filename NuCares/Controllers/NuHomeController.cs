@@ -181,7 +181,7 @@ namespace NuCares.Controllers
                     .OrderByDescending(cm => cm.Comment.CreateDate); // 根據CreateDate升序排序
 
                 // 計算評價的總平均
-                double rateAvg = commentsData.Select(r => (double)r.Comment.Rate).Average();
+                var rateAvg = Math.Round(commentsData.Select(r => r.Comment.Rate).DefaultIfEmpty().Average(), 1);
 
                 // 要輸出的資料
                 var newNuData = nuData
