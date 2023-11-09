@@ -59,21 +59,44 @@ namespace NuCares.Controllers
 
         #region "首頁 - 取得所有營養師"
 
-        /// <summary>
-        /// 取得所有營養師資訊
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="userid"></param>
-        /// <returns></returns>
         [HttpGet]
         [Route("nutritionists")]
-        public IHttpActionResult GetAllNu(int page = 1, int userid = 0)
+        public IHttpActionResult GetAllNu(int page = 1)
         {
+            int userId = 0;
+
+            #region "JwtToken驗證"
+
+            if (Request.Headers.Authorization != null && !string.IsNullOrEmpty(Request.Headers.Authorization.Parameter))
+            {
+                // 取出請求內容，解密 JwtToken 取出資料
+                var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+                userId = (int)userToken["Id"];
+
+                bool checkUser = db.Users.Any(n => n.Id == userId);
+                if (!checkUser)
+                {
+                    return Content(HttpStatusCode.Unauthorized, new
+                    {
+                        StatusCode = 401,
+                        Status = "Error",
+                        Message = "請重新登入"
+                    });
+                }
+            }
+            else
+            {
+                // 如果沒有 JWT Token，進行相應的處理
+                userId = 0;
+            }
+
+            #endregion "JwtToken驗證"
+
             int pageSize = 10; // 每頁顯示的記錄數
             var totalRecords = db.Nutritionists.Where(n => n.IsPublic).Count(); // 計算符合條件的記錄總數
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize); // 計算總頁數
 
-            if (userid == 0)
+            if (userId == 0)
             {
                 // 未登入時
                 var nuData = db.Nutritionists
@@ -84,10 +107,12 @@ namespace NuCares.Controllers
                 .AsEnumerable() // 使查詢先執行,再在記憶體中處理
                 .Select(n => new
                 {
+                    n.Id,
                     n.Title,
                     PortraitImage = ImageUrl.GetImageUrl(n.PortraitImage),
                     Expertise = n.Expertise.Split(',').ToArray(),
                     Favorite = false,
+                    n.AboutMe,
                     Course = n.Plans.Where(p => !p.IsDelete).Select(p => new
                     {
                         p.Rank,
@@ -103,7 +128,12 @@ namespace NuCares.Controllers
                     StatusCode = 200,
                     Status = "Success",
                     Message = "取得所有營養師",
-                    Data = nuData
+                    Data = nuData,
+                    Pagination = new
+                    {
+                        Current_page = page,
+                        Total_pages = totalPages
+                    }
                 };
                 return Ok(result);
             }
@@ -118,10 +148,12 @@ namespace NuCares.Controllers
                     .AsEnumerable() // 使查詢先執行,再在記憶體中處理
                     .Select(n => new
                     {
+                        n.Id,
                         n.Title,
                         PortraitImage = ImageUrl.GetImageUrl(n.PortraitImage),
                         Expertise = n.Expertise.Split(',').ToArray(),
-                        Favorite = n.FavoriteLists.Where(f => f.UserId == userid).Any(),
+                        Favorite = n.FavoriteLists.Where(f => f.UserId == userId).Any(),
+                        n.AboutMe,
                         Course = n.Plans.Where(p => !p.IsDelete).Select(p => new
                         {
                             p.Rank,
@@ -137,7 +169,12 @@ namespace NuCares.Controllers
                     StatusCode = 200,
                     Status = "Success",
                     Message = "取得所有營養師",
-                    Data = nuData
+                    Data = nuData,
+                    Pagination = new
+                    {
+                        Current_page = page,
+                        Total_pages = totalPages
+                    }
                 };
                 return Ok(result);
             }
