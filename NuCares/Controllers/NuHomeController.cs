@@ -97,7 +97,7 @@ namespace NuCares.Controllers
 
             #endregion "JwtToken驗證"
 
-            int pageSize = 10; // 每頁顯示的記錄數
+            int pageSize = 5; // 每頁顯示的記錄數
             var totalRecords = db.Nutritionists.Where(n => n.IsPublic).Count(); // 計算符合條件的記錄總數
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize); // 計算總頁數
 
