@@ -118,7 +118,7 @@ namespace NuCares.Controllers
                     Expertise = n.Expertise.Split(',').ToArray(),
                     Favorite = false,
                     n.AboutMe,
-                    Course = n.Plans.Where(p => !p.IsDelete).Select(p => new
+                    Plan = n.Plans.Where(p => !p.IsDelete).Select(p => new
                     {
                         p.Rank,
                         p.CourseName,
@@ -159,7 +159,7 @@ namespace NuCares.Controllers
                         Expertise = n.Expertise.Split(',').ToArray(),
                         Favorite = n.FavoriteLists.Where(f => f.UserId == userId).Any(),
                         n.AboutMe,
-                        Course = n.Plans.Where(p => !p.IsDelete).Select(p => new
+                        Plan = n.Plans.Where(p => !p.IsDelete).Select(p => new
                         {
                             p.Rank,
                             p.CourseName,
