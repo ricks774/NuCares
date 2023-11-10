@@ -268,13 +268,15 @@ namespace NuCares.Controllers
                         nd.Nutritionist.Experience,
                         nd.Nutritionist.AboutMe,
                         nd.Nutritionist.CourseIntro,
-                        Course = nd.Nutritionist.Plans.Where(p => !p.IsDelete).Select(p => new
+                        Plan = nd.Nutritionist.Plans.Where(p => !p.IsDelete).Select(p => new
                         {
+                            p.Id,
                             p.Rank,
                             p.CourseName,
                             p.CourseWeek,
                             p.CoursePrice,
-                            p.Tag
+                            p.Tag,
+                            p.Detail
                         }).OrderBy(p => p.Rank),
                         Comment = commentsData.AsEnumerable().Select(c => new
                         {
@@ -284,7 +286,7 @@ namespace NuCares.Controllers
                             CreateDate = c.Comment.CreateDate.ToString("yyyy/MM/dd")
                         }),
                         RateAVG = rateAvg
-                    });
+                    }).FirstOrDefault();
 
                 var result = new
                 {
