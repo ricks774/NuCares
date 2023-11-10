@@ -187,6 +187,34 @@ namespace NuCares.Controllers
 
         #endregion "首頁 - 取得所有營養師"
 
+        #region "首頁 - 取得所有營養師Id"
+
+        /// <summary>
+        /// 取得所有營養師Id資訊
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("nutritionistsid")]
+        public IHttpActionResult GetNuId()
+        {
+            // 取的所有公開的營養師
+            var nudata = db.Nutritionists.Where(n => n.IsPublic);
+
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "取得營養師資料Id成功",
+                Data = nudata.Select(n => new
+                {
+                    n.Id
+                })
+            };
+            return Ok(result);
+        }
+
+        #endregion "首頁 - 取得所有營養師Id"
+
         #region "首頁 - 取得單一營養師"
 
         /// <summary>
