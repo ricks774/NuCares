@@ -59,6 +59,18 @@ namespace NuCares.Controllers
                 });
             }
 
+            // 判斷是否已經申請過
+            bool nuData = db.Nutritionists.Where(nu => nu.UserId == id).Any();
+            if (nuData)
+            {
+                return Content(HttpStatusCode.Forbidden, new
+                {
+                    StatusCode = 403,
+                    Status = "Error",
+                    Message = "已經申請，待管理員審核中"
+                });
+            }
+
             // 將性別轉成數字
             int gender = viewApplyNutritionist.Gender == "male" ? 0 : 1;
 
