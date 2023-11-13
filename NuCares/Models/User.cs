@@ -97,10 +97,6 @@ namespace NuCares.Models
         public virtual ICollection<Order> Orders { get; set; }
 
         [JsonIgnore]
-        [Display(Name = "會員評論")]
-        public virtual ICollection<Comment> Comments { get; set; }
-
-        [JsonIgnore]
         [Display(Name = "追蹤者")]
         public virtual ICollection<FavoriteList> FavoriteLists { get; set; }
 
