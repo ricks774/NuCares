@@ -666,5 +666,59 @@ namespace NuCares.Controllers
         }
 
         #endregion "學員 - 單一營養師資料"
+
+        #region "收藏營養師列表"
+
+        /// <summary>
+        /// 收藏營養師列表
+        /// </summary>
+        /// <returns></returns>
+        [OpenApiTag("Stdent", Description = "學員")]
+        [HttpGet]
+        [Route("user/follow")]
+        [JwtAuthFilter]
+        public IHttpActionResult GetFavoriteList()
+        {
+            #region "JwtToken驗證"
+
+            // 取出請求內容，解密 JwtToken 取出資料
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            var userId = (int)userToken["Id"];
+
+            bool checkUser = db.Users.Any(n => n.Id == userId);
+            if (!checkUser)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "請重新登入"
+                });
+            }
+
+            #endregion "JwtToken驗證"
+
+            var favoriteData = db.FavoriteLists.Where(fl => fl.UserId == userId)
+                .Select(fl => new
+                {
+                    fl.Nutritionist.Id,
+                    fl.Nutritionist.Title,
+                    fl.Nutritionist.PortraitImage,
+                    fl.Nutritionist.Expertise,
+                    fl.Nutritionist.AboutMe,
+                    Favorite = true
+                });
+
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "取得收藏營養師列表成功",
+                Data = favoriteData
+            };
+            return Ok(result);
+        }
+
+        #endregion "收藏營養師列表"
     }
 }
