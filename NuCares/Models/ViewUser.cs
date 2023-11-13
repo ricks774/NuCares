@@ -160,4 +160,34 @@ namespace NuCares.Models
         [Display(Name = "照片")]
         public string ImgUrl { get; set; }
     }
+
+    public class ViewUserPassChange
+    {
+        /// <summary>
+        /// 密碼, 必須為6-12位英文字母和數字的組合
+        /// </summary>
+        [Required(ErrorMessage = "{0}必填")]
+        [StringLength(100)]
+        [DataType(DataType.Password)]
+        [Display(Name = "密碼")]
+        public string OldPassword { get; set; }
+
+        /// <summary>
+        /// 密碼, 必須為6-12位英文字母和數字的組合
+        /// </summary>
+        [Required(ErrorMessage = "{0}必填")]
+        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,12}$", ErrorMessage = "密碼必須為6-12位英文字母和數字的組合")]
+        [DataType(DataType.Password)]
+        [Display(Name = "密碼")]
+        public string Password { get; set; }
+
+        /// <summary>
+        /// 密碼, 必須為6-12位英文字母和數字的組合
+        /// </summary>
+        [Required(ErrorMessage = "{0}必填")]
+        [StringLength(100)]
+        [DataType(DataType.Password)]
+        [Display(Name = "密碼確認")]
+        public string RePassword { get; set; }
+    }
 }
