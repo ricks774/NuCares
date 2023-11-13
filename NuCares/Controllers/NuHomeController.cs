@@ -120,6 +120,7 @@ namespace NuCares.Controllers
                     n.AboutMe,
                     Plan = n.Plans.Where(p => !p.IsDelete).Select(p => new
                     {
+                        p.Id,
                         p.Rank,
                         p.CourseName,
                         p.CourseWeek,
@@ -161,6 +162,7 @@ namespace NuCares.Controllers
                         n.AboutMe,
                         Plan = n.Plans.Where(p => !p.IsDelete).Select(p => new
                         {
+                            p.Id,
                             p.Rank,
                             p.CourseName,
                             p.CourseWeek,
