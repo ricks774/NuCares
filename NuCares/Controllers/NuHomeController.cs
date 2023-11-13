@@ -33,8 +33,18 @@ namespace NuCares.Controllers
                 .ToList();
 
             var topNutritionists = nutritionistsData
-
-                .OrderByDescending(n => n.Plans.Average(p => p.Comments.Average(c => (double?)c.Rate) ?? 0))
+               .OrderByDescending(n => n.Plans
+                    .SelectMany(p => p.Orders
+                        .SelectMany(o => o.Courses
+                            .SelectMany(course => course.Comments
+                                .Select(comment => (double?)comment.Rate)
+                            )
+                        )
+                    )
+                    .Where(rate => rate.HasValue)
+                    .DefaultIfEmpty(0)
+                    .Average()
+                )
                 .ThenBy(n => random.NextDouble())
                 .AsEnumerable()
                 .Select(n => new
