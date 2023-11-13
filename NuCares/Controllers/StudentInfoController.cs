@@ -7,6 +7,7 @@ using System.Web.Http;
 using NSwag.Annotations;
 using NuCares.Models;
 using NuCares.Security;
+using static NuCares.Models.EnumList;
 
 namespace NuCares.Controllers
 {
@@ -15,7 +16,7 @@ namespace NuCares.Controllers
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();
 
-        #region "取得學員資訊"
+        #region "取得使用者資訊"
 
         /// <summary>
         /// 取得使用者資訊
@@ -66,6 +67,89 @@ namespace NuCares.Controllers
             return Ok(result);
         }
 
-        #endregion "取得學員資訊"
+        #endregion "取得使用者資訊"
+
+        #region "修改使用者資訊"
+
+        /// <summary>
+        /// 修改使用者資訊
+        /// </summary>
+        /// <param name="viewUserInfoEdit"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("user/profile")]
+        [JwtAuthFilter]
+        public IHttpActionResult UserInfoEdit(ViewUserInfoEdit viewUserInfoEdit)
+        {
+            #region "JwtToken驗證"
+
+            // 取出請求內容，解密 JwtToken 取出資料
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int userId = (int)userToken["Id"];
+
+            bool checkUser = db.Users.Any(n => n.Id == userId);
+            if (!checkUser)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "請重新登入"
+                });
+            }
+
+            #endregion "JwtToken驗證"
+
+            var userData = db.Users.FirstOrDefault(u => u.Id == userId);
+
+            // 判斷書入的格式是否正確
+            if (!ModelState.IsValid)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = "修改失敗，數值輸入錯誤"
+                });
+            }
+
+            // 將取得的資料更新到資料庫
+            userData.UserName = !string.IsNullOrEmpty(viewUserInfoEdit.UserName) ? viewUserInfoEdit.UserName : userData.UserName;
+            userData.ImgUrl = !string.IsNullOrEmpty(viewUserInfoEdit.ImgUrl) ? viewUserInfoEdit.ImgUrl : userData.ImgUrl;
+            userData.Birthday = viewUserInfoEdit.Birthday != null ? viewUserInfoEdit.Birthday : userData.Birthday;
+            userData.Gender = !string.IsNullOrEmpty(viewUserInfoEdit.Gender) ? (GenderType)Enum.Parse(typeof(GenderType), viewUserInfoEdit.Gender) : userData.Gender;
+            userData.Phone = !string.IsNullOrEmpty(viewUserInfoEdit.Phone) ? viewUserInfoEdit.Phone : userData.Phone;
+
+            try
+            {
+                db.SaveChanges();
+
+                var newUserData = db.Users.Where(u => u.Id == userId).AsEnumerable().Select(u => new
+                {
+                    u.Id,
+                    u.UserName,
+                    u.ImgUrl,
+                    u.Email,
+                    Birthday = u.Birthday.ToString("yyyy/MM/dd"),
+                    Gender = u.Gender.ToString(),
+                    u.Phone
+                }).FirstOrDefault();
+
+                var result = new
+                {
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "修改使用者資訊成功",
+                    Data = newUserData
+                };
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        #endregion "修改使用者資訊"
     }
 }
