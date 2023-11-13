@@ -344,5 +344,158 @@ namespace NuCares.Controllers
         }
 
         #endregion "首頁 - 取得單一營養師"
+
+        #region "首頁 - 營養師篩選跟排序"
+
+        /// <summary>
+        /// 營養師篩選跟排序
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="sort"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("nutritionist/search")]
+        public IHttpActionResult NuFilter(string filter = "", string sort = "", int page = 1)
+        {
+            int userId = 0;
+
+            #region "JwtToken驗證"
+
+            if (Request.Headers.Authorization != null && !string.IsNullOrEmpty(Request.Headers.Authorization.Parameter))
+            {
+                // 取出請求內容，解密 JwtToken 取出資料
+                var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+                userId = (int)userToken["Id"];
+
+                bool checkUser = db.Users.Any(n => n.Id == userId);
+                if (!checkUser)
+                {
+                    return Content(HttpStatusCode.Unauthorized, new
+                    {
+                        StatusCode = 401,
+                        Status = "Error",
+                        Message = "請重新登入"
+                    });
+                }
+            }
+            else
+            {
+                // 如果沒有 JWT Token，進行相應的處理
+                userId = 0;
+            }
+
+            #endregion "JwtToken驗證"
+
+            int pageSize = 5; // 每頁顯示的記錄數
+            var totalRecords = db.Nutritionists.Where(n => n.IsPublic).Count(); // 計算符合條件的記錄總數
+            int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize); // 計算總頁數
+
+            #region "依照 filter 傳入的值進行篩選"
+
+            var nuDataQuery = db.Nutritionists.Where(n => n.IsPublic);
+            if (!string.IsNullOrEmpty(filter))
+            {
+                var filterValues = filter.Trim().ToLower().Split(',');
+                nuDataQuery = nuDataQuery.Where(n =>
+                    filterValues.Any(f =>
+                        (f == "weight" && n.Expertise.Contains("體重控制")) ||
+                        (f == "colleague" && n.Expertise.Contains("上班族營養")) ||
+                        (f == "pregnant" && n.Expertise.Contains("孕期營養")) ||
+                        (f == "health" && n.Expertise.Contains("樂齡營養與保健"))
+                    )
+                );
+            }
+
+            #endregion "依照 filter 傳入的值進行篩選"
+
+            #region "依照 sort 傳入的值進行排序"
+
+            if (sort == "heighestComment")
+            {
+                nuDataQuery = nuDataQuery.OrderByDescending(n => n.Plans
+                    .SelectMany(p => p.Orders
+                        .SelectMany(o => o.Courses
+                            .SelectMany(course => course.Comments
+                                .Select(comment => (double?)comment.Rate)
+                            )
+                        )
+                    )
+                    .Where(rate => rate.HasValue)
+                    .DefaultIfEmpty(0)
+                    .Average());
+            }
+            else if (sort == "mostComment")
+            {
+                nuDataQuery = nuDataQuery.OrderByDescending(n => n.Plans
+                .SelectMany(p => p.Orders
+                    .SelectMany(o => o.Courses
+                        .SelectMany(course => course.Comments
+                            .Select(comment => comment.Content)
+                            .Distinct()
+                        )
+                    )
+                )
+                .Count());
+            }
+            else
+            {
+                nuDataQuery = nuDataQuery.OrderBy(n => n.Id);
+            }
+
+            #endregion "依照 sort 傳入的值進行排序"
+
+            var nuData = nuDataQuery
+                .Where(n => n.IsPublic)
+                .Skip(((int)page - 1) * pageSize)
+                .Take(pageSize)
+                .AsEnumerable()
+                .Select(n => new
+                {
+                    n.Id,
+                    n.Title,
+                    PortraitImage = ImageUrl.GetImageUrl(n.PortraitImage),
+                    Expertise = n.Expertise.Split(',').ToArray(),
+                    Favorite = db.FavoriteLists.Any(f => f.UserId == userId && n.Id == f.NutritionistId),
+                    n.AboutMe,
+                    Plan = n.Plans.Where(p => !p.IsDelete).Select(p => new
+                    {
+                        p.Id,
+                        p.Rank,
+                        p.CourseName,
+                        p.CourseWeek,
+                        p.CoursePrice,
+                        p.Tag
+                    }).OrderBy(p => p.Rank).Take(2)
+                });
+
+            if (nuData == null)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = new
+                    {
+                        Nutritionists = "查無符合營養師資料"
+                    }
+                });
+            }
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "取得所有營養師",
+                Data = nuData,
+                Pagination = new
+                {
+                    Current_page = page,
+                    Total_pages = totalPages
+                }
+            };
+            return Ok(result);
+        }
+
+        #endregion "首頁 - 營養師篩選跟排序"
     }
 }
