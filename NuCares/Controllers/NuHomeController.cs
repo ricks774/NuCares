@@ -220,26 +220,54 @@ namespace NuCares.Controllers
         #region "首頁 - 取得單一營養師"
 
         /// <summary>
-        /// 取得單一營養師資訊
+        /// 取得單一營養師
         /// </summary>
-        /// <param name="nutritionistid"></param>
-        /// <param name="userid"></param>
+        /// <param name="nutritionistId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("nutritionist")]
-        public IHttpActionResult GetSingleNu(int nutritionistid, int userid = 0)
+        [Route("nutritionist/{nutritionistId}")]
+        public IHttpActionResult GetSingleNu(int nutritionistId)
         {
+            int userId = 0;
+
+            #region "JwtToken驗證"
+
+            if (Request.Headers.Authorization != null && !string.IsNullOrEmpty(Request.Headers.Authorization.Parameter))
+            {
+                // 取出請求內容，解密 JwtToken 取出資料
+                var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+                userId = (int)userToken["Id"];
+
+                bool checkUser = db.Users.Any(n => n.Id == userId);
+                if (!checkUser)
+                {
+                    return Content(HttpStatusCode.Unauthorized, new
+                    {
+                        StatusCode = 401,
+                        Status = "Error",
+                        Message = "請重新登入"
+                    });
+                }
+            }
+            else
+            {
+                // 如果沒有 JWT Token，進行相應的處理
+                userId = 0;
+            }
+
+            #endregion "JwtToken驗證"
+
             try
             {
                 // 取得營養師資料
                 var nuData = (
                 from n in db.Nutritionists
                 join u in db.Users on n.UserId equals u.Id
-                where n.Id == nutritionistid
+                where n.Id == nutritionistId
                 select new { Nutritionist = n, User = u });   // select出2張表的所有欄位
 
                 // 取得是否為收藏的營養師
-                bool isFavorite = db.FavoriteLists.Where(f => f.UserId == userid && f.NutritionistId == nutritionistid).Any();
+                bool isFavorite = db.FavoriteLists.Where(f => f.UserId == userId && f.NutritionistId == nutritionistId).Any();
 
                 // 取得評價資料
                 var commentsData = (
@@ -248,7 +276,7 @@ namespace NuCares.Controllers
                     join c in db.Courses on o.Id equals c.OrderId
                     join cm in db.Comments on c.Id equals cm.CourseId
                     join u in db.Users on o.UserId equals u.Id
-                    where p.NutritionistId == nutritionistid
+                    where p.NutritionistId == nutritionistId
                     select new { User = u, Comment = cm })   // select出2張表的所有欄位
                     .OrderByDescending(cm => cm.Comment.CreateDate); // 根據CreateDate升序排序
 
