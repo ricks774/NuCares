@@ -155,6 +155,11 @@ namespace NuCares.Controllers
 
         #region "變更密碼"
 
+        /// <summary>
+        /// 修改密碼
+        /// </summary>
+        /// <param name="viewUserPassChange"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("user/update-password")]
         [JwtAuthFilter]
@@ -182,7 +187,7 @@ namespace NuCares.Controllers
             var userData = db.Users.FirstOrDefault(u => u.Id == userId);
 
             // 取得輸入的舊密碼
-            string password = viewUserPassChange.Password;
+            string oldPassword = viewUserPassChange.OldPassword;
 
             // 取得資料庫中的資料
             string salt = userData.Salt;
@@ -200,25 +205,37 @@ namespace NuCares.Controllers
             }
 
             // 判斷密碼是否正確
-            var passwordCheck = ag2Verify.VerifyPassword(password, salt, hashPassword);
+            var passwordCheck = ag2Verify.VerifyPassword(oldPassword, salt, hashPassword);
 
             if (passwordCheck)
             {
-                if (viewUserPassChange.Password == viewUserPassChange.RePassword)
-                {
-                    // 密碼hash加密
-                    var getHash = ag2Verify.PasswordHash(viewUserPassChange.Password);
-                    userData.Password = getHash.hashPassword;
-                    userData.Salt = getHash.salt;
-                }
-                else
+                if (viewUserPassChange.OldPassword == viewUserPassChange.Password)
                 {
                     return Content(HttpStatusCode.BadRequest, new
                     {
                         StatusCode = 400,
                         Status = "Error",
-                        Message = "密碼不一致"
+                        Message = "新密碼不可與舊密碼相同"
                     });
+                }
+                else
+                {
+                    if (viewUserPassChange.Password == viewUserPassChange.RePassword)
+                    {
+                        // 密碼hash加密
+                        var getHash = ag2Verify.PasswordHash(viewUserPassChange.Password);
+                        userData.Password = getHash.hashPassword;
+                        userData.Salt = getHash.salt;
+                    }
+                    else
+                    {
+                        return Content(HttpStatusCode.BadRequest, new
+                        {
+                            StatusCode = 400,
+                            Status = "Error",
+                            Message = "密碼不一致"
+                        });
+                    }
                 }
             }
             else
