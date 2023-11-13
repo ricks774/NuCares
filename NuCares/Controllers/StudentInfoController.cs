@@ -15,6 +15,7 @@ namespace NuCares.Controllers
     public class StudentInfoController : ApiController
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();
+        private readonly Argon2Verify ag2Verify = new Argon2Verify();
 
         #region "取得使用者資訊"
 
@@ -151,5 +152,103 @@ namespace NuCares.Controllers
         }
 
         #endregion "修改使用者資訊"
+
+        #region "變更密碼"
+
+        [HttpPost]
+        [Route("user/update-password")]
+        [JwtAuthFilter]
+        public IHttpActionResult UserPassChange(ViewUserPassChange viewUserPassChange)
+        {
+            #region "JwtToken驗證"
+
+            // 取出請求內容，解密 JwtToken 取出資料
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int userId = (int)userToken["Id"];
+
+            bool checkUser = db.Users.Any(n => n.Id == userId);
+            if (!checkUser)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "請重新登入"
+                });
+            }
+
+            #endregion "JwtToken驗證"
+
+            var userData = db.Users.FirstOrDefault(u => u.Id == userId);
+
+            // 取得輸入的舊密碼
+            string password = viewUserPassChange.Password;
+
+            // 取得資料庫中的資料
+            string salt = userData.Salt;
+            string hashPassword = userData.Password;
+
+            // 判斷書入的格式是否正確
+            if (!ModelState.IsValid)
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = "修改失敗，數值輸入錯誤"
+                });
+            }
+
+            // 判斷密碼是否正確
+            var passwordCheck = ag2Verify.VerifyPassword(password, salt, hashPassword);
+
+            if (passwordCheck)
+            {
+                if (viewUserPassChange.Password == viewUserPassChange.RePassword)
+                {
+                    // 密碼hash加密
+                    var getHash = ag2Verify.PasswordHash(viewUserPassChange.Password);
+                    userData.Password = getHash.hashPassword;
+                    userData.Salt = getHash.salt;
+                }
+                else
+                {
+                    return Content(HttpStatusCode.BadRequest, new
+                    {
+                        StatusCode = 400,
+                        Status = "Error",
+                        Message = "密碼不一致"
+                    });
+                }
+            }
+            else
+            {
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = "密碼錯誤"
+                });
+            }
+
+            try
+            {
+                db.SaveChanges();
+
+                var result = new
+                {
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "修改密碼成功"
+                };
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        #endregion "變更密碼"
     }
 }
