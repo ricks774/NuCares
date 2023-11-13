@@ -218,14 +218,14 @@ namespace NuCares.Controllers
         #region "首頁 - 取得單一營養師"
 
         /// <summary>
-        /// 取得單一營養師資訊
+        /// 取得單一營養師
         /// </summary>
-        /// <param name="nutritionistid"></param>
+        /// <param name="nutritionistId"></param>
         /// <param name="userid"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("nutritionist")]
-        public IHttpActionResult GetSingleNu(int nutritionistid, int userid = 0)
+        [Route("nutritionist/{nutritionistId}")]
+        public IHttpActionResult GetSingleNu(int nutritionistId, int userid = 0)
         {
             try
             {
@@ -233,11 +233,11 @@ namespace NuCares.Controllers
                 var nuData = (
                 from n in db.Nutritionists
                 join u in db.Users on n.UserId equals u.Id
-                where n.Id == nutritionistid
+                where n.Id == nutritionistId
                 select new { Nutritionist = n, User = u });   // select出2張表的所有欄位
 
                 // 取得是否為收藏的營養師
-                bool isFavorite = db.FavoriteLists.Where(f => f.UserId == userid && f.NutritionistId == nutritionistid).Any();
+                bool isFavorite = db.FavoriteLists.Where(f => f.UserId == userid && f.NutritionistId == nutritionistId).Any();
 
                 // 取得評價資料
                 var commentsData = (
@@ -246,7 +246,7 @@ namespace NuCares.Controllers
                     join c in db.Courses on o.Id equals c.OrderId
                     join cm in db.Comments on c.Id equals cm.CourseId
                     join u in db.Users on o.UserId equals u.Id
-                    where p.NutritionistId == nutritionistid
+                    where p.NutritionistId == nutritionistId
                     select new { User = u, Comment = cm })   // select出2張表的所有欄位
                     .OrderByDescending(cm => cm.Comment.CreateDate); // 根據CreateDate升序排序
 
