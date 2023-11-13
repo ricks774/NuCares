@@ -23,7 +23,7 @@ namespace NuCares.Models
         [JsonIgnore]
         [ForeignKey("CourseId")]
         [Display(Name = "所屬課程")]
-        public virtual Course MyCourse { get; set; }
+        public virtual Course Course { get; set; }
 
         /// <summary>
         /// 評論內容

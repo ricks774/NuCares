@@ -94,6 +94,10 @@ namespace NuCares.Models
         [Display(Name = "課程菜單")]
         public virtual ICollection<DailyCourseMenu> DailyCourseMenus { get; set; }
 
+        [JsonIgnore]
+        [Display(Name = "課程評價")]
+        public virtual ICollection<Comment> Comments { get; set; }
+
         [Display(Name = "建立日期")]
         public DateTime CreateDate { get; set; } = DateTime.Now;
 

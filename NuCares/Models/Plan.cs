@@ -75,10 +75,6 @@ namespace NuCares.Models
         [Display(Name = "課程訂單")]
         public virtual ICollection<Order> Orders { get; set; }
 
-        [JsonIgnore]
-        [Display(Name = "方案評論")]
-        public virtual ICollection<Comment> Comments { get; set; }
-
         [Display(Name = " 已刪除")]
         public bool IsDelete { get; set; } = false;
 
