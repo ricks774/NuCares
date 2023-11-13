@@ -497,5 +497,100 @@ namespace NuCares.Controllers
         }
 
         #endregion "首頁 - 營養師篩選跟排序"
+
+        #region "首頁 - 新增&刪除收藏營養師"
+
+        /// <summary>
+        /// 新增及刪除收藏營養師
+        /// </summary>
+        /// <param name="nutritionistId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("user/follow/{nutritionistId}")]
+        [JwtAuthFilter]
+        public IHttpActionResult AddFavoriteNu(int nutritionistId)
+        {
+            int userId = 0;
+
+            #region "JwtToken驗證"
+
+            if (Request.Headers.Authorization != null && !string.IsNullOrEmpty(Request.Headers.Authorization.Parameter))
+            {
+                // 取出請求內容，解密 JwtToken 取出資料
+                var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+                userId = (int)userToken["Id"];
+
+                bool checkUser = db.Users.Any(n => n.Id == userId);
+                if (!checkUser)
+                {
+                    return Content(HttpStatusCode.Unauthorized, new
+                    {
+                        StatusCode = 401,
+                        Status = "Error",
+                        Message = "請重新登入"
+                    });
+                }
+            }
+            else
+            {
+                // 如果沒有 JWT Token，進行相應的處理
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "請先登入"
+                });
+            }
+
+            #endregion "JwtToken驗證"
+
+            // 判斷目前營養師是否已經有收藏
+            var isFavorite = db.FavoriteLists.FirstOrDefault(f => f.UserId == userId && f.NutritionistId == nutritionistId);
+
+            if (isFavorite != null)
+            {
+                // 如果已經收藏就移除收藏
+                try
+                {
+                    db.FavoriteLists.Remove(isFavorite);
+                    db.SaveChanges();
+
+                    var result = new
+                    {
+                        StatusCode = 200,
+                        Status = "Success",
+                        Message = "移除收藏成功"
+                    };
+                    return Ok(result);
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
+            }
+            else
+            {
+                // 創建一個新的 Favorite 物件，紀錄傳入的數值
+                var newFavorite = new FavoriteList
+                {
+                    UserId = userId,
+                    NutritionistId = nutritionistId,
+                    CreateDate = DateTime.Now
+                };
+
+                db.FavoriteLists.Add(newFavorite);
+                db.SaveChanges();
+
+                var result = new
+                {
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "新增收藏成功"
+                };
+                return Ok(result);
+            }
+        }
+
+        #endregion "首頁 - 新增&刪除收藏營養師"
     }
 }
