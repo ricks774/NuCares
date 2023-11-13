@@ -347,6 +347,13 @@ namespace NuCares.Controllers
 
         #region "首頁 - 營養師篩選跟排序"
 
+        /// <summary>
+        /// 營養師篩選跟排序
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="sort"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("nutritionist/search")]
         public IHttpActionResult NuFilter(string filter = "", string sort = "", int page = 1)
@@ -397,7 +404,7 @@ namespace NuCares.Controllers
                         (f == "pregnant" && n.Expertise.Contains("孕期營養")) ||
                         (f == "health" && n.Expertise.Contains("樂齡營養與保健"))
                     )
-               );
+                );
             }
 
             #endregion "依照 filter 傳入的值進行篩選"
@@ -406,9 +413,6 @@ namespace NuCares.Controllers
 
             if (sort == "heighestComment")
             {
-                // 計算評價的總平均
-                //var rateAvg = Math.Round(nuDataQuery.SelectMany(n => n.Plans.SelectMany(p => p.Comments.Select(c => c.Rate))).DefaultIfEmpty().Average(), 1);
-
                 nuDataQuery = nuDataQuery.OrderByDescending(n => n.Plans
                     .SelectMany(p => p.Orders
                         .SelectMany(o => o.Courses
@@ -448,7 +452,6 @@ namespace NuCares.Controllers
                 .AsEnumerable()
                 .Select(n => new
                 {
-                    //n.AverageRate,
                     n.Id,
                     n.Title,
                     PortraitImage = ImageUrl.GetImageUrl(n.PortraitImage),
@@ -465,11 +468,12 @@ namespace NuCares.Controllers
                         p.Tag
                     }).OrderBy(p => p.Rank).Take(2)
                 });
+
             if (nuData == null)
             {
                 return Content(HttpStatusCode.BadRequest, new
                 {
-                    StatusCode = 401,
+                    StatusCode = 400,
                     Status = "Error",
                     Message = new
                     {
