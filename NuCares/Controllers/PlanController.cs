@@ -117,7 +117,17 @@ namespace NuCares.Controllers
             .Where(plan => plan.Nutritionist.UserId == id && !plan.IsDelete)
             .OrderBy(plan => (int)plan.Rank)
             .ThenBy(plan => plan.CreateDate)
-            .ToList();
+            .AsEnumerable()
+            .Select(plan => new
+            {
+                plan.Id,
+                plan.Rank,
+                plan.CourseName,
+                plan.CourseWeek,
+                CoursePrice = plan.CoursePrice.ToString("N0"),  // 使用 "N0" 格式，會在千位數添加逗號
+                plan.Tag,
+                plan.Detail
+            });
 
             var result = new
             {
