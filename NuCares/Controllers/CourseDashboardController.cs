@@ -102,9 +102,9 @@ namespace NuCares.Controllers
                 {
                     db.SaveChanges();
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    return InternalServerError(e);
+                    return InternalServerError(ex);
                 }
             }
 
@@ -597,9 +597,9 @@ namespace NuCares.Controllers
                 };
                 return Ok(result);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return InternalServerError(e);
+                return InternalServerError(ex);
             }
         }
 

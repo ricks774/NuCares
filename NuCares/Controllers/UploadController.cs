@@ -84,9 +84,9 @@ namespace NuCares.Controllers
                     }
                 });
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return Content(HttpStatusCode.BadRequest, new { StatusCode = 400, Status = "Error", Message = e });
+                return InternalServerError(ex);
             }
         }
         #endregion "上傳圖片"
