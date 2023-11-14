@@ -82,9 +82,9 @@ namespace NuCares.Controllers
                 };
                 return Ok(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return InternalServerError();
+                return InternalServerError(ex);
             }
         }
         #endregion "新增API"
@@ -229,9 +229,9 @@ namespace NuCares.Controllers
 
                 return Ok(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return InternalServerError();
+                return InternalServerError(ex);
             }
         }
 
@@ -288,9 +288,9 @@ namespace NuCares.Controllers
 
                 return Ok(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return InternalServerError();
+                return InternalServerError(ex);
             }
         }
         #endregion"刪除課程方案"

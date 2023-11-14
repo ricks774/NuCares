@@ -236,9 +236,9 @@ namespace NuCares.Controllers
                 };
                 return Ok(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return InternalServerError();
+                return InternalServerError(ex);
             }
         }
 
