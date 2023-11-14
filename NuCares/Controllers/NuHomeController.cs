@@ -387,10 +387,6 @@ namespace NuCares.Controllers
 
             #endregion "JwtToken驗證"
 
-            int pageSize = 5; // 每頁顯示的記錄數
-            var totalRecords = db.Nutritionists.Where(n => n.IsPublic).Count(); // 計算符合條件的記錄總數
-            int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize); // 計算總頁數
-
             #region "依照 filter 傳入的值進行篩選"
 
             var nuDataQuery = db.Nutritionists.Where(n => n.IsPublic);
@@ -444,6 +440,10 @@ namespace NuCares.Controllers
             }
 
             #endregion "依照 sort 傳入的值進行排序"
+
+            int pageSize = 5; // 每頁顯示的記錄數
+            var totalRecords = nuDataQuery.Count(); // 計算符合條件的記錄總數
+            int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize); // 計算總頁數
 
             var nuData = nuDataQuery
                 .Where(n => n.IsPublic)
