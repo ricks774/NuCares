@@ -77,7 +77,7 @@ namespace NuCares.Controllers
         /// </summary>
         /// <param name="viewUserInfoEdit"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPut]
         [Route("user/profile")]
         [JwtAuthFilter]
         public IHttpActionResult UserInfoEdit(ViewUserInfoEdit viewUserInfoEdit)
@@ -160,7 +160,7 @@ namespace NuCares.Controllers
         /// </summary>
         /// <param name="viewUserPassChange"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPut]
         [Route("user/update-password")]
         [JwtAuthFilter]
         public IHttpActionResult UserPassChange(ViewUserPassChange viewUserPassChange)
