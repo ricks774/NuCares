@@ -255,6 +255,7 @@
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\FavoriteList.cs" />
     <Compile Include="Models\ViewBodyInfo.cs" />
+    <Compile Include="Models\ViewComment.cs" />
     <Compile Include="Models\ViewDaily.cs" />
     <Compile Include="Models\ViewCourse.cs" />
     <Compile Include="Models\ViewDailyCourseMenu.cs" />

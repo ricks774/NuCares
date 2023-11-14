@@ -667,23 +667,24 @@ namespace NuCares.Controllers
 
         #endregion "學員 - 單一營養師資料"
 
-        #region "收藏營養師列表"
+        #region "學員 - 新增評價"
 
         /// <summary>
-        /// 收藏營養師列表
+        /// 對課程進行評價
         /// </summary>
+        /// <param name="viewComment"></param>
+        /// <param name="courseId"></param>
         /// <returns></returns>
-        [OpenApiTag("Stdent", Description = "學員")]
-        [HttpGet]
-        [Route("user/follow")]
+        [HttpPost]
+        [Route("course/{courseId}/comment")]
         [JwtAuthFilter]
-        public IHttpActionResult GetFavoriteList()
+        public IHttpActionResult AddComment(ViewComment viewComment, int courseId)
         {
             #region "JwtToken驗證"
 
             // 取出請求內容，解密 JwtToken 取出資料
             var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
-            var userId = (int)userToken["Id"];
+            int userId = (int)userToken["Id"];
 
             bool checkUser = db.Users.Any(n => n.Id == userId);
             if (!checkUser)
@@ -698,27 +699,112 @@ namespace NuCares.Controllers
 
             #endregion "JwtToken驗證"
 
-            var favoriteData = db.FavoriteLists.Where(fl => fl.UserId == userId)
-                .Select(fl => new
-                {
-                    fl.Nutritionist.Id,
-                    fl.Nutritionist.Title,
-                    fl.Nutritionist.PortraitImage,
-                    fl.Nutritionist.Expertise,
-                    fl.Nutritionist.AboutMe,
-                    Favorite = true
-                });
+            // 判斷學員是否有該課程，訂單已付款 課程是否結束 尚未評價
+            //int orderId = db.Courses.Where(c => c.Id == courseId && c.IsComment == false && c.CourseState == EnumList.CourseState.結束).Select(c => c.OrderId).FirstOrDefault();
 
-            var result = new
+            var courseQuery = db.Courses.Where(c => c.Id == courseId);
+
+            if (!courseQuery.Any())
             {
-                StatusCode = 200,
-                Status = "Success",
-                Message = "取得收藏營養師列表成功",
-                Data = favoriteData
-            };
-            return Ok(result);
+                // 找不到課程的情況
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = "課程不存在"
+                });
+            }
+            else
+            {
+                var course = courseQuery.First();
+
+                if (course.IsComment)
+                {
+                    // 已評價為true的情況
+                    return Content(HttpStatusCode.BadRequest, new
+                    {
+                        StatusCode = 400,
+                        Status = "Error",
+                        Message = "該課程已經評價過了"
+                    });
+                }
+                else if (course.CourseState != EnumList.CourseState.結束)
+                {
+                    // 課程狀態不是結束的情況
+                    return Content(HttpStatusCode.BadRequest, new
+                    {
+                        StatusCode = 400,
+                        Status = "Error",
+                        Message = "課程尚未結束"
+                    });
+                }
+                else
+                {
+                    int orderId = course.OrderId;
+                    bool orderCheck = db.Orders.Where(o => o.Id == orderId && o.UserId == userId && o.IsPayment == true).Any();
+
+                    if (orderCheck)
+                    {
+                        // 寫入評價資料
+                        if (ModelState.IsValid)
+                        {
+                            // 創建一個新的 User 物件，紀錄傳入的數值
+                            var newComment = new Comment
+                            {
+                                CourseId = courseId,
+                                Content = viewComment.Content,
+                                Rate = viewComment.Rate,
+                                CreateDate = DateTime.Now
+                            };
+
+                            db.Comments.Add(newComment);
+                            db.SaveChanges();
+
+                            var result = new
+                            {
+                                StatusCode = 200,
+                                Status = "Success",
+                                Message = "評價成功"
+                            };
+                            return Ok(result);
+                        }
+                        else
+                        {
+                            #region "自動判斷哪個欄位數值輸入錯誤'"
+
+                            // 回傳錯誤的訊息
+                            var errors = ModelState.Keys
+                                .Select(key =>
+                                {
+                                    var propertyName = key.Split('.').Last(); // 取的屬性名稱
+                                    var errorMessage = ModelState[key].Errors.First().ErrorMessage; // 取得錯誤訊息
+                                    return new { PropertyName = propertyName, ErrorMessage = errorMessage };
+                                })
+                                .ToDictionary(e => e.PropertyName, e => e.ErrorMessage);
+
+                            return Content(HttpStatusCode.BadRequest, new
+                            {
+                                StatusCode = 400,
+                                Status = "Error",
+                                Message = errors
+                            });
+
+                            #endregion "自動判斷哪個欄位數值輸入錯誤'"
+                        }
+                    }
+                    else
+                    {
+                        return Content(HttpStatusCode.BadRequest, new
+                        {
+                            StatusCode = 400,
+                            Status = "Error",
+                            Message = "課程尚未付款"
+                        });
+                    }
+                }
+            }
         }
 
-        #endregion "收藏營養師列表"
+        #endregion "學員 - 新增評價"
     }
 }
