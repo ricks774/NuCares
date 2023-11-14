@@ -669,10 +669,16 @@ namespace NuCares.Controllers
 
         #region "學員 - 新增評價"
 
+        /// <summary>
+        /// 對課程進行評價
+        /// </summary>
+        /// <param name="viewComment"></param>
+        /// <param name="courseId"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("course/{courseId}/comment")]
         [JwtAuthFilter]
-        public IHttpActionResult AddComment(int courseId)
+        public IHttpActionResult AddComment(ViewComment viewComment, int courseId)
         {
             #region "JwtToken驗證"
 
@@ -694,10 +700,109 @@ namespace NuCares.Controllers
             #endregion "JwtToken驗證"
 
             // 判斷學員是否有該課程，訂單已付款 課程是否結束 尚未評價
-            int orderId = db.Courses.Where(c => c.Id == courseId && c.IsComment == false && c.CourseState == EnumList.CourseState.結束).Select(c => c.OrderId).FirstOrDefault();
-            bool orderCheck = db.Orders.Where(o => o.Id == orderId && o.UserId == userId && o.IsPayment == true).Any();
+            //int orderId = db.Courses.Where(c => c.Id == courseId && c.IsComment == false && c.CourseState == EnumList.CourseState.結束).Select(c => c.OrderId).FirstOrDefault();
 
-            return Ok(orderCheck);
+            var courseQuery = db.Courses.Where(c => c.Id == courseId);
+
+            if (!courseQuery.Any())
+            {
+                // 找不到課程的情況
+                return Content(HttpStatusCode.BadRequest, new
+                {
+                    StatusCode = 400,
+                    Status = "Error",
+                    Message = "課程不存在"
+                });
+            }
+            else
+            {
+                var course = courseQuery.First();
+
+                if (course.IsComment)
+                {
+                    // 已評價為true的情況
+                    return Content(HttpStatusCode.BadRequest, new
+                    {
+                        StatusCode = 400,
+                        Status = "Error",
+                        Message = "該課程已經評價過了"
+                    });
+                }
+                else if (course.CourseState != EnumList.CourseState.結束)
+                {
+                    // 課程狀態不是結束的情況
+                    return Content(HttpStatusCode.BadRequest, new
+                    {
+                        StatusCode = 400,
+                        Status = "Error",
+                        Message = "課程尚未結束"
+                    });
+                }
+                else
+                {
+                    int orderId = course.OrderId;
+                    bool orderCheck = db.Orders.Where(o => o.Id == orderId && o.UserId == userId && o.IsPayment == true).Any();
+
+                    if (orderCheck)
+                    {
+                        // 寫入評價資料
+                        if (ModelState.IsValid)
+                        {
+                            // 創建一個新的 User 物件，紀錄傳入的數值
+                            var newComment = new Comment
+                            {
+                                CourseId = courseId,
+                                Content = viewComment.Content,
+                                Rate = viewComment.Rate,
+                                CreateDate = DateTime.Now
+                            };
+
+                            db.Comments.Add(newComment);
+                            db.SaveChanges();
+
+                            var result = new
+                            {
+                                StatusCode = 200,
+                                Status = "Success",
+                                Message = "評價成功"
+                            };
+                            return Ok(result);
+                        }
+                        else
+                        {
+                            #region "自動判斷哪個欄位數值輸入錯誤'"
+
+                            // 回傳錯誤的訊息
+                            var errors = ModelState.Keys
+                                .Select(key =>
+                                {
+                                    var propertyName = key.Split('.').Last(); // 取的屬性名稱
+                                    var errorMessage = ModelState[key].Errors.First().ErrorMessage; // 取得錯誤訊息
+                                    return new { PropertyName = propertyName, ErrorMessage = errorMessage };
+                                })
+                                .ToDictionary(e => e.PropertyName, e => e.ErrorMessage);
+
+                            return Content(HttpStatusCode.BadRequest, new
+                            {
+                                StatusCode = 400,
+                                Status = "Error",
+                                Message = errors
+                            });
+
+                            #endregion "自動判斷哪個欄位數值輸入錯誤'"
+                        }
+                    }
+                    else
+                    {
+                        return Content(HttpStatusCode.BadRequest, new
+                        {
+                            StatusCode = 400,
+                            Status = "Error",
+                            Message = "課程尚未付款"
+                        });
+                    }
+                }
+            }
         }
 
         #endregion "學員 - 新增評價"
