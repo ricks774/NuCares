@@ -666,5 +666,40 @@ namespace NuCares.Controllers
         }
 
         #endregion "學員 - 單一營養師資料"
+
+        #region "學員 - 新增評價"
+
+        [HttpPost]
+        [Route("course/{courseId}/comment")]
+        [JwtAuthFilter]
+        public IHttpActionResult AddComment(int courseId)
+        {
+            #region "JwtToken驗證"
+
+            // 取出請求內容，解密 JwtToken 取出資料
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int userId = (int)userToken["Id"];
+
+            bool checkUser = db.Users.Any(n => n.Id == userId);
+            if (!checkUser)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "請重新登入"
+                });
+            }
+
+            #endregion "JwtToken驗證"
+
+            // 判斷學員是否有該課程，訂單已付款 課程是否結束 尚未評價
+            int orderId = db.Courses.Where(c => c.Id == courseId && c.IsComment == false && c.CourseState == EnumList.CourseState.結束).Select(c => c.OrderId).FirstOrDefault();
+            bool orderCheck = db.Orders.Where(o => o.Id == orderId && o.UserId == userId && o.IsPayment == true).Any();
+
+            return Ok(orderCheck);
+        }
+
+        #endregion "學員 - 新增評價"
     }
 }
