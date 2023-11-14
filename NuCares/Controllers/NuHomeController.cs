@@ -302,7 +302,7 @@ namespace NuCares.Controllers
                             p.Rank,
                             p.CourseName,
                             p.CourseWeek,
-                            p.CoursePrice,
+                            CoursePrice = p.CoursePrice.ToString("N0"),  // 使用 "N0" 格式，會在千位數添加逗號
                             p.Tag,
                             p.Detail
                         }).OrderBy(p => p.Rank),
