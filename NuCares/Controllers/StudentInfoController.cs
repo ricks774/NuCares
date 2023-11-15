@@ -130,7 +130,7 @@ namespace NuCares.Controllers
                 {
                     u.Id,
                     u.UserName,
-                    u.ImgUrl,
+                    ImgUrl = ImageUrl.GetImageUrl(u.ImgUrl),
                     u.Email,
                     Birthday = u.Birthday.ToString("yyyy/MM/dd"),
                     Gender = u.Gender.ToString(),
