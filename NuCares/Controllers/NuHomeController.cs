@@ -441,7 +441,7 @@ namespace NuCares.Controllers
 
             #endregion "依照 sort 傳入的值進行排序"
 
-            int pageSize = 5; // 每頁顯示的記錄數
+            int pageSize = 10; // 每頁顯示的記錄數
             var totalRecords = nuDataQuery.Count(); // 計算符合條件的記錄總數
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize); // 計算總頁數
 
