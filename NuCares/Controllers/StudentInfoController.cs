@@ -47,13 +47,13 @@ namespace NuCares.Controllers
 
             #endregion "JwtToken驗證"
 
-            var userData = db.Users.Where(u => u.Id == userId).Select(u => new
+            var userData = db.Users.Where(u => u.Id == userId).AsEnumerable().Select(u => new
             {
                 u.Id,
                 u.UserName,
                 u.ImgUrl,
                 u.Email,
-                u.Birthday,
+                Birthday = u.Birthday.ToString("yyyy/MM/dd"),
                 Gender = u.Gender.ToString(),
                 u.Phone
             }).FirstOrDefault();
