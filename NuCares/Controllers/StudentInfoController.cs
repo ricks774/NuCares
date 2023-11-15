@@ -8,6 +8,7 @@ using NSwag.Annotations;
 using NuCares.Models;
 using NuCares.Security;
 using static NuCares.Models.EnumList;
+using NuCares.helper;
 
 namespace NuCares.Controllers
 {
@@ -51,7 +52,7 @@ namespace NuCares.Controllers
             {
                 u.Id,
                 u.UserName,
-                u.ImgUrl,
+                ImgUrl = ImageUrl.GetImageUrl(u.ImgUrl),
                 u.Email,
                 Birthday = u.Birthday.ToString("yyyy/MM/dd"),
                 Gender = u.Gender.ToString(),
