@@ -838,7 +838,7 @@ namespace NuCares.Controllers
 
             #endregion "JwtToken驗證"
 
-            var favoriteData = db.FavoriteLists.Where(fl => fl.UserId == userId)
+            var favoriteData = db.FavoriteLists.Where(fl => fl.UserId == userId).AsEnumerable()
                 .Select(fl => new
                 {
                     fl.Nutritionist.Id,
