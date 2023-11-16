@@ -328,6 +328,17 @@ namespace NuCares.Controllers
                         RateAVG = rateAvg
                     }).FirstOrDefault();
 
+                if (newNuData == null)
+                {
+                    return Content(
+                        HttpStatusCode.BadRequest, new
+                        {
+                            StatusCode = 400,
+                            Status = "Error",
+                            Message = "該營養師不存在"
+                        });
+                }
+
                 var result = new
                 {
                     StatusCode = 200,
