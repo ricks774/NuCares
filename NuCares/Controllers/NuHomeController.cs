@@ -332,7 +332,7 @@ namespace NuCares.Controllers
                 {
                     StatusCode = 200,
                     Status = "Success",
-                    Message = "取得所有營養師",
+                    Message = "取得單一營養師資料成功",
                     Data = newNuData
                 };
                 return Ok(result);
