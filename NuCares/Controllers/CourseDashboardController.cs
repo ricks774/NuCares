@@ -843,8 +843,8 @@ namespace NuCares.Controllers
                 {
                     fl.Nutritionist.Id,
                     fl.Nutritionist.Title,
-                    fl.Nutritionist.PortraitImage,
-                    fl.Nutritionist.Expertise,
+                    PortraitImage = ImageUrl.GetImageUrl(fl.Nutritionist.PortraitImage),
+                    Expertise = fl.Nutritionist.Expertise.Split(',').ToArray(),
                     fl.Nutritionist.AboutMe,
                     Favorite = true
                 });
