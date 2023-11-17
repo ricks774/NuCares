@@ -321,7 +321,7 @@ namespace NuCares.Controllers
                         Comment = commentsData.AsEnumerable().Select(c => new
                         {
                             c.User.UserName,
-                            c.Comment.Content,
+                            Content = c.Comment.Content == "(未留言)" ? "" : c.Comment.Content,
                             c.Comment.Rate,
                             CreateDate = c.Comment.CreateDate.ToString("yyyy/MM/dd")
                         }),
