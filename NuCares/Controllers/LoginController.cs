@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Web.Http;
 using NuCares.Models;
 using NuCares.Security;
+using NuCares.helper;
 
 namespace NuCares.Controllers
 {
@@ -88,7 +89,7 @@ namespace NuCares.Controllers
                             userData.Id,
                             userData.UserName,
                             userData.Email,
-                            userData.ImgUrl,
+                            ImgUrl = ImageUrl.GetImageUrl(userData.ImgUrl),
                             userData.IsNutritionist,
                             UserCurrentStatus = userStatus
                         }
