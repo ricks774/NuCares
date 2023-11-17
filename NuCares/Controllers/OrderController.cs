@@ -332,7 +332,7 @@ namespace NuCares.Controllers
                     o.OrderNumber,
                     o.Plan.Nutritionist.Title,
                     o.Plan.CourseName,
-                    o.Plan.CoursePrice,
+                    CoursePrice = o.Plan.CoursePrice.ToString("N0"),
                     o.PaymentMethod
                 });
 
