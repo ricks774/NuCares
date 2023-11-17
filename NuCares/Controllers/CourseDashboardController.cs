@@ -760,6 +760,18 @@ namespace NuCares.Controllers
                             db.Comments.Add(newComment);
                             db.SaveChanges();
 
+                            // 將Course設定為已評價
+                            var coursedata = db.Courses.Where(c => c.Id == courseId).FirstOrDefault();
+                            coursedata.IsComment = true;
+                            try
+                            {
+                                db.SaveChanges();
+                            }
+                            catch (Exception ex)
+                            {
+                                return InternalServerError(ex);
+                            }
+
                             var result = new
                             {
                                 StatusCode = 200,
