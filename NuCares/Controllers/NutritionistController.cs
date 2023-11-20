@@ -1,4 +1,5 @@
 ﻿using NSwag.Annotations;
+using NuCares.helper;
 using NuCares.Models;
 using NuCares.Security;
 using System;
@@ -59,7 +60,7 @@ namespace NuCares.Controllers
                 {
                     nu.Id,
                     nu.IsPublic,
-                    nu.PortraitImage,
+                    PortraitImage = ImageUrl.GetImageUrl(nu.PortraitImage),
                     nu.Title,
                     nu.City,
                     Expertise = expertiseArray,
@@ -178,7 +179,7 @@ namespace NuCares.Controllers
                     {
                         nu.Id,
                         nu.IsPublic,
-                        nu.PortraitImage,
+                        PortraitImage = ImageUrl.GetImageUrl(nu.PortraitImage),
                         nu.Title,
                         nu.City,
                         Expertise = expertiseArray,
@@ -196,9 +197,9 @@ namespace NuCares.Controllers
                 };
                 return Ok(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return InternalServerError();
+                return InternalServerError(ex);
             }
 
         }

@@ -7,6 +7,7 @@ using System.Web.Http;
 using NSwag.Annotations;
 using NuCares.Models;
 using NuCares.Security;
+using NuCares.helper;
 
 namespace NuCares.Controllers
 {
@@ -168,7 +169,7 @@ namespace NuCares.Controllers
 
             #endregion "JwtToken驗證"
 
-            var dailyData = db.DailyLogs.SingleOrDefault(dt => dt.Id == dailyLogId);
+            var dailyData = db.DailyLogs.FirstOrDefault(dt => dt.Id == dailyLogId);
 
             // 判斷書入的格式是否正確
             if (!ModelState.IsValid)
@@ -208,19 +209,20 @@ namespace NuCares.Controllers
 
                 // 要回傳的資料格式
                 var dailyLog = db.DailyLogs.Where(d => d.Id == dailyLogId)
+                    .AsEnumerable() // 使查詢先執行,再在記憶體中處理
                     .Select(d => new
                     {
                         d.OilDescription,
-                        d.OilImgUrl,
+                        OilImgUrl = ImageUrl.GetImageUrl(d.OilImgUrl),
                         d.Oil,
                         d.FruitDescription,
-                        d.FruitImgUrl,
+                        FruitImgUrl = ImageUrl.GetImageUrl(d.FruitImgUrl),
                         d.Fruit,
                         d.WaterDescription,
-                        d.WaterImgUrl,
+                        WaterImgUrl = ImageUrl.GetImageUrl(d.WaterImgUrl),
                         d.Water
                     })
-                    .SingleOrDefault();
+                    .FirstOrDefault();
 
                 var result = new
                 {
@@ -253,7 +255,7 @@ namespace NuCares.Controllers
                 });
             }
 
-            var mealTimeData = db.DailyMealTimes.SingleOrDefault(dt => dt.Id == timesId);
+            var mealTimeData = db.DailyMealTimes.FirstOrDefault(dt => dt.Id == timesId);
 
             // 判斷書入的格式是否正確
             if (!ModelState.IsValid)
@@ -289,16 +291,17 @@ namespace NuCares.Controllers
 
                 // 要回傳的資料格式
                 var mealTimeLog = db.DailyMealTimes.Where(so => so.Id == timesId)
+                    .AsEnumerable() // 使查詢先執行,再在記憶體中處理
                     .Select(so => new
                     {
                         so.MealTime,
                         so.MealDescription,
-                        so.MealImgUrl,
+                        MealImgUrl = ImageUrl.GetImageUrl(so.MealImgUrl),
                         so.Starch,
                         so.Protein,
                         so.Vegetable
                     })
-                    .SingleOrDefault();
+                    .FirstOrDefault();
 
                 var result = new
                 {

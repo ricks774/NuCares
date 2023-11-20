@@ -8,23 +8,8 @@ using System.Web;
 
 namespace NuCares.Models
 {
-    public class Comment
+    public class ViewComment
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Display(Name = "編號")]
-        public int Id { get; set; }
-
-        /// <summary>
-        /// 課程 Id
-        /// </summary>
-        [Display(Name = "課程")]
-        public int CourseId { get; set; }
-        [JsonIgnore]
-        [ForeignKey("CourseId")]
-        [Display(Name = "所屬課程")]
-        public virtual Course Course { get; set; }
-
         /// <summary>
         /// 評論內容
         /// </summary>
@@ -40,8 +25,5 @@ namespace NuCares.Models
         [Range(1, 5, ErrorMessage = "{0}必須在 1 到 5 之間")]
         [Display(Name = "評分")]
         public int Rate { get; set; }
-
-        [Display(Name = "建立日期")]
-        public DateTime CreateDate { get; set; } = DateTime.Now;
     }
 }

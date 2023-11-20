@@ -176,8 +176,8 @@ namespace NuCares.Controllers
                 string amt = newOrder.Plan.CoursePrice.ToString();
                 string itemDesc = newOrder.Plan.CourseName + " / " + newOrder.Plan.Nutritionist.Title + " 營養師";
                 string tradeLimit = "600"; // 交易限制秒數
-                string notifyURL = @"http://4.213.67.245" + "/order/paymentResult";// NotifyURL 填後端接收藍新付款結果的 API 位置，如 : /api/users/getpaymentdata
-                string returnURL = "";  // 前端可用 Status: SUCCESS 來判斷付款成功，網址夾帶可拿來取得活動內容
+                string notifyURL = $@"{Request.RequestUri.Scheme}://{Request.RequestUri.Host}" + "/order/paymentResult";// NotifyURL 填後端接收藍新付款結果的 API 位置，如 : /api/users/getpaymentdata
+                string returnURL = @"https://nu-cares.vercel.app/api/payment-return";  // 前端可用 Status: SUCCESS 來判斷付款成功，網址夾帶可拿來取得活動內容
                 string email = newOrder.UserEmail; // 通知付款完成用
                 string loginType = "0"; // 0不須登入藍新金流會員
 
@@ -236,9 +236,9 @@ namespace NuCares.Controllers
                 };
                 return Ok(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return InternalServerError();
+                return InternalServerError(ex);
             }
         }
 
@@ -267,16 +267,19 @@ namespace NuCares.Controllers
 
             // 付款失敗跳離執行
             var response = Request.CreateResponse(HttpStatusCode.OK);
+            var orderData = db.Orders.FirstOrDefault(o => o.Id == logId);
             if (!data.Status.Equals("SUCCESS"))
             {
+                var courseData = db.Courses.FirstOrDefault(c => c.OrderId == logId);
+                db.Orders.Remove(orderData);
+                db.Courses.Remove(courseData);
+                db.SaveChanges();
                 return response;
             }
 
             // 用取得的"訂單ID"修改資料庫此筆訂單的付款狀態為 true
-            var orderData = db.Orders.FirstOrDefault(o => o.Id == logId);
             orderData.IsPayment = true;
             db.SaveChanges();
-
             return response;
         }
 
