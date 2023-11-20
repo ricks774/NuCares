@@ -106,7 +106,7 @@ namespace NuCares.Controllers
                 // 未登入時
                 var nuData = db.Nutritionists
                 .Where(n => n.IsPublic)
-                .OrderBy(n => n.Id) // 主要排序條件
+                .OrderByDescending(n => n.CreateDate) // 主要排序條件
                 .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
                 .Take(pageSize) // 每頁顯示的記錄數
                 .AsEnumerable() // 使查詢先執行,再在記憶體中處理
