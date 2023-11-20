@@ -49,7 +49,7 @@ namespace NuCares.Controllers
 
             var coursesData = db.Courses
                 .Where(c => c.Order.UserId == id)
-                .OrderBy(c => c.Id) // 根據需要的屬性進行排序
+                .OrderByDescending(c => c.CreateDate) // 根據需要的屬性進行排序
                 .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
                 .Take(pageSize) // 每頁顯示的記錄數
                 .AsEnumerable() // 使查詢先執行,再在記憶體中處理
@@ -61,7 +61,7 @@ namespace NuCares.Controllers
                     c.Order.Plan.CourseWeek,
                     c.Order.Plan.CourseName,
                     CourseStartDate = c.CourseStartDate.HasValue ? c.CourseStartDate.Value.ToString("yyyy-MM-dd") : null,
-                    CourseEndDate = c.CourseEndDate.HasValue ? c.CourseStartDate.Value.ToString("yyyy-MM-dd") : null,
+                    CourseEndDate = c.CourseEndDate.HasValue ? c.CourseEndDate.Value.ToString("yyyy-MM-dd") : null,
                     CourseState = c.CourseState.ToString(),
                     c.IsQuest,
                     c.IsComment,
