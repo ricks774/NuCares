@@ -40,13 +40,13 @@ namespace NuCares.Controllers
                     Message = new { Auth = "您沒有營養師權限" }
                 });
             }
-            int pageSize = 5; // 每頁顯示的記錄數
+            int pageSize = 10; // 每頁顯示的記錄數
             var totalRecords = db.Courses.Where(c => c.Order.Plan.Nutritionist.UserId == id && c.Order.IsPayment).Count(); // 計算符合條件的記錄總數
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize); // 計算總頁數
             var today = DateTime.Today;
             var coursesData = db.Courses
                 .Where(c => c.Order.Plan.Nutritionist.UserId == id && c.Order.IsPayment)
-                .OrderBy(c => c.CreateDate)
+                .OrderByDescending(c => c.CreateDate)
                 .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
                 .Take(pageSize) // 每頁顯示的記錄數
                 .AsEnumerable()
