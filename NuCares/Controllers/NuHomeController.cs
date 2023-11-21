@@ -52,7 +52,7 @@ namespace NuCares.Controllers
                     NutritionistId = n.Id,
                     n.Title,
                     PortraitImage = ImageUrl.GetImageUrl(n.PortraitImage),
-                    Expertis = n.Expertise.Split(',').ToArray()
+                    Expertise = n.Expertise.Split(',').ToArray()
                 });
 
             var result = new
