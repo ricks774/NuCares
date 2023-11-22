@@ -400,7 +400,7 @@ namespace NuCares.Controllers
 
             #region "依照 filter 傳入的值進行篩選"
 
-            var nuDataQuery = db.Nutritionists.Where(n => n.IsPublic);
+            var nuDataQuery = db.Nutritionists.OrderByDescending(n => n.CreateDate).Where(n => n.IsPublic);
             if (!string.IsNullOrEmpty(filter))
             {
                 var filterValues = filter.Trim().ToLower().Split(',');
@@ -418,7 +418,8 @@ namespace NuCares.Controllers
 
             #region "依照 sort 傳入的值進行排序"
 
-            if (sort == "heighestComment")
+            //var sortValues = sort.Trim().ToLower();
+            if (sort == "HeighestComment")
             {
                 nuDataQuery = nuDataQuery.OrderByDescending(n => n.Plans
                     .SelectMany(p => p.Orders
@@ -432,7 +433,7 @@ namespace NuCares.Controllers
                     .DefaultIfEmpty(0)
                     .Average());
             }
-            else if (sort == "mostComment")
+            else if (sort == "MostComment")
             {
                 nuDataQuery = nuDataQuery.OrderByDescending(n => n.Plans
                 .SelectMany(p => p.Orders
@@ -447,7 +448,7 @@ namespace NuCares.Controllers
             }
             else
             {
-                nuDataQuery = nuDataQuery.OrderBy(n => n.Id);
+                nuDataQuery = nuDataQuery.OrderByDescending(n => n.Id);
             }
 
             #endregion "依照 sort 傳入的值進行排序"
