@@ -703,6 +703,7 @@ namespace NuCares.Controllers
             //int orderId = db.Courses.Where(c => c.Id == courseId && c.IsComment == false && c.CourseState == EnumList.CourseState.結束).Select(c => c.OrderId).FirstOrDefault();
 
             var courseQuery = db.Courses.Where(c => c.Id == courseId);
+            var today = DateTime.Today;
 
             if (!courseQuery.Any())
             {
@@ -728,7 +729,7 @@ namespace NuCares.Controllers
                         Message = "該課程已經評價過了"
                     });
                 }
-                else if (course.CourseState != EnumList.CourseState.結束)
+                else if (course.CourseEndDate < today)
                 {
                     // 課程狀態不是結束的情況
                     return Content(HttpStatusCode.BadRequest, new
