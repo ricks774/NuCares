@@ -10,7 +10,7 @@ using NSwag.Annotations;
 
 namespace NuCares.Controllers
 {
-    [OpenApiTag("Stdent", Description = "學員")]
+    [OpenApiTag("Student", Description = "學員")]
     public class AllCourseListController : ApiController
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();
@@ -60,8 +60,8 @@ namespace NuCares.Controllers
                     c.Order.Plan.Nutritionist.Title,
                     c.Order.Plan.CourseWeek,
                     c.Order.Plan.CourseName,
-                    CourseStartDate = c.CourseStartDate.HasValue ? c.CourseStartDate.Value.ToString("yyyy-MM-dd") : null,
-                    CourseEndDate = c.CourseEndDate.HasValue ? c.CourseEndDate.Value.ToString("yyyy-MM-dd") : null,
+                    CourseStartDate = c.CourseStartDate.HasValue ? c.CourseStartDate.Value.ToString("yyyy/MM/dd") : null,
+                    CourseEndDate = c.CourseEndDate.HasValue ? c.CourseEndDate.Value.ToString("yyyy/MM/dd") : null,
                     CourseState = c.CourseState.ToString(),
                     c.IsQuest,
                     c.IsComment,
