@@ -287,7 +287,7 @@ namespace NuCares.Controllers
                     join cm in db.Comments on c.Id equals cm.CourseId
                     join u in db.Users on o.UserId equals u.Id
                     where p.NutritionistId == nutritionistId
-                    select new { User = u, Comment = cm })   // select出2張表的所有欄位
+                    select new { User = u, Comment = cm, Order = o })   // select出2張表的所有欄位
                     .OrderByDescending(cm => cm.Comment.CreateDate); // 根據CreateDate升序排序
 
                 // 計算評價的總平均
@@ -320,7 +320,7 @@ namespace NuCares.Controllers
                         }).OrderBy(p => p.Rank),
                         Comment = commentsData.AsEnumerable().Select(c => new
                         {
-                            c.User.UserName,
+                            c.Order.UserName,
                             Content = c.Comment.Content == "(未留言)" ? "" : c.Comment.Content,
                             c.Comment.Rate,
                             CreateDate = c.Comment.CreateDate.ToString("yyyy/MM/dd")
