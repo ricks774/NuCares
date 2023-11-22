@@ -294,6 +294,7 @@ namespace NuCares.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("user/orders")]
+        [JwtAuthFilter]
         public IHttpActionResult GetOrderList(int page = 1)
         {
             #region "JwtToken驗證"
