@@ -43,9 +43,9 @@ namespace NuCares.Controllers
             }
 
             int pageSize = 10; // 每頁顯示的記錄數
-
             var totalRecords = db.Courses.Where(c => c.Order.UserId == id).Count(); // 計算符合條件的記錄總數
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize); // 計算總頁數
+            var today = DateTime.Today;
 
             var coursesData = db.Courses
                 .Where(c => c.Order.UserId == id)
@@ -62,7 +62,7 @@ namespace NuCares.Controllers
                     c.Order.Plan.CourseName,
                     CourseStartDate = c.CourseStartDate.HasValue ? c.CourseStartDate.Value.ToString("yyyy/MM/dd") : null,
                     CourseEndDate = c.CourseEndDate.HasValue ? c.CourseEndDate.Value.ToString("yyyy/MM/dd") : null,
-                    CourseState = c.CourseState.ToString(),
+                    CourseState = c.CourseEndDate < today ? "結束" : c.CourseState.ToString(),
                     c.IsQuest,
                     c.IsComment,
                 });
