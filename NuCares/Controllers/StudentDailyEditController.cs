@@ -11,7 +11,7 @@ using NuCares.helper;
 
 namespace NuCares.Controllers
 {
-    [OpenApiTag("Stdent", Description = "學員")]
+    [OpenApiTag("Student", Description = "學員")]
     public class StudentDailyEditController : ApiController
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();
@@ -193,7 +193,7 @@ namespace NuCares.Controllers
             dailyData.Fruit = (int)(viewDaily.Fruit.HasValue ? viewDaily.Fruit : dailyData.Fruit);
             dailyData.Water = (int)(viewDaily.Water.HasValue ? viewDaily.Water : dailyData.Water);
 
-            if (dailyData.Oil >= 100 || dailyData.Fruit >= 100 || dailyData.Water >= 100)
+            if (dailyData.Oil >= 100 || dailyData.Fruit >= 100 || dailyData.Water >= 5000)
             {
                 return Content(HttpStatusCode.BadRequest, new
                 {
