@@ -826,7 +826,7 @@ namespace NuCares.Controllers
         /// 收藏營養師列表
         /// </summary>
         /// <returns></returns>
-        [OpenApiTag("Stdent", Description = "學員")]
+        [OpenApiTag("Student", Description = "學員")]
         [HttpGet]
         [Route("user/follow")]
         [JwtAuthFilter]
