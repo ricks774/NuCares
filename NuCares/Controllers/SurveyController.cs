@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NSwag.Annotations;
 using NuCares.Models;
 using NuCares.Security;
@@ -165,16 +166,22 @@ namespace NuCares.Controllers
                 {
                     StatusCode = 403,
                     Status = "Error",
-                    Message = new { SurveyData = "您無權限" }
+                    Message = new { SurveyData = "您無權限" },
+                    NU = surveyData.Course.Order.Plan.Nutritionist.UserId
                 });
             }
-            var questionsAndAnswers = new Dictionary<string, string[]>();
-            for (int i = 1; i <= 25; i++)
-            {
-                string question = $"Question{i}";
-                string answer = (string)surveyData.GetType().GetProperty(question).GetValue(surveyData);
-                questionsAndAnswers[question] = new string[] { answer };
-            }
+
+            //var questionsAndAnswers = new Dictionary<string, string[]>();
+            //for (int i = 1; i <= 25; i++)
+            //{
+            //    string question = $"Question{i}";
+            //    string answer = (string)surveyData.GetType().GetProperty(question).GetValue(surveyData);
+            //    questionsAndAnswers[question] = new string[] { answer };
+            //}
+
+            // 將 Question1 字串轉換為 JObject
+            JObject questionsAndAnswers = JsonConvert.DeserializeObject<JObject>(surveyData.Question1);
+
             var birthDate = surveyData.Course.Order.User.Birthday;
             DateTime today = DateTime.Today;
             int age = today.Year - birthDate.Year;
