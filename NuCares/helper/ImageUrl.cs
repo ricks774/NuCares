@@ -9,7 +9,7 @@ namespace NuCares.helper
     {
         public static string GetImageUrl(string imagePath)
         {
-            return imagePath != null ? $@"https://localhost:44354/upload/images/{imagePath}" : null;
+            return imagePath != null ? $@"https://nucares.top/upload/images/{imagePath}" : null;
         }
     }
 }

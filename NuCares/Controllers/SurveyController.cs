@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Newtonsoft.Json;
 using NSwag.Annotations;
 using NuCares.Models;
 using NuCares.Security;
@@ -11,12 +12,12 @@ using NuCares.Security;
 namespace NuCares.Controllers
 {
     [OpenApiTag("Survey", Description = "問卷")]
-
     public class SurveyController : ApiController
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();
 
         #region "新增問卷API"
+
         /// <summary>
         /// 新增問卷
         /// </summary>
@@ -80,16 +81,24 @@ namespace NuCares.Controllers
                 {
                     CourseId = courseId
                 };
-                // 用迴圈將所有題目寫入
-                for (int i = 1; i <= 25; i++)
-                {
-                    string question = $"Question{i}";
-                    string getVaule = (string)viewAddSurvey.GetType().GetProperty(question).GetValue(viewAddSurvey);
-                    newSurvey.GetType().GetProperty(question).SetValue(newSurvey, getVaule);
-                }
+
+                //// 用迴圈將所有題目寫入
+                //for (int i = 1; i <= 25; i++)
+                //{
+                //    string question = $"Question{i}";
+                //    string getVaule = (string)viewAddSurvey.GetType().GetProperty(question).GetValue(viewAddSurvey);
+                //    newSurvey.GetType().GetProperty(question).SetValue(newSurvey, getVaule);
+                //}
+
+                // 使用 Newtonsoft.Json 將 Question 物件序列化為 JSON 字串
+                newSurvey.Question1 = JsonConvert.SerializeObject(viewAddSurvey.Question);
+
                 newSurvey.CreateTime = DateTime.Today;
 
                 db.Surveys.Add(newSurvey);
+
+                var coursesData = db.Courses.Find(courseId);
+                coursesData.IsQuest = true;
                 db.SaveChanges();
 
                 var result = new
