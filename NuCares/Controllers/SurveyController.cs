@@ -93,13 +93,26 @@ namespace NuCares.Controllers
 
                 // 使用 Newtonsoft.Json 將 Question 物件序列化為 JSON 字串
                 newSurvey.Question1 = JsonConvert.SerializeObject(viewAddSurvey.Question);
-
                 newSurvey.CreateTime = DateTime.Today;
-
                 db.Surveys.Add(newSurvey);
 
                 var coursesData = db.Courses.Find(courseId);
                 coursesData.IsQuest = true;
+
+                #region "通知設定"
+
+                ViewNotification viewNotice = new ViewNotification();
+
+                var addNotice = new Notification
+                {
+                    UserId = id,
+                    NoticeMessage = "已完成生活問卷",
+                    NoticeType = courseId.ToString(),
+                };
+                db.Notification.Add(addNotice);
+
+                #endregion "通知設定"
+
                 db.SaveChanges();
 
                 var result = new

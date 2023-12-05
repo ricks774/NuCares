@@ -261,6 +261,7 @@
     <Compile Include="Models\ViewDaily.cs" />
     <Compile Include="Models\ViewCourse.cs" />
     <Compile Include="Models\ViewDailyCourseMenu.cs" />
+    <Compile Include="Models\ViewNotification.cs" />
     <Compile Include="Models\ViewNutritionist.cs" />
     <Compile Include="Models\Plan.cs" />
     <Compile Include="Models\EnumDisplayNameAttribute.cs" />
