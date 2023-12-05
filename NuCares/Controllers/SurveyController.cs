@@ -182,6 +182,37 @@ namespace NuCares.Controllers
             // 將 Question1 字串轉換為 JObject
             JObject questionsAndAnswers = JsonConvert.DeserializeObject<JObject>(surveyData.Question1);
 
+            #region "將問卷分組"
+
+            // 將 個人基本/生理資料 的內容取出，並組成一個新的 JObject
+            var group1 = new JObject();
+
+            for (int i = 1; i <= 4; i++)
+            {
+                string questionKey = "Question" + i;
+                group1.Add(questionKey, questionsAndAnswers[questionKey]);
+            }
+
+            // 將 個人/家族病史 的內容取出，並組成另一個新的 JObject
+            var group2 = new JObject();
+
+            for (int i = 5; i <= 9; i++)
+            {
+                string questionKey = "Question" + i;
+                group2.Add(questionKey, questionsAndAnswers[questionKey]);
+            }
+
+            // 將 飲食習慣 的內容取出，並組成另一個新的 JObject
+            var group3 = new JObject();
+
+            for (int i = 10; i <= 19; i++)
+            {
+                string questionKey = "Question" + i;
+                group3.Add(questionKey, questionsAndAnswers[questionKey]);
+            }
+
+            #endregion "將問卷分組"
+
             var birthDate = surveyData.Course.Order.User.Birthday;
             DateTime today = DateTime.Today;
             int age = today.Year - birthDate.Year;
@@ -201,7 +232,13 @@ namespace NuCares.Controllers
                     UserName = surveyData.Course.Order.UserName,
                     Age = age,
                     Gender = surveyData.Course.Order.User.Gender.ToString(),
-                    Answers = questionsAndAnswers
+                    //Answers = questionsAndAnswers,
+                    Answers = new[]
+                    {
+                        group1,
+                        group2,
+                        group3
+                    }
                 }
             };
             return Ok(result);
