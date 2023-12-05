@@ -184,32 +184,37 @@ namespace NuCares.Controllers
 
             #region "將問卷分組"
 
-            // 將 個人基本/生理資料 的內容取出，並組成一個新的 JObject
-            var group1 = new JObject();
-
-            for (int i = 1; i <= 4; i++)
+            // 取得問卷清單
+            JObject ProcessGroup(int start, int end)
             {
-                string questionKey = "Question" + i;
-                group1.Add(questionKey, questionsAndAnswers[questionKey]);
+                var group = new JObject();
+
+                for (int i = start; i <= end; i++)
+                {
+                    string questionKey = "Question" + i;
+                    if (questionsAndAnswers[questionKey] == null)
+                    {
+                        // 如果為 null，設為空陣列的 JToken
+                        group.Add(questionKey, JToken.FromObject(new[] { "" }));
+                    }
+                    else if (questionsAndAnswers[questionKey].Type == JTokenType.Null)
+                    {
+                        // 如果為 JTokenType.Null，也設為空陣列的 JToken
+                        group.Add(questionKey, JToken.FromObject(new[] { "" }));
+                    }
+                    else
+                    {
+                        group.Add(questionKey, questionsAndAnswers[questionKey]);
+                    }
+                }
+
+                return group;
             }
 
-            // 將 個人/家族病史 的內容取出，並組成另一個新的 JObject
-            var group2 = new JObject();
-
-            for (int i = 5; i <= 9; i++)
-            {
-                string questionKey = "Question" + i;
-                group2.Add(questionKey, questionsAndAnswers[questionKey]);
-            }
-
-            // 將 飲食習慣 的內容取出，並組成另一個新的 JObject
-            var group3 = new JObject();
-
-            for (int i = 10; i <= 19; i++)
-            {
-                string questionKey = "Question" + i;
-                group3.Add(questionKey, questionsAndAnswers[questionKey]);
-            }
+            // 取得各種組別的資料
+            var personalDataGroup = ProcessGroup(1, 4);
+            var medicalHistoryGroup = ProcessGroup(5, 9);
+            var dietaryHabitsGroup = ProcessGroup(10, 19);
 
             #endregion "將問卷分組"
 
@@ -235,9 +240,9 @@ namespace NuCares.Controllers
                     //Answers = questionsAndAnswers,
                     Answers = new[]
                     {
-                        group1,
-                        group2,
-                        group3
+                        personalDataGroup,
+                        medicalHistoryGroup,
+                        dietaryHabitsGroup
                     }
                 }
             };
