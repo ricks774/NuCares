@@ -15,9 +15,6 @@ namespace NuCares.Models
         [Display(Name = "編號")]
         public int Id { get; set; }
 
-        [Display(Name = "會員")]
-        public int UserId { get; set; }
-
         [JsonIgnore]
         [ForeignKey("UserId")]
         [Display(Name = "會員")]
