@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using NSwag.Annotations;
 using NuCares.Models;
 using NuCares.Security;
+using NuCares.helper;
 
 namespace NuCares.Controllers
 {
@@ -99,19 +100,21 @@ namespace NuCares.Controllers
                 var coursesData = db.Courses.Find(courseId);
                 coursesData.IsQuest = true;
 
-                #region "通知設定"
+                //#region "通知設定"
 
-                ViewNotification viewNotice = new ViewNotification();
+                //ViewNotification viewNotice = new ViewNotification();
 
-                var addNotice = new Notification
-                {
-                    UserId = id,
-                    NoticeMessage = "已完成生活問卷",
-                    NoticeType = courseId.ToString(),
-                };
-                db.Notification.Add(addNotice);
+                //var addNotice = new Notification
+                //{
+                //    UserId = id,
+                //    NoticeMessage = "已完成生活問卷",
+                //    NoticeType = courseId.ToString(),
+                //};
+                //db.Notification.Add(addNotice);
 
-                #endregion "通知設定"
+                //#endregion "通知設定"
+
+                Notice.AddNotice(db, id, "已完成生活問卷", courseId.ToString());
 
                 db.SaveChanges();
 
