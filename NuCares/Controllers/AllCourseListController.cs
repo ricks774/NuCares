@@ -49,7 +49,8 @@ namespace NuCares.Controllers
 
             var coursesData = db.Courses
                 .Where(c => c.Order.UserId == id)
-                .OrderByDescending(c => c.CreateDate) // 根據需要的屬性進行排序
+                .OrderBy(c => c.CourseState) // 根據需要的屬性進行排序
+                .ThenByDescending(c => c.CreateDate)
                 .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
                 .Take(pageSize) // 每頁顯示的記錄數
                 .AsEnumerable() // 使查詢先執行,再在記憶體中處理
