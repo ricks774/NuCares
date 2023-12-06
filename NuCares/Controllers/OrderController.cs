@@ -322,7 +322,7 @@ namespace NuCares.Controllers
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize); // 計算總頁數
 
             var orderData = db.Orders
-                .Where(o => o.UserId == id)
+                .Where(o => o.UserId == id && o.IsPayment == true)
                 .OrderBy(o => o.Id) // 根據需要的屬性進行排序
                 .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
                 .Take(pageSize) // 每頁顯示的記錄數
