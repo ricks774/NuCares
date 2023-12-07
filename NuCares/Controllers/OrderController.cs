@@ -283,7 +283,9 @@ namespace NuCares.Controllers
             // 用取得的"訂單ID"修改資料庫此筆訂單的付款狀態為 true
             orderData.IsPayment = true;
             db.SaveChanges();
-            Notice.AddNotice(db, orderData.User.Id, "已購課", orderData.PlanId.ToString());
+
+            // 新增通知訊息到資料庫
+            Notice.AddNotice(db, orderData.User.Id, "已購課", orderData.Id.ToString());
             return response;
         }
 
