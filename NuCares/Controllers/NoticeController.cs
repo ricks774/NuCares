@@ -41,7 +41,7 @@ namespace NuCares.Controllers
 
             #endregion "JwtToken驗證"
 
-            var noticeData = db.Notification.FirstOrDefault(n => n.UserId == id);
+            var noticeData = db.Notification.AsEnumerable().FirstOrDefault(n => n.UserId == id);
 
             if (noticeData != null)
             {
@@ -76,20 +76,19 @@ namespace NuCares.Controllers
                         Message = noticeData.NoticeMessage,
                         Title = couresData.Order.Plan.Nutritionist.Title,
                         UserName = userName,
-                        //Date = noticeData.CreateTime.ToString("yyyy/MM/dd HH:mm"),
+                        Date = noticeData.CreateTime.ToString("yyyy/MM/dd HH:mm"),
                         IsRead = noticeData.IsRead
                     }
                 };
+
+                return Ok(result);
             }
 
             return Content(HttpStatusCode.BadRequest, new
             {
                 StatusCode = 400,
                 Status = "Error",
-                Message = "沒有通知",
-                id,
-                noticeData.UserId,
-                noticeData
+                Message = "沒有新通知"
             });
         }
 

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using NSwag.Annotations;
 using NuCares.Models;
+using NuCares.helper;
 using NuCares.Security;
 using System;
 using System.Collections.Generic;
@@ -234,6 +235,8 @@ namespace NuCares.Controllers
                         Version = version
                     }
                 };
+
+                //Notice.AddNotice(db, userId, "已購課", planId.ToString());
                 return Ok(result);
             }
             catch (Exception ex)
@@ -280,6 +283,7 @@ namespace NuCares.Controllers
             // 用取得的"訂單ID"修改資料庫此筆訂單的付款狀態為 true
             orderData.IsPayment = true;
             db.SaveChanges();
+            Notice.AddNotice(db, orderData.User.Id, "已購課", orderData.PlanId.ToString());
             return response;
         }
 
