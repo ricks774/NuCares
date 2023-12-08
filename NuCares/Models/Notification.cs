@@ -23,6 +23,9 @@ namespace NuCares.Models
         [Display(Name = "會員")]
         public virtual User User { get; set; }
 
+        [Display(Name = "營養師")]
+        public int NutritionistId { get; set; }
+
         [Display(Name = "通知訊息")]
         public string NoticeMessage { get; set; }
 
