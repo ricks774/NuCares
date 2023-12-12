@@ -14,9 +14,9 @@ namespace NuCares.Controllers
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();
 
-        #region "取得單一通知訊息"
+        #region "讀取單一通知"
 
-        [HttpGet]
+        [HttpPut]
         [Route("notice/{noticeId}")]
         [JwtAuthFilter]
         public IHttpActionResult GetNotice(int noticeId)
@@ -43,98 +43,183 @@ namespace NuCares.Controllers
 
             var noticeData = db.Notification.AsEnumerable().FirstOrDefault(n => n.UserId == id && n.Id == noticeId);
 
-            if (noticeData != null)
+            return Content(HttpStatusCode.BadRequest, new
             {
-                string noticeType = noticeData.NoticeMessage;
+                StatusCode = 400,
+                Status = "Error",
+                Message = "沒有新通知"
+            });
+        }
 
-                if (noticeType.Contains("已完成生活問卷"))     // 回傳問卷通知
+        #endregion "讀取單一通知"
+
+        #region "取得全部通知"
+
+        /// <summary>
+        /// 取得所有通知訊息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("notice")]
+        [JwtAuthFilter]
+        public IHttpActionResult GetAllNotice()
+        {
+            #region "JwtToken驗證"
+
+            // 取出請求內容，解密 JwtToken 取出資料
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int userId = (int)userToken["Id"];
+            string userName = userToken["UserName"].ToString();
+
+            bool checkUser = db.Users.Any(n => n.Id == userId);
+            if (!checkUser)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
                 {
-                    #region "回傳問卷格式"
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "請重新登入"
+                });
+            }
 
-                    // 取得課程資料
-                    int courseId = int.Parse(noticeData.NoticeType);    // 取得課程Id
-                    var couresData = db.Courses.FirstOrDefault(c => c.Id == courseId);
+            #endregion "JwtToken驗證"
 
-                    #region "判斷課程是否存在"
+            var noticeData = db.Notification.Where(n => n.UserId == userId).ToList();
 
-                    if (couresData == null)
+            // 創建一個 List 來存儲通知
+            var noticeList = new List<object>();
+
+            if (noticeData.Any())
+            {
+                foreach (var notice in noticeData)
+                {
+                    if (notice.NoticeMessage.Contains("已完成生活問卷"))
                     {
-                        return Content(HttpStatusCode.BadRequest, new
-                        {
-                            StatusCode = 400,
-                            Status = "Error",
-                            Message = "找不到這筆課程"
-                        });
-                    }
+                        // 取得課程資料
+                        int courseId = int.Parse(notice.NoticeType);    // 取得課程Id
+                        var couresData = db.Courses.FirstOrDefault(c => c.Id == courseId);
 
-                    #endregion "判斷課程是否存在"
+                        #region "判斷問卷&課程是否存在"
 
-                    var result = new
-                    {
-                        StatusCode = 200,
-                        Status = "Success",
-                        Message = "新增問卷成功",
-                        Data = new
+                        if (couresData == null)
                         {
-                            NoticeId = noticeData.Id,
+                            return Content(HttpStatusCode.BadRequest, new
+                            {
+                                StatusCode = 400,
+                                Status = "Error",
+                                Message = "找不到這筆課程"
+                            });
+                        }
+
+                        #endregion "判斷問卷&課程是否存在"
+
+                        #region "回傳問卷格式"
+
+                        var surveysNotice = new
+                        {
+                            NoticeId = notice.Id,
                             CourseId = courseId,
                             CourseNane = couresData.Order.Plan.CourseName,
-                            Message = noticeData.NoticeMessage,
+                            Message = notice.NoticeMessage,
                             Title = couresData.Order.Plan.Nutritionist.Title,
                             UserName = userName,
-                            Date = noticeData.CreateTime.ToString("yyyy/MM/dd HH:mm"),
-                            IsRead = noticeData.IsRead
-                        }
-                    };
-                    return Ok(result);
+                            Date = notice.CreateTime.ToString("yyyy/MM/dd HH:mm"),
+                            IsRead = notice.IsRead
+                        };
 
-                    #endregion "回傳問卷格式"
-                }
-                else if (noticeType.Contains("已購課"))    // 回傳購課通知
-                {
-                    #region "回傳購課格式"
+                        #endregion "回傳問卷格式"
 
-                    // 取得訂單資料
-                    int orderId = int.Parse(noticeData.NoticeType);    // 取得訂單Id
-                    var orderData = db.Orders.FirstOrDefault(o => o.Id == orderId);
-
-                    #region "判斷訂單是否存在"
-
-                    if (orderData == null)
-                    {
-                        return Content(HttpStatusCode.BadRequest, new
-                        {
-                            StatusCode = 400,
-                            Status = "Error",
-                            Message = "找不到這筆訂單"
-                        });
+                        // 將通知加入 List
+                        noticeList.Add(surveysNotice);
                     }
-
-                    #endregion "判斷訂單是否存在"
-
-                    var result = new
+                    else if (notice.NoticeMessage.Contains("已購課"))
                     {
-                        StatusCode = 200,
-                        Status = "Success",
-                        Message = "新增問卷成功",
-                        Data = new
+                        // 取得訂單資料
+                        int orderId = int.Parse(notice.NoticeType);    // 取得訂單Id
+                        var orderData = db.Orders.FirstOrDefault(o => o.Id == orderId);
+
+                        #region "判斷訂單是否存在"
+
+                        if (orderData == null)
                         {
-                            NoticeId = noticeData.Id,
+                            return Content(HttpStatusCode.BadRequest, new
+                            {
+                                StatusCode = 400,
+                                Status = "Error",
+                                Message = "找不到這筆訂單"
+                            });
+                        }
+
+                        #endregion "判斷訂單是否存在"
+
+                        #region "回傳購課格式"
+
+                        var orderNotice = new
+                        {
+                            NoticeId = notice.Id,
                             CourseNane = orderData.Plan.CourseName,
-                            Message = noticeData.NoticeMessage,
+                            Message = notice.NoticeMessage,
                             Title = orderData.Plan.Nutritionist.Title,
                             UserName = userName,
-                            Date = noticeData.CreateTime.ToString("yyyy/MM/dd HH:mm"),
-                            IsRead = noticeData.IsRead
-                        }
-                    };
-                    return Ok(result);
+                            Date = notice.CreateTime.ToString("yyyy/MM/dd HH:mm"),
+                            IsRead = notice.IsRead
+                        };
 
-                    #endregion "回傳購課格式"
+                        #endregion "回傳購課格式"
+
+                        // 將通知加入 List
+                        noticeList.Add(orderNotice);
+                    }
+                    else if (notice.NoticeMessage.Contains("已評價"))
+                    {
+                        // 取得課程資料
+                        int courseId = int.Parse(notice.NoticeType);    // 取得課程Id
+                        var couresData = db.Courses.FirstOrDefault(c => c.Id == courseId);
+
+                        #region "判斷課程是否存在"
+
+                        if (couresData == null)
+                        {
+                            return Content(HttpStatusCode.BadRequest, new
+                            {
+                                StatusCode = 400,
+                                Status = "Error",
+                                Message = "找不到這筆課程"
+                            });
+                        }
+
+                        #endregion "判斷課程是否存在"
+
+                        #region "回傳評價格式"
+
+                        var commentsNotice = new
+                        {
+                            NoticeId = notice.Id,
+                            NutritionistId = couresData.Order.Plan.NutritionistId,
+                            CourseNane = couresData.Order.Plan.CourseName,
+                            Message = notice.NoticeMessage,
+                            Title = couresData.Order.Plan.Nutritionist.Title,
+                            UserName = userName,
+                            Date = notice.CreateTime.ToString("yyyy/MM/dd HH:mm"),
+                            IsRead = notice.IsRead
+                        };
+
+                        #endregion "回傳評價格式"
+
+                        // 將通知加入 List
+                        noticeList.Add(commentsNotice);
+                    }
                 }
-                else if (noticeType.Contains("已評價"))
+
+                var result = new
                 {
-                }
+                    StatusCode = 200,
+                    Status = "Success",
+                    Message = "新增問卷成功",
+                    ChannelId = userId,
+                    Data = noticeList
+                };
+                return Ok(result);
             }
 
             return Content(HttpStatusCode.BadRequest, new
@@ -145,6 +230,6 @@ namespace NuCares.Controllers
             });
         }
 
-        #endregion "取得單一通知訊息"
+        #endregion "取得全部通知"
     }
 }

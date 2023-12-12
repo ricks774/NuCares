@@ -84,6 +84,8 @@ namespace NuCares.Controllers
                     CourseId = courseId
                 };
 
+                #region "舊方法已無使用"
+
                 //// 用迴圈將所有題目寫入
                 //for (int i = 1; i <= 25; i++)
                 //{
@@ -91,6 +93,8 @@ namespace NuCares.Controllers
                 //    string getVaule = (string)viewAddSurvey.GetType().GetProperty(question).GetValue(viewAddSurvey);
                 //    newSurvey.GetType().GetProperty(question).SetValue(newSurvey, getVaule);
                 //}
+
+                #endregion "舊方法已無使用"
 
                 // 使用 Newtonsoft.Json 將 Question 物件序列化為 JSON 字串
                 newSurvey.Question1 = JsonConvert.SerializeObject(viewAddSurvey.Question);
@@ -100,31 +104,27 @@ namespace NuCares.Controllers
                 var coursesData = db.Courses.Find(courseId);
                 coursesData.IsQuest = true;
 
-                //#region "通知設定"
+                //  通知訊息
+                int channelId = coursesData.Order.Plan.NutritionistId;  // 傳送通知給哪個營樣師
+                Notice.AddNotice(db, id, "已完成生活問卷", courseId.ToString());   // 紀錄通知訊息
 
-                //ViewNotification viewNotice = new ViewNotification();
-
-                //var addNotice = new Notification
-                //{
-                //    UserId = id,
-                //    NoticeMessage = "已完成生活問卷",
-                //    NoticeType = courseId.ToString(),
-                //};
-                //db.Notification.Add(addNotice);
-
-                //#endregion "通知設定"
-
-                Notice.AddNotice(db, id, "已完成生活問卷", courseId.ToString());
-
-                db.SaveChanges();
-
-                var result = new
+                try
                 {
-                    StatusCode = 200,
-                    Status = "Success",
-                    Message = "新增問卷成功",
-                };
-                return Ok(result);
+                    db.SaveChanges();
+
+                    var result = new
+                    {
+                        StatusCode = 200,
+                        Status = "Success",
+                        Message = "新增問卷成功",
+                        ChannelId = channelId
+                    };
+                    return Ok(result);
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
             }
             else
             {
