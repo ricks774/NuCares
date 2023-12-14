@@ -7,9 +7,11 @@ using System.Net.Http;
 using System.Web.Http;
 using NuCares.Security;
 using NuCares.helper;
+using NSwag.Annotations;
 
 namespace NuCares.Controllers
 {
+    [OpenApiTag("Notifications", Description = "通知")]
     public class NoticeController : ApiController
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();
@@ -25,10 +27,10 @@ namespace NuCares.Controllers
 
             // 取出請求內容，解密 JwtToken 取出資料
             var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
-            int id = (int)userToken["Id"];
+            int userId = (int)userToken["Id"];
             string userName = userToken["UserName"].ToString();
 
-            bool checkUser = db.Users.Any(n => n.Id == id);
+            bool checkUser = db.Users.Any(n => n.Id == userId);
             if (!checkUser)
             {
                 return Content(HttpStatusCode.Unauthorized, new
@@ -41,7 +43,7 @@ namespace NuCares.Controllers
 
             #endregion "JwtToken驗證"
 
-            var noticeData = db.Notification.AsEnumerable().FirstOrDefault(n => n.UserId == id && n.Id == noticeId);
+            var noticeData = db.Notification.AsEnumerable().FirstOrDefault(n => n.UserId == userId && n.Id == noticeId);
 
             return Content(HttpStatusCode.BadRequest, new
             {
@@ -119,7 +121,7 @@ namespace NuCares.Controllers
                         {
                             NoticeId = notice.Id,
                             CourseId = courseId,
-                            CourseNane = couresData.Order.Plan.CourseName,
+                            CourseName = couresData.Order.Plan.CourseName,
                             Message = notice.NoticeMessage,
                             Title = couresData.Order.Plan.Nutritionist.Title,
                             UserName = userName,
@@ -157,7 +159,7 @@ namespace NuCares.Controllers
                         var orderNotice = new
                         {
                             NoticeId = notice.Id,
-                            CourseNane = orderData.Plan.CourseName,
+                            CourseName = orderData.Plan.CourseName,
                             Message = notice.NoticeMessage,
                             Title = orderData.Plan.Nutritionist.Title,
                             UserName = userName,
@@ -196,7 +198,7 @@ namespace NuCares.Controllers
                         {
                             NoticeId = notice.Id,
                             NutritionistId = couresData.Order.Plan.NutritionistId,
-                            CourseNane = couresData.Order.Plan.CourseName,
+                            CourseName = couresData.Order.Plan.CourseName,
                             Message = notice.NoticeMessage,
                             Title = couresData.Order.Plan.Nutritionist.Title,
                             UserName = userName,
