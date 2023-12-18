@@ -105,7 +105,7 @@ namespace NuCares.Controllers
                 coursesData.IsQuest = true;
 
                 //  通知訊息
-                int channelId = coursesData.Order.Plan.NutritionistId;  // 傳送通知給哪個營樣師
+                int channelId = coursesData.Order.Plan.Nutritionist.UserId;  // 傳送通知給哪個營樣師
                 Notice.AddNotice(db, id, "已完成生活問卷", courseId.ToString());   // 紀錄通知訊息
 
                 try

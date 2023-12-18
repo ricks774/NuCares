@@ -213,6 +213,9 @@ namespace NuCares.Controllers
                     }
                 }
 
+                // 將通知列表按照日期降序排序
+                noticeList = noticeList.OrderByDescending(n => ((dynamic)n).Date).ToList();
+
                 var result = new
                 {
                     StatusCode = 200,
