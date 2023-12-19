@@ -11,7 +11,7 @@ using NuCares.helper;
 
 namespace NuCares.Controllers
 {
-    [OpenApiTag("Stdent", Description = "學員")]
+    [OpenApiTag("Student", Description = "學員")]
     public class BodyInfoController : ApiController
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();

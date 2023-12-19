@@ -44,6 +44,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\NuCares.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -232,6 +233,7 @@
     <Compile Include="Controllers\CourseDashboardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\NoticeController.cs" />
     <Compile Include="Controllers\NuCourseController.cs" />
     <Compile Include="Controllers\NuCourseListController.cs" />
     <Compile Include="Controllers\NuHomeController.cs" />
@@ -247,6 +249,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="helper\ImageUrl.cs" />
+    <Compile Include="helper\Notice.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BodyInfo.cs" />
     <Compile Include="Models\DailyCourseMenu.cs" />
@@ -254,11 +257,13 @@
     <Compile Include="Models\DailyMealTime.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\FavoriteList.cs" />
+    <Compile Include="Models\Notification.cs" />
     <Compile Include="Models\ViewBodyInfo.cs" />
     <Compile Include="Models\ViewComment.cs" />
     <Compile Include="Models\ViewDaily.cs" />
     <Compile Include="Models\ViewCourse.cs" />
     <Compile Include="Models\ViewDailyCourseMenu.cs" />
+    <Compile Include="Models\ViewNotification.cs" />
     <Compile Include="Models\ViewNutritionist.cs" />
     <Compile Include="Models\Plan.cs" />
     <Compile Include="Models\EnumDisplayNameAttribute.cs" />

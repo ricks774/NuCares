@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using NSwag.Annotations;
 using NuCares.Models;
+using NuCares.helper;
 using NuCares.Security;
 using System;
 using System.Collections.Generic;
@@ -234,6 +235,8 @@ namespace NuCares.Controllers
                         Version = version
                     }
                 };
+
+                //Notice.AddNotice(db, userId, "已購課", planId.ToString());
                 return Ok(result);
             }
             catch (Exception ex)
@@ -280,6 +283,9 @@ namespace NuCares.Controllers
             // 用取得的"訂單ID"修改資料庫此筆訂單的付款狀態為 true
             orderData.IsPayment = true;
             db.SaveChanges();
+
+            // 新增通知訊息到資料庫
+            Notice.AddNotice(db, orderData.User.Id, "已購課", orderData.Id.ToString());
             return response;
         }
 
@@ -294,6 +300,7 @@ namespace NuCares.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("user/orders")]
+        [JwtAuthFilter]
         public IHttpActionResult GetOrderList(int page = 1)
         {
             #region "JwtToken驗證"
@@ -321,7 +328,7 @@ namespace NuCares.Controllers
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize); // 計算總頁數
 
             var orderData = db.Orders
-                .Where(o => o.UserId == id)
+                .Where(o => o.UserId == id && o.IsPayment == true)
                 .OrderBy(o => o.Id) // 根據需要的屬性進行排序
                 .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
                 .Take(pageSize) // 每頁顯示的記錄數

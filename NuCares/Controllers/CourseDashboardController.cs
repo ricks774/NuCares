@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using static NuCares.Models.EnumList;
 
 namespace NuCares.Controllers
 {
@@ -703,6 +704,7 @@ namespace NuCares.Controllers
             //int orderId = db.Courses.Where(c => c.Id == courseId && c.IsComment == false && c.CourseState == EnumList.CourseState.結束).Select(c => c.OrderId).FirstOrDefault();
 
             var courseQuery = db.Courses.Where(c => c.Id == courseId);
+            var today = DateTime.Today;
 
             if (!courseQuery.Any())
             {
@@ -728,7 +730,7 @@ namespace NuCares.Controllers
                         Message = "該課程已經評價過了"
                     });
                 }
-                else if (course.CourseState != EnumList.CourseState.結束)
+                else if (course.CourseEndDate > today)
                 {
                     // 課程狀態不是結束的情況
                     return Content(HttpStatusCode.BadRequest, new
@@ -772,11 +774,16 @@ namespace NuCares.Controllers
                                 return InternalServerError(ex);
                             }
 
+                            //  通知訊息
+                            int channelId = coursedata.Order.Plan.Nutritionist.UserId;  // 傳送通知給哪個營樣師
+                            Notice.AddNotice(db, userId, "已評價", courseId.ToString());   // 紀錄通知訊息
+
                             var result = new
                             {
                                 StatusCode = 200,
                                 Status = "Success",
-                                Message = "評價成功"
+                                Message = "評價成功",
+                                ChannelId = channelId
                             };
                             return Ok(result);
                         }
@@ -825,7 +832,7 @@ namespace NuCares.Controllers
         /// 收藏營養師列表
         /// </summary>
         /// <returns></returns>
-        [OpenApiTag("Stdent", Description = "學員")]
+        [OpenApiTag("Student", Description = "學員")]
         [HttpGet]
         [Route("user/follow")]
         [JwtAuthFilter]

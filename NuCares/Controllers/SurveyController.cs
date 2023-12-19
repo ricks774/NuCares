@@ -4,19 +4,22 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NSwag.Annotations;
 using NuCares.Models;
 using NuCares.Security;
+using NuCares.helper;
 
 namespace NuCares.Controllers
 {
     [OpenApiTag("Survey", Description = "問卷")]
-
     public class SurveyController : ApiController
     {
         private readonly NuCaresDBContext db = new NuCaresDBContext();
 
         #region "新增問卷API"
+
         /// <summary>
         /// 新增問卷
         /// </summary>
@@ -80,25 +83,48 @@ namespace NuCares.Controllers
                 {
                     CourseId = courseId
                 };
-                // 用迴圈將所有題目寫入
-                for (int i = 1; i <= 25; i++)
-                {
-                    string question = $"Question{i}";
-                    string getVaule = (string)viewAddSurvey.GetType().GetProperty(question).GetValue(viewAddSurvey);
-                    newSurvey.GetType().GetProperty(question).SetValue(newSurvey, getVaule);
-                }
+
+                #region "舊方法已無使用"
+
+                //// 用迴圈將所有題目寫入
+                //for (int i = 1; i <= 25; i++)
+                //{
+                //    string question = $"Question{i}";
+                //    string getVaule = (string)viewAddSurvey.GetType().GetProperty(question).GetValue(viewAddSurvey);
+                //    newSurvey.GetType().GetProperty(question).SetValue(newSurvey, getVaule);
+                //}
+
+                #endregion "舊方法已無使用"
+
+                // 使用 Newtonsoft.Json 將 Question 物件序列化為 JSON 字串
+                newSurvey.Question1 = JsonConvert.SerializeObject(viewAddSurvey.Question);
                 newSurvey.CreateTime = DateTime.Today;
-
                 db.Surveys.Add(newSurvey);
-                db.SaveChanges();
 
-                var result = new
+                var coursesData = db.Courses.Find(courseId);
+                coursesData.IsQuest = true;
+
+                //  通知訊息
+                int channelId = coursesData.Order.Plan.Nutritionist.UserId;  // 傳送通知給哪個營樣師
+                Notice.AddNotice(db, id, "已完成生活問卷", courseId.ToString());   // 紀錄通知訊息
+
+                try
                 {
-                    StatusCode = 200,
-                    Status = "Success",
-                    Message = "新增問卷成功",
-                };
-                return Ok(result);
+                    db.SaveChanges();
+
+                    var result = new
+                    {
+                        StatusCode = 200,
+                        Status = "Success",
+                        Message = "新增問卷成功",
+                        ChannelId = channelId
+                    };
+                    return Ok(result);
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
             }
             else
             {
@@ -156,16 +182,58 @@ namespace NuCares.Controllers
                 {
                     StatusCode = 403,
                     Status = "Error",
-                    Message = new { SurveyData = "您無權限" }
+                    Message = new { SurveyData = "您無權限" },
+                    NU = surveyData.Course.Order.Plan.Nutritionist.UserId
                 });
             }
-            var questionsAndAnswers = new Dictionary<string, string[]>();
-            for (int i = 1; i <= 25; i++)
+
+            //var questionsAndAnswers = new Dictionary<string, string[]>();
+            //for (int i = 1; i <= 25; i++)
+            //{
+            //    string question = $"Question{i}";
+            //    string answer = (string)surveyData.GetType().GetProperty(question).GetValue(surveyData);
+            //    questionsAndAnswers[question] = new string[] { answer };
+            //}
+
+            // 將 Question1 字串轉換為 JObject
+            JObject questionsAndAnswers = JsonConvert.DeserializeObject<JObject>(surveyData.Question1);
+
+            #region "將問卷分組"
+
+            // 取得問卷清單
+            JObject ProcessGroup(int start, int end)
             {
-                string question = $"Question{i}";
-                string answer = (string)surveyData.GetType().GetProperty(question).GetValue(surveyData);
-                questionsAndAnswers[question] = new string[] { answer };
+                var group = new JObject();
+
+                for (int i = start; i <= end; i++)
+                {
+                    string questionKey = "Question" + i;
+                    if (questionsAndAnswers[questionKey] == null)
+                    {
+                        // 如果為 null，設為空陣列的 JToken
+                        group.Add(questionKey, JToken.FromObject(new[] { "" }));
+                    }
+                    else if (questionsAndAnswers[questionKey].Type == JTokenType.Null)
+                    {
+                        // 如果為 JTokenType.Null，也設為空陣列的 JToken
+                        group.Add(questionKey, JToken.FromObject(new[] { "" }));
+                    }
+                    else
+                    {
+                        group.Add(questionKey, questionsAndAnswers[questionKey]);
+                    }
+                }
+
+                return group;
             }
+
+            // 取得各種組別的資料
+            var personalDataGroup = ProcessGroup(1, 4);
+            var medicalHistoryGroup = ProcessGroup(5, 9);
+            var dietaryHabitsGroup = ProcessGroup(10, 19);
+
+            #endregion "將問卷分組"
+
             var birthDate = surveyData.Course.Order.User.Birthday;
             DateTime today = DateTime.Today;
             int age = today.Year - birthDate.Year;
@@ -185,7 +253,13 @@ namespace NuCares.Controllers
                     UserName = surveyData.Course.Order.UserName,
                     Age = age,
                     Gender = surveyData.Course.Order.User.Gender.ToString(),
-                    Answers = questionsAndAnswers
+                    //Answers = questionsAndAnswers,
+                    Answers = new[]
+                    {
+                        personalDataGroup,
+                        medicalHistoryGroup,
+                        dietaryHabitsGroup
+                    }
                 }
             };
             return Ok(result);
