@@ -10,6 +10,8 @@ using NSwag.Annotations;
 using NuCares.Models;
 using NuCares.Security;
 using NuCares.helper;
+using Microsoft.AspNet.SignalR;
+using Microsoft.AspNet.SignalR.Messaging;
 
 namespace NuCares.Controllers
 {
@@ -119,6 +121,10 @@ namespace NuCares.Controllers
                         Message = "新增問卷成功",
                         ChannelId = channelId
                     };
+
+                    var hub = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+                    hub.Clients.All.notify("取得" + channelId + "了!");
+
                     return Ok(result);
                 }
                 catch (Exception ex)

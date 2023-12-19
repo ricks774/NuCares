@@ -1,4 +1,5 @@
-﻿using Microsoft.Owin;
+﻿using Microsoft.AspNet.SignalR;
+using Microsoft.Owin;
 using NSwag;
 using NSwag.AspNet.Owin;
 using NSwag.Generation.Processors.Security;
@@ -46,6 +47,11 @@ namespace NuCares
             app.UseWebApi(config);
             config.MapHttpAttributeRoutes();
             config.EnsureInitialized();
+
+            // 配置 SignalR Hub
+            //app.MapSignalR("/noticeHub", new HubConfiguration());
+
+            app.MapSignalR();
         }
     }
 }
