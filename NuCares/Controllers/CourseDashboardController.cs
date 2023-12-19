@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using static NuCares.Models.EnumList;
 
 namespace NuCares.Controllers
 {
@@ -773,11 +774,16 @@ namespace NuCares.Controllers
                                 return InternalServerError(ex);
                             }
 
+                            //  通知訊息
+                            int channelId = coursedata.Order.Plan.Nutritionist.UserId;  // 傳送通知給哪個營樣師
+                            Notice.AddNotice(db, userId, "已評價", courseId.ToString());   // 紀錄通知訊息
+
                             var result = new
                             {
                                 StatusCode = 200,
                                 Status = "Success",
-                                Message = "評價成功"
+                                Message = "評價成功",
+                                ChannelId = channelId
                             };
                             return Ok(result);
                         }
