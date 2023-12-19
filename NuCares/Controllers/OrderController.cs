@@ -236,7 +236,6 @@ namespace NuCares.Controllers
                     }
                 };
 
-                //Notice.AddNotice(db, userId, "已購課", planId.ToString());
                 return Ok(result);
             }
             catch (Exception ex)
