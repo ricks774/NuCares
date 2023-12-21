@@ -28,93 +28,40 @@
     <script src="signalr/hubs"></script>
     <!--Add script to update the page and send messages.-->
     <script type="text/javascript">
-        //$(function () {
-        //    // Declare a proxy to reference the hub.
-        //    var chat = $.connection.notificationHub;
+        $(function () {
+            // Declare a proxy to reference the hub.
+            var chat = $.connection.notificationHub;
 
-        //    // Create a function that the hub can call to broadcast messages.
-        //    chat.client.broadcastMessage = function (name, message) {
-        //        // Html encode display name and message.
-        //        var encodedName = $('<div />').text(name).html();
-        //        var encodedMsg = $('<div />').text(message).html();
-        //        // Add the message to the page.
-        //        $('#discussion').append('<li><strong>' + encodedName
-        //            + '</strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
-        //    };
-
-        //    // Add a function to handle showMessage method.
-        //    chat.client.showMessage = function (message) {
-        //        // Do something with the message, for example, display it in an alert.
-        //        console.log('showMessage called with message:', message);
-        //        alert(message);
-        //    };
-
-        //    // Get the user name and store it to prepend to messages.
-        //    $('#displayname').val(prompt('Enter your name:', ''));
-        //    // Set initial focus to message input box.
-
-        //    // Start the connection.
-        //    $.connection.hub.start().done(function () {
-        //        $('#sendmessage').click(function () {
-        //            // Call the Send method on the hub.
-        //            chat.server.send($('#displayname').val(), $('#message').val());
-        //            // Clear text box and reset focus for the next comment.
-        //            $('#message').val('').focus();
-        //        });
-        //    });
-        //});
-        // 建立 WebSocket 連接
-
-        const socket = new WebSocket('wss://localhost:44354/notificationHub');
-
-        // 監聽 WebSocket 連接開啟事件
-        socket.addEventListener('open', (event) => {
-            console.log('WebSocket 連接已開啟');
-
-            // Get the user name and store it to prepend to messages.
-            const displayName = prompt('Enter your name:', '');
-            $('#displayname').val(displayName);
-
-            // Set initial focus to message input box.
-            $('#message').focus();
-
-            // 監聽發送按鈕的點擊事件
-            $('#sendmessage').click(() => {
-                // 獲取使用者輸入的訊息
-                const message = $('#message').val();
-
-                // 呼叫 WebSocket 發送訊息
-                socket.send(JSON.stringify({ name: displayName, message: message }));
-
-                // Clear text box and reset focus for the next comment.
-                $('#message').val('').focus();
-            });
-        });
-
-        // 監聽 WebSocket 收到訊息事件
-        socket.addEventListener('message', (event) => {
-            // 解析 JSON 訊息
-            const data = JSON.parse(event.data);
-
-            // 判斷訊息類型
-            if (data.type === 'broadcast') {
+            // Create a function that the hub can call to broadcast messages.
+            chat.client.broadcastMessage = function (name, message) {
                 // Html encode display name and message.
-                const encodedName = $('<div />').text(data.name).html();
-                const encodedMsg = $('<div />').text(data.message).html();
-
+                var encodedName = $('<div />').text(name).html();
+                var encodedMsg = $('<div />').text(message).html();
                 // Add the message to the page.
                 $('#discussion').append('<li><strong>' + encodedName
                     + '</strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
-            } else if (data.type === 'showMessage') {
-                // Do something with the message, for example, display it in an alert.
-                console.log('showMessage called with message:', data.message);
-                alert(data.message);
-            }
-        });
+            };
 
-        // 監聽 WebSocket 連接關閉事件
-        socket.addEventListener('close', (event) => {
-            console.log('WebSocket 連接已關閉');
+            // Add a function to handle showMessage method.
+            chat.client.showMessage = function (message) {
+                // Do something with the message, for example, display it in an alert.
+                console.log('showMessage called with message:', message);
+                alert(message);
+            };
+
+            // Get the user name and store it to prepend to messages.
+            $('#displayname').val(prompt('Enter your name:', ''));
+            // Set initial focus to message input box.
+
+            // Start the connection.
+            $.connection.hub.start().done(function () {
+                $('#sendmessage').click(function () {
+                    // Call the Send method on the hub.
+                    chat.server.send($('#displayname').val(), $('#message').val());
+                    // Clear text box and reset focus for the next comment.
+                    $('#message').val('').focus();
+                });
+            });
         });
     </script>
 </body>

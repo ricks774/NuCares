@@ -13,5 +13,16 @@ namespace NuCares
             // Call the broadcastMessage method to update clients.
             Clients.All.broadcastMessage(name, message);
         }
+
+        public void SendMessage(string user, string message)
+        {
+            Clients.All.ReceiveMessage(user, message);
+        }
+
+        public void Notify(string message)
+        {
+            // 在這裡可以進一步處理通知，例如記錄日誌或進行其他操作
+            Clients.All.notify(message);
+        }
     }
 }

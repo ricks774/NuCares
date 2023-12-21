@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div>
+        <h1>Signal R測試</h1>
+    </div>
+    <script src="Scripts/jquery-3.4.1.min.js"></script>
+    <script src="Scripts/jquery.signalR-2.2.2.min.js"></script>
+    <script src="signalr/hubs"></script>
+    <script>
+        // 定義在全局範圍內
+        var connection = $.hubConnection();
+        var hubProxy = connection.createHubProxy('notificationHub');
+
+        hubProxy.on('ReceiveMessage', function (user, message) {
+            alert('Hi ' + user + ', you said: ' + message);
+        });
+
+        // 接收新增問卷的通知
+        hubProxy.on('notify', function (message) {
+            alert(message)
+        });
+
+        // 啟動連接
+        connection.start().done(function () {
+            hubProxy.invoke('SendMessage', 'NoNo', 'hello world')
+                .fail(function (error) {
+                    console.error(error);
+                });
+        });
+    </script>
+</body>
+</html>

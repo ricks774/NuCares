@@ -122,8 +122,9 @@ namespace NuCares.Controllers
                         ChannelId = channelId
                     };
 
+                    string userName = userToken["UserName"].ToString();
                     var hub = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
-                    hub.Clients.All.notify("取得" + channelId + "了!");
+                    hub.Clients.All.notify($"{userName} 的問卷填寫完成了!!");
 
                     return Ok(result);
                 }
