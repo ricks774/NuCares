@@ -13,9 +13,12 @@
     <script src="signalr/hubs"></script>
     <script>
         // 定義在全局範圍內
-        var connection = $.hubConnection();
-        var hubProxy = connection.createHubProxy('notificationHub');
+        var url = 'https://nucares.top/signalr';
+        var localUrl = 'http://localhost:44354';
 
+        var connection = $.hubConnection(localUrl);
+
+        var hubProxy = connection.createHubProxy('notificationHub');
         hubProxy.on('ReceiveMessage', function (user, message) {
             alert('Hi ' + user + ', you said: ' + message);
         });
