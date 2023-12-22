@@ -1,10 +1,13 @@
-﻿using Microsoft.Owin;
+﻿using Microsoft.AspNet.SignalR;
+using Microsoft.Owin;
+using Microsoft.Owin.Cors;
 using NSwag;
 using NSwag.AspNet.Owin;
 using NSwag.Generation.Processors.Security;
 using Owin;
 using System;
 using System.Threading.Tasks;
+using System.Web.Cors;
 using System.Web.Http;
 
 [assembly: OwinStartup(typeof(NuCares.Startup))]
@@ -20,6 +23,37 @@ namespace NuCares
 
             // 針對 JSON 資料使用 camel (JSON 回應會改 camel，但 Swagger 提示不會)
             //config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+            //設定 CORS
+            app.UseCors(CorsOptions.AllowAll);
+            // 配置 SignalR Hub
+            app.MapSignalR(new HubConfiguration
+            {
+                EnableDetailedErrors = true, // 可選：啟用詳細錯誤信息
+                EnableJavaScriptProxies = true, // 可選：啟用 JavaScript 代理
+                EnableJSONP = true
+            });
+            //app.MapSignalR("/signalr", new HubConfiguration
+            //{
+            //    EnableDetailedErrors = true, // 可選：啟用詳細錯誤信息
+            //    EnableJavaScriptProxies = true // 可選：啟用 JavaScript 代理
+            //});
+
+            //var corsOptions = new CorsOptions
+            //{
+            //    PolicyProvider = new CorsPolicyProvider
+            //    {
+            //        PolicyResolver = context =>
+            //        {
+            //            var policy = new CorsPolicy();
+            //            policy.Origins.Add("*"); // 新增您的跨域網址
+            //            policy.Headers.Add("*"); // 允許任何標頭
+            //            policy.Methods.Add("*"); // 允許任何方法
+            //            policy.SupportsCredentials = true; // 允許攜帶認證資訊
+            //            return Task.FromResult(policy);
+            //        }
+            //    }
+            //};
 
             app.UseSwaggerUi3(typeof(Startup).Assembly, settings =>
             {
