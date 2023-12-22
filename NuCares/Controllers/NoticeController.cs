@@ -211,6 +211,45 @@ namespace NuCares.Controllers
                         // 將通知加入 List
                         noticeList.Add(commentsNotice);
                     }
+                    else if (notice.NoticeMessage.Contains("開始課程"))
+                    {
+                        // 取得課程資料
+                        int courseId = int.Parse(notice.NoticeType);    // 取得課程Id
+                        var couresData = db.Courses.FirstOrDefault(c => c.Id == courseId);
+
+                        #region "判斷課程是否存在"
+
+                        if (couresData == null)
+                        {
+                            return Content(HttpStatusCode.BadRequest, new
+                            {
+                                StatusCode = 400,
+                                Status = "Error",
+                                Message = "找不到這筆課程"
+                            });
+                        }
+
+                        #endregion "判斷課程是否存在"
+
+                        #region "回傳開始課程格式"
+
+                        var startNotice = new
+                        {
+                            NoticeId = notice.Id,
+                            CourseId = courseId,
+                            CourseName = couresData.Order.Plan.CourseName,
+                            Message = notice.NoticeMessage,
+                            Title = couresData.Order.Plan.Nutritionist.Title,
+                            UserName = userName,
+                            Date = notice.CreateTime.ToString("yyyy/MM/dd HH:mm"),
+                            IsRead = notice.IsRead
+                        };
+
+                        #endregion "回傳開始課程格式"
+
+                        // 將通知加入 List
+                        noticeList.Add(startNotice);
+                    }
                 }
 
                 // 將通知列表按照日期降序排序
@@ -220,7 +259,7 @@ namespace NuCares.Controllers
                 {
                     StatusCode = 200,
                     Status = "Success",
-                    Message = "新增問卷成功",
+                    Message = "取得通知成功",
                     ChannelId = userId,
                     Data = noticeList
                 };
