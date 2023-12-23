@@ -226,6 +226,9 @@ namespace NuCares.Controllers
                 //  通知訊息
                 int channelId = coursesData.Order.UserId;  // 傳送通知給哪個學員
                 Notice.AddNotice(db, channelId, "開始課程", courseId.ToString());   // 紀錄通知訊息
+                // Signal R通知
+                string sourceName = coursesData.Order.Plan.Nutritionist.Title;  // 哪個營養師開始課程
+                Notice.SendNotice(sourceName, "開始課程");
 
                 return Ok(result);
             }

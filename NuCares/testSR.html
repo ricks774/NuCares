@@ -16,7 +16,7 @@
         var url = 'https://nucares.top/signalr';
         var localUrl = 'http://localhost:44354';
 
-        var connection = $.hubConnection(localUrl);
+        var connection = $.hubConnection();
 
         var hubProxy = connection.createHubProxy('notificationHub');
         hubProxy.on('ReceiveMessage', function (user, message) {

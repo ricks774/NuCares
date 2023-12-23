@@ -1,4 +1,5 @@
-﻿using NSwag.Annotations;
+﻿using Microsoft.AspNet.SignalR;
+using NSwag.Annotations;
 using NuCares.helper;
 using NuCares.Models;
 using NuCares.Security;
@@ -776,7 +777,11 @@ namespace NuCares.Controllers
 
                             //  通知訊息
                             int channelId = coursedata.Order.Plan.Nutritionist.UserId;  // 傳送通知給哪個營樣師
-                            Notice.AddNotice(db, userId, "已評價", courseId.ToString());   // 紀錄通知訊息
+                            Notice.AddNotice(db, channelId, "已評價", courseId.ToString());   // 紀錄通知訊息
+
+                            // Signal R通知
+                            string sourceName = userToken["UserName"].ToString();
+                            Notice.SendNotice(sourceName, "已評價");
 
                             var result = new
                             {

@@ -108,7 +108,7 @@ namespace NuCares.Controllers
 
                 //  通知訊息
                 int channelId = coursesData.Order.Plan.Nutritionist.UserId;  // 傳送通知給哪個營樣師
-                Notice.AddNotice(db, id, "已完成生活問卷", courseId.ToString());   // 紀錄通知訊息
+                Notice.AddNotice(db, channelId, "已完成生活問卷", courseId.ToString());   // 紀錄通知訊息
 
                 try
                 {
@@ -122,9 +122,15 @@ namespace NuCares.Controllers
                         ChannelId = channelId
                     };
 
+                    // Signal R通知
                     string userName = userToken["UserName"].ToString();
-                    var hub = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
-                    hub.Clients.All.notify($"{userName} 的問卷填寫完成了!!");
+
+                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+                    //string connectionId = hubContext.Clients.Client(Context.ConnectionId).GetConnectionId();
+
+                    Notice.SendNotice(userName, "已完成生活問卷");
+                    //var hub = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+                    //hub.Clients.All.notify($"{userName} 的問卷填寫完成了!!");
 
                     return Ok(result);
                 }

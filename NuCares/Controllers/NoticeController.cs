@@ -8,6 +8,7 @@ using System.Web.Http;
 using NuCares.Security;
 using NuCares.helper;
 using NSwag.Annotations;
+using Microsoft.AspNet.SignalR.Infrastructure;
 
 namespace NuCares.Controllers
 {
@@ -62,7 +63,7 @@ namespace NuCares.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("notice")]
+        [Route("notice/all")]
         [JwtAuthFilter]
         public IHttpActionResult GetAllNotice()
         {
@@ -124,7 +125,7 @@ namespace NuCares.Controllers
                             CourseName = couresData.Order.Plan.CourseName,
                             Message = notice.NoticeMessage,
                             Title = couresData.Order.Plan.Nutritionist.Title,
-                            UserName = userName,
+                            UserName = couresData.Order.User.UserName,
                             Date = notice.CreateTime.ToString("yyyy/MM/dd HH:mm"),
                             IsRead = notice.IsRead
                         };
@@ -162,7 +163,7 @@ namespace NuCares.Controllers
                             CourseName = orderData.Plan.CourseName,
                             Message = notice.NoticeMessage,
                             Title = orderData.Plan.Nutritionist.Title,
-                            UserName = userName,
+                            UserName = orderData.User.UserName,
                             Date = notice.CreateTime.ToString("yyyy/MM/dd HH:mm"),
                             IsRead = notice.IsRead
                         };
@@ -201,7 +202,7 @@ namespace NuCares.Controllers
                             CourseName = couresData.Order.Plan.CourseName,
                             Message = notice.NoticeMessage,
                             Title = couresData.Order.Plan.Nutritionist.Title,
-                            UserName = userName,
+                            UserName = couresData.Order.User.UserName,
                             Date = notice.CreateTime.ToString("yyyy/MM/dd HH:mm"),
                             IsRead = notice.IsRead
                         };
@@ -240,7 +241,7 @@ namespace NuCares.Controllers
                             CourseName = couresData.Order.Plan.CourseName,
                             Message = notice.NoticeMessage,
                             Title = couresData.Order.Plan.Nutritionist.Title,
-                            UserName = userName,
+                            UserName = couresData.Order.User.UserName,
                             Date = notice.CreateTime.ToString("yyyy/MM/dd HH:mm"),
                             IsRead = notice.IsRead
                         };
@@ -275,5 +276,52 @@ namespace NuCares.Controllers
         }
 
         #endregion "取得全部通知"
+
+        #region "取得全域未讀通知"
+
+        /// <summary>
+        /// 取得所有未讀通知
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("notice/new")]
+        [JwtAuthFilter]
+        public IHttpActionResult GetNotReadNotice()
+        {
+            #region "JwtToken驗證"
+
+            // 取出請求內容，解密 JwtToken 取出資料
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int userId = (int)userToken["Id"];
+            string userName = userToken["UserName"].ToString();
+
+            bool checkUser = db.Users.Any(n => n.Id == userId);
+            if (!checkUser)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "請重新登入"
+                });
+            }
+
+            #endregion "JwtToken驗證"
+
+            var noticeData = db.Notification.Where(n => n.UserId == userId).ToList();
+            bool isAllRead = noticeData.All(n => n.GlobalIsRead);
+
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "取得未讀通知成功",
+                IsAllRead = isAllRead,
+                ChannelId = userId,
+            };
+            return Ok(result);
+        }
+
+        #endregion "取得全域未讀通知"
     }
 }

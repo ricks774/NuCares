@@ -24,5 +24,11 @@ namespace NuCares
             // 在這裡可以進一步處理通知，例如記錄日誌或進行其他操作
             Clients.All.notify(message);
         }
+
+        // 取得連線的帳號 ConnectionId
+        public string GetConnectionId()
+        {
+            return Context.ConnectionId;
+        }
     }
 }

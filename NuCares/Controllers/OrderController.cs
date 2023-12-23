@@ -285,6 +285,14 @@ namespace NuCares.Controllers
 
             // 新增通知訊息到資料庫
             Notice.AddNotice(db, orderData.User.Id, "已購課", orderData.Id.ToString());
+            Notice.AddNotice(db, orderData.Plan.Nutritionist.UserId, "已購課", orderData.Id.ToString());
+
+            // Signal R通知
+            //string targetName = orderData.Plan.Nutritionist.Title;
+            string sourceName = orderData.User.UserName;
+            Notice.SendNotice(sourceName, "填寫生活問卷");
+            Notice.SendNotice(sourceName, "已購客");
+
             return response;
         }
 
