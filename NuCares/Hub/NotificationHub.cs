@@ -30,5 +30,10 @@ namespace NuCares
         {
             return Context.ConnectionId;
         }
+
+        public void SendMessageToClient(string connectionId, string message)
+        {
+            Clients.Client(connectionId).SendAsync("ReceiveMessage", message);
+        }
     }
 }

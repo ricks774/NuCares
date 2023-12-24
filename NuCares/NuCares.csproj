@@ -265,10 +265,6 @@
     </Compile>
     <Compile Include="helper\ImageUrl.cs" />
     <Compile Include="helper\Notice.cs" />
-    <Compile Include="Migrations\202312230730507_init.cs" />
-    <Compile Include="Migrations\202312230730507_init.Designer.cs">
-      <DependentUpon>202312230730507_init.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BodyInfo.cs" />
     <Compile Include="Models\DailyCourseMenu.cs" />
@@ -394,11 +390,6 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\202312230730507_init.resx">
-      <DependentUpon>202312230730507_init.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
