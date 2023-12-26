@@ -766,6 +766,13 @@ namespace NuCares.Controllers
                             // 將Course設定為已評價
                             var coursedata = db.Courses.Where(c => c.Id == courseId).FirstOrDefault();
                             coursedata.IsComment = true;
+
+                            // 將 connectionId 儲存
+                            string userEmail = userToken["Email"].ToString();
+                            var connectionId = NotificationHub.Users.ConnectionIds.FirstOrDefault(u => u.Value == userEmail).Key;
+                            var userData = db.Users.FirstOrDefault(u => u.Id == userId);
+                            userData.ConnectionId = connectionId;
+
                             try
                             {
                                 db.SaveChanges();
@@ -781,7 +788,9 @@ namespace NuCares.Controllers
 
                             // Signal R通知
                             string sourceName = userToken["UserName"].ToString();
-                            Notice.SendNotice(sourceName, "已評價");
+                            //Notice.SendNotice(sourceName, "已評價");
+
+                            Notice.TestNotice(db, connectionId);
 
                             var result = new
                             {

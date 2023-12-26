@@ -12,6 +12,10 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Microsoft.AspNet.SignalR;
+using System.Web;
+using Microsoft.AspNet.SignalR.Infrastructure;
+using Microsoft.AspNet.SignalR.Messaging;
 
 namespace NuCares.Controllers
 {
@@ -284,14 +288,18 @@ namespace NuCares.Controllers
             db.SaveChanges();
 
             // 新增通知訊息到資料庫
-            Notice.AddNotice(db, orderData.User.Id, "已購課", orderData.Id.ToString());
-            Notice.AddNotice(db, orderData.Plan.Nutritionist.UserId, "已購課", orderData.Id.ToString());
+            Notice.AddNotice(db, orderData.User.Id, "已購課(學員)", orderData.Id.ToString());
+            Notice.AddNotice(db, orderData.Plan.Nutritionist.UserId, "已購課(營養師)", orderData.Id.ToString());
 
-            // Signal R通知
+            //// Signal R通知
+            //var hubContext = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            //var allConnections = hubContext.Clients.All.GetInvocationId();
+
             //string targetName = orderData.Plan.Nutritionist.Title;
-            string sourceName = orderData.User.UserName;
-            Notice.SendNotice(sourceName, "填寫生活問卷");
-            Notice.SendNotice(sourceName, "已購客");
+            //string sourceName = orderData.User.UserName;
+            //Notice.SendNotice(sourceName, "填寫生活問卷");
+            //Notice.SendNotice(sourceName, "已購課 ");
+            //Notice.SendNotice("test", allConnections);
 
             return response;
         }

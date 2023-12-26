@@ -358,7 +358,7 @@ namespace NuCares.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut]
-        [Route("notice/read")]
+        [Route("notice/new")]
         [JwtAuthFilter]
         public IHttpActionResult ReadAllGlobalNotice()
         {

@@ -48,5 +48,19 @@ namespace NuCares.helper
                 hub.Clients.All.notify($"{name} 記得填寫生活問卷");
             }
         }
+
+        //public static void TestNotice(string name, string connectionId)
+        //{
+        //    var hub = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+        //    hub.Clients.All.notify($"{name} 的廣播編號是: {connectionId}");
+        //}
+
+        public static void TestNotice(NuCaresDBContext db, string connectionId)
+        {
+            var hub = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+
+            // 向特定的 connectionId 使用者發送通知
+            hub.Clients.Client(connectionId).notify($"的廣播編號是: {connectionId}");
+        }
     }
 }
