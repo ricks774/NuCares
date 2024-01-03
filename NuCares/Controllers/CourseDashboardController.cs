@@ -767,10 +767,6 @@ namespace NuCares.Controllers
                             var courseData = db.Courses.Where(c => c.Id == courseId).FirstOrDefault();
                             courseData.IsComment = true;
 
-                            // 取得 connectionId
-                            string nuUserId = courseData.Order.Plan.Nutritionist.UserId.ToString();
-                            var connectionId = NotificationHub.Users.ConnectionIds.FirstOrDefault(u => u.Key == nuUserId).Value;
-
                             try
                             {
                                 db.SaveChanges();
@@ -783,6 +779,10 @@ namespace NuCares.Controllers
                             //  通知訊息
                             int channelId = courseData.Order.Plan.Nutritionist.UserId;  // 傳送通知給哪個營樣師
                             int noticeId = Notice.AddNotice(db, channelId, "已評價", courseId.ToString());   // 紀錄通知訊息
+
+                            // 取得 connectionId
+                            string nuUserId = courseData.Order.Plan.Nutritionist.UserId.ToString();
+                            var connectionId = NotificationHub.Users.ConnectionIds.FirstOrDefault(u => u.Key == nuUserId).Value;
 
                             // Signal R通知
                             //Notice.SendNotice(sourceName, "已評價");
