@@ -53,12 +53,6 @@ namespace NuCares.helper
             }
         }
 
-        //public static void TestNotice(string name, string connectionId)
-        //{
-        //    var hub = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
-        //    hub.Clients.All.notify($"{name} 的廣播編號是: {connectionId}");
-        //}
-
         public static void GetNotice(NuCaresDBContext db, string connectionId, int noticeId, Course courseData)
         {
             var hub = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
