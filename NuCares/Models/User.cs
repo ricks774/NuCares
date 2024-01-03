@@ -16,6 +16,13 @@ namespace NuCares.Models
         public int Id { get; set; }
 
         /// <summary>
+        /// ConnectionId
+        /// </summary>
+        [MaxLength(50)]
+        [Display(Name = "廣播編號")]
+        public string ConnectionId { get; set; }
+
+        /// <summary>
         /// 照片
         /// </summary>
         [MaxLength(500)]

@@ -1,4 +1,5 @@
 ﻿using NSwag.Annotations;
+using NuCares.helper;
 using NuCares.Models;
 using NuCares.Security;
 using System;
@@ -221,6 +222,21 @@ namespace NuCares.Controllers
                         CourseEndDate = coursesData.CourseEndDate,
                     }
                 };
+
+                //  通知訊息
+                int channelId = coursesData.Order.UserId;  // 傳送通知給哪個學員
+                int noticeId = Notice.AddNotice(db, channelId, "開始課程", courseId.ToString());   // 紀錄通知訊息
+
+                // 取得 connectionId
+                string userId = coursesData.Order.UserId.ToString();  // 傳送通知給哪個學員
+                var connectionId = NotificationHub.Users.ConnectionIds.FirstOrDefault(u => u.Key == userId).Value;
+
+                // Signal R通知
+                if (connectionId != null)
+                {
+                    Notice.GetNotice(db, connectionId, noticeId, coursesData);
+                }
+
                 return Ok(result);
             }
             catch (Exception ex)

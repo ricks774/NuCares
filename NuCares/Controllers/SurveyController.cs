@@ -106,10 +106,6 @@ namespace NuCares.Controllers
                 var coursesData = db.Courses.Find(courseId);
                 coursesData.IsQuest = true;
 
-                //  通知訊息
-                int channelId = coursesData.Order.Plan.Nutritionist.UserId;  // 傳送通知給哪個營樣師
-                Notice.AddNotice(db, id, "已完成生活問卷", courseId.ToString());   // 紀錄通知訊息
-
                 try
                 {
                     db.SaveChanges();
@@ -118,13 +114,23 @@ namespace NuCares.Controllers
                     {
                         StatusCode = 200,
                         Status = "Success",
-                        Message = "新增問卷成功",
-                        ChannelId = channelId
+                        Message = "新增問卷成功"
                     };
 
-                    string userName = userToken["UserName"].ToString();
-                    var hub = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
-                    hub.Clients.All.notify($"{userName} 的問卷填寫完成了!!");
+                    //  通知訊息
+                    int channelId = coursesData.Order.Plan.Nutritionist.UserId;  // 傳送通知給哪個營樣師
+                    int noticeId = Notice.AddNotice(db, channelId, "已完成生活問卷", courseId.ToString());   // 紀錄通知訊息
+
+                    // 取得 connectionId
+                    string nuUserId = coursesData.Order.Plan.Nutritionist.UserId.ToString();
+                    var connectionId = NotificationHub.Users.ConnectionIds.FirstOrDefault(u => u.Key == nuUserId).Value;
+
+                    // Signal R通知
+                    //Notice.SendNotice(sourceName, "已評價");
+                    if (connectionId != null)
+                    {
+                        Notice.GetNotice(db, connectionId, noticeId, coursesData);
+                    }
 
                     return Ok(result);
                 }

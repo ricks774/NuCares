@@ -8,6 +8,7 @@ using System.Web.Http;
 using NuCares.Security;
 using NuCares.helper;
 using NSwag.Annotations;
+using Microsoft.AspNet.SignalR.Infrastructure;
 
 namespace NuCares.Controllers
 {
@@ -18,6 +19,11 @@ namespace NuCares.Controllers
 
         #region "讀取單一通知"
 
+        /// <summary>
+        /// 讀取單一通知
+        /// </summary>
+        /// <param name="noticeId"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("notice/{noticeId}")]
         [JwtAuthFilter]
@@ -43,7 +49,29 @@ namespace NuCares.Controllers
 
             #endregion "JwtToken驗證"
 
-            var noticeData = db.Notification.AsEnumerable().FirstOrDefault(n => n.UserId == userId && n.Id == noticeId);
+            var noticeData = db.Notification.FirstOrDefault(n => n.UserId == userId && n.Id == noticeId);
+
+            if (noticeData != null)
+            {
+                noticeData.IsRead = true;
+
+                try
+                {
+                    db.SaveChanges();
+                    var result = new
+                    {
+                        StatusCode = 200,
+                        Status = "Success",
+                        Message = "通知已讀成功",
+                        ChannelId = userId,
+                    };
+                    return Ok(result);
+                }
+                catch (Exception e)
+                {
+                    return InternalServerError(e);
+                }
+            }
 
             return Content(HttpStatusCode.BadRequest, new
             {
@@ -62,7 +90,7 @@ namespace NuCares.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("notice")]
+        [Route("notice/all")]
         [JwtAuthFilter]
         public IHttpActionResult GetAllNotice()
         {
@@ -124,7 +152,7 @@ namespace NuCares.Controllers
                             CourseName = couresData.Order.Plan.CourseName,
                             Message = notice.NoticeMessage,
                             Title = couresData.Order.Plan.Nutritionist.Title,
-                            UserName = userName,
+                            UserName = couresData.Order.User.UserName,
                             Date = notice.CreateTime.ToString("yyyy/MM/dd HH:mm"),
                             IsRead = notice.IsRead
                         };
@@ -162,7 +190,7 @@ namespace NuCares.Controllers
                             CourseName = orderData.Plan.CourseName,
                             Message = notice.NoticeMessage,
                             Title = orderData.Plan.Nutritionist.Title,
-                            UserName = userName,
+                            UserName = orderData.User.UserName,
                             Date = notice.CreateTime.ToString("yyyy/MM/dd HH:mm"),
                             IsRead = notice.IsRead
                         };
@@ -201,7 +229,7 @@ namespace NuCares.Controllers
                             CourseName = couresData.Order.Plan.CourseName,
                             Message = notice.NoticeMessage,
                             Title = couresData.Order.Plan.Nutritionist.Title,
-                            UserName = userName,
+                            UserName = couresData.Order.User.UserName,
                             Date = notice.CreateTime.ToString("yyyy/MM/dd HH:mm"),
                             IsRead = notice.IsRead
                         };
@@ -210,6 +238,45 @@ namespace NuCares.Controllers
 
                         // 將通知加入 List
                         noticeList.Add(commentsNotice);
+                    }
+                    else if (notice.NoticeMessage.Contains("開始課程"))
+                    {
+                        // 取得課程資料
+                        int courseId = int.Parse(notice.NoticeType);    // 取得課程Id
+                        var couresData = db.Courses.FirstOrDefault(c => c.Id == courseId);
+
+                        #region "判斷課程是否存在"
+
+                        if (couresData == null)
+                        {
+                            return Content(HttpStatusCode.BadRequest, new
+                            {
+                                StatusCode = 400,
+                                Status = "Error",
+                                Message = "找不到這筆課程"
+                            });
+                        }
+
+                        #endregion "判斷課程是否存在"
+
+                        #region "回傳開始課程格式"
+
+                        var startNotice = new
+                        {
+                            NoticeId = notice.Id,
+                            CourseId = courseId,
+                            CourseName = couresData.Order.Plan.CourseName,
+                            Message = notice.NoticeMessage,
+                            Title = couresData.Order.Plan.Nutritionist.Title,
+                            UserName = couresData.Order.User.UserName,
+                            Date = notice.CreateTime.ToString("yyyy/MM/dd HH:mm"),
+                            IsRead = notice.IsRead
+                        };
+
+                        #endregion "回傳開始課程格式"
+
+                        // 將通知加入 List
+                        noticeList.Add(startNotice);
                     }
                 }
 
@@ -220,7 +287,7 @@ namespace NuCares.Controllers
                 {
                     StatusCode = 200,
                     Status = "Success",
-                    Message = "新增問卷成功",
+                    Message = "取得通知成功",
                     ChannelId = userId,
                     Data = noticeList
                 };
@@ -236,5 +303,188 @@ namespace NuCares.Controllers
         }
 
         #endregion "取得全部通知"
+
+        #region "取得全域未讀通知"
+
+        /// <summary>
+        /// 取得所有未讀通知
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("notice/new")]
+        [JwtAuthFilter]
+        public IHttpActionResult GetNotReadNotice()
+        {
+            #region "JwtToken驗證"
+
+            // 取出請求內容，解密 JwtToken 取出資料
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int userId = (int)userToken["Id"];
+            string userName = userToken["UserName"].ToString();
+
+            bool checkUser = db.Users.Any(n => n.Id == userId);
+            if (!checkUser)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "請重新登入"
+                });
+            }
+
+            #endregion "JwtToken驗證"
+
+            var noticeData = db.Notification.Where(n => n.UserId == userId).ToList();
+            bool isAllRead = noticeData.All(n => n.GlobalIsRead);
+
+            var result = new
+            {
+                StatusCode = 200,
+                Status = "Success",
+                Message = "取得未讀通知成功",
+                IsAllRead = isAllRead,
+                ChannelId = userId,
+            };
+            return Ok(result);
+        }
+
+        #endregion "取得全域未讀通知"
+
+        #region "全域通知已讀"
+
+        /// <summary>
+        /// 已讀全域通知
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("notice/new")]
+        [JwtAuthFilter]
+        public IHttpActionResult ReadAllGlobalNotice()
+        {
+            #region "JwtToken驗證"
+
+            // 取出請求內容，解密 JwtToken 取出資料
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int userId = (int)userToken["Id"];
+            string userName = userToken["UserName"].ToString();
+
+            bool checkUser = db.Users.Any(n => n.Id == userId);
+            if (!checkUser)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "請重新登入"
+                });
+            }
+
+            #endregion "JwtToken驗證"
+
+            var noticeData = db.Notification.Where(n => n.UserId == userId).ToList();
+
+            if (noticeData != null)
+            {
+                for (int i = 0; i < noticeData.Count; i++)
+                {
+                    noticeData[i].GlobalIsRead = true;
+                }
+
+                try
+                {
+                    db.SaveChanges();
+                    var result = new
+                    {
+                        StatusCode = 200,
+                        Status = "Success",
+                        Message = "全域通知已讀成功",
+                        ChannelId = userId,
+                    };
+                    return Ok(result);
+                }
+                catch (Exception e)
+                {
+                    return InternalServerError(e);
+                }
+            }
+
+            return Content(HttpStatusCode.BadRequest, new
+            {
+                StatusCode = 400,
+                Status = "Error",
+                Message = "沒有新通知"
+            });
+        }
+
+        #endregion "全域通知已讀"
+
+        #region "所有通知已讀"
+
+        /// <summary>
+        /// 所有通知已讀
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("notice/readall")]
+        [JwtAuthFilter]
+        public IHttpActionResult ReadAllNotice()
+        {
+            #region "JwtToken驗證"
+
+            // 取出請求內容，解密 JwtToken 取出資料
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            int userId = (int)userToken["Id"];
+            string userName = userToken["UserName"].ToString();
+
+            bool checkUser = db.Users.Any(n => n.Id == userId);
+            if (!checkUser)
+            {
+                return Content(HttpStatusCode.Unauthorized, new
+                {
+                    StatusCode = 401,
+                    Status = "Error",
+                    Message = "請重新登入"
+                });
+            }
+
+            #endregion "JwtToken驗證"
+
+            var noticeData = db.Notification.Where(n => n.UserId == userId).ToList();
+
+            if (noticeData != null)
+            {
+                for (int i = 0; i < noticeData.Count; i++)
+                {
+                    noticeData[i].IsRead = true;
+                }
+
+                try
+                {
+                    db.SaveChanges();
+                    var result = new
+                    {
+                        StatusCode = 200,
+                        Status = "Success",
+                        Message = "所有通知已讀成功",
+                        ChannelId = userId,
+                    };
+                    return Ok(result);
+                }
+                catch (Exception e)
+                {
+                    return InternalServerError(e);
+                }
+            }
+
+            return Content(HttpStatusCode.BadRequest, new
+            {
+                StatusCode = 400,
+                Status = "Error",
+                Message = "沒有新通知"
+            });
+        }
+
+        #endregion "所有通知已讀"
     }
 }
