@@ -274,9 +274,10 @@ namespace NuCares.Controllers
             // 付款失敗跳離執行
             var response = Request.CreateResponse(HttpStatusCode.OK);
             var orderData = db.Orders.FirstOrDefault(o => o.Id == logId);
+            var courseData = db.Courses.FirstOrDefault(c => c.OrderId == logId);
+
             if (!data.Status.Equals("SUCCESS"))
             {
-                var courseData = db.Courses.FirstOrDefault(c => c.OrderId == logId);
                 db.Orders.Remove(orderData);
                 db.Courses.Remove(courseData);
                 db.SaveChanges();
@@ -287,19 +288,27 @@ namespace NuCares.Controllers
             orderData.IsPayment = true;
             db.SaveChanges();
 
-            // 新增通知訊息到資料庫
-            Notice.AddNotice(db, orderData.User.Id, "已購課(學員)", orderData.Id.ToString());
-            Notice.AddNotice(db, orderData.Plan.Nutritionist.UserId, "已購課(營養師)", orderData.Id.ToString());
+            //  通知訊息
+            int userNoticeId = Notice.AddNotice(db, orderData.User.Id, "已購課(學員)", orderData.Id.ToString());   // 紀錄通知訊息
+            int nuNoticeId = Notice.AddNotice(db, orderData.Plan.Nutritionist.UserId, "已購課(營養師)", orderData.Id.ToString()); ;   // 紀錄通知訊息
 
-            //// Signal R通知
-            //var hubContext = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
-            //var allConnections = hubContext.Clients.All.GetInvocationId();
+            // 取得 connectionId
+            var userToken = JwtAuthFilter.GetToken(Request.Headers.Authorization.Parameter);
+            string userId = userToken["Id"].ToString();     // 取得學員Id
+            string nuId = orderData.Plan.Nutritionist.UserId.ToString();    // 取得營養師Id
+            var userConnectionId = NotificationHub.Users.ConnectionIds.FirstOrDefault(u => u.Key == userId).Value;  // 取得學員的 ConnectionId
+            var nuConnectionId = NotificationHub.Users.ConnectionIds.FirstOrDefault(u => u.Key == nuId).Value;  // 取得營養師的 ConnectionId
 
-            //string targetName = orderData.Plan.Nutritionist.Title;
-            //string sourceName = orderData.User.UserName;
-            //Notice.SendNotice(sourceName, "填寫生活問卷");
-            //Notice.SendNotice(sourceName, "已購課 ");
-            //Notice.SendNotice("test", allConnections);
+            // Signal R通知
+            if (userConnectionId != null)
+            {
+                Notice.GetNotice(db, userConnectionId, userNoticeId, courseData);
+
+                if (nuConnectionId != null)
+                {
+                    Notice.GetNotice(db, nuConnectionId, nuNoticeId, courseData);
+                }
+            }
 
             return response;
         }
@@ -344,7 +353,7 @@ namespace NuCares.Controllers
 
             var orderData = db.Orders
                 .Where(o => o.UserId == id && o.IsPayment == true)
-                .OrderBy(o => o.Id) // 根據需要的屬性進行排序
+                .OrderByDescending(o => o.CreateDate) // 根據需要的屬性進行排序
                 .Skip(((int)page - 1) * pageSize) // 跳過前面的記錄
                 .Take(pageSize) // 每頁顯示的記錄數
                 .AsEnumerable() // 使查詢先執行,再在記憶體中處理

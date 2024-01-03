@@ -225,10 +225,17 @@ namespace NuCares.Controllers
 
                 //  通知訊息
                 int channelId = coursesData.Order.UserId;  // 傳送通知給哪個學員
-                Notice.AddNotice(db, channelId, "開始課程", courseId.ToString());   // 紀錄通知訊息
+                int noticeId = Notice.AddNotice(db, channelId, "開始課程", courseId.ToString());   // 紀錄通知訊息
+
+                // 取得 connectionId
+                string userId = coursesData.Order.UserId.ToString();  // 傳送通知給哪個學員
+                var connectionId = NotificationHub.Users.ConnectionIds.FirstOrDefault(u => u.Key == userId).Value;
+
                 // Signal R通知
-                string sourceName = coursesData.Order.Plan.Nutritionist.Title;  // 哪個營養師開始課程
-                Notice.SendNotice(sourceName, "開始課程");
+                if (connectionId != null)
+                {
+                    Notice.GetNotice(db, connectionId, noticeId, coursesData);
+                }
 
                 return Ok(result);
             }

@@ -61,8 +61,9 @@ namespace NuCares.helper
             var result = new
             {
                 NoticeId = noticeId,
-                NutritionistId = courseData.Order.Plan.NutritionistId,
+                CourseId = courseData.Id,
                 CourseName = courseData.Order.Plan.CourseName,
+                NutritionistId = courseData.Order.Plan.NutritionistId,
                 Message = noticeData.NoticeMessage,
                 Title = courseData.Order.Plan.Nutritionist.Title,
                 UserName = courseData.Order.User.UserName,
