@@ -1,16 +1,18 @@
-﻿using Microsoft.AspNet.SignalR;
+﻿using Microsoft.Ajax.Utilities;
+using Microsoft.AspNet.SignalR;
 using NuCares.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.PeerToPeer;
 using System.Web;
+using System.Xml.Linq;
 
 namespace NuCares.helper
 {
     public class Notice
     {
-        public static void AddNotice(NuCaresDBContext db, int userId, string message, string typeId)
+        public static int AddNotice(NuCaresDBContext db, int userId, string message, string typeId)
         {
             var addNotice = new Notification
             {
@@ -21,6 +23,8 @@ namespace NuCares.helper
 
             db.Notification.Add(addNotice);
             db.SaveChanges();
+
+            return addNotice.Id;
         }
 
         public static void SendNotice(string name, string message)
@@ -55,12 +59,25 @@ namespace NuCares.helper
         //    hub.Clients.All.notify($"{name} 的廣播編號是: {connectionId}");
         //}
 
-        public static void TestNotice(NuCaresDBContext db, string connectionId)
+        public static void GetNotice(NuCaresDBContext db, string connectionId, int noticeId, Course courseData)
         {
             var hub = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            var noticeData = db.Notification.FirstOrDefault(n => n.Id == noticeId);
+
+            var result = new
+            {
+                NoticeId = noticeId,
+                NutritionistId = courseData.Order.Plan.NutritionistId,
+                CourseName = courseData.Order.Plan.CourseName,
+                Message = noticeData.NoticeMessage,
+                Title = courseData.Order.Plan.Nutritionist.Title,
+                UserName = courseData.Order.User.UserName,
+                Date = noticeData.CreateTime.ToString("yyyy/MM/dd HH:mm"),
+                IsRead = noticeData.IsRead
+            };
 
             // 向特定的 connectionId 使用者發送通知
-            hub.Clients.Client(connectionId).notify($"的廣播編號是: {connectionId}");
+            hub.Clients.Client(connectionId).notify(result);
         }
     }
 }

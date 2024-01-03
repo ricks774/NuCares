@@ -764,14 +764,12 @@ namespace NuCares.Controllers
                             db.SaveChanges();
 
                             // 將Course設定為已評價
-                            var coursedata = db.Courses.Where(c => c.Id == courseId).FirstOrDefault();
-                            coursedata.IsComment = true;
+                            var courseData = db.Courses.Where(c => c.Id == courseId).FirstOrDefault();
+                            courseData.IsComment = true;
 
-                            // 將 connectionId 儲存
-                            string userEmail = userToken["Email"].ToString();
-                            var connectionId = NotificationHub.Users.ConnectionIds.FirstOrDefault(u => u.Value == userEmail).Key;
-                            var userData = db.Users.FirstOrDefault(u => u.Id == userId);
-                            userData.ConnectionId = connectionId;
+                            // 取得 connectionId
+                            string nuUserId = courseData.Order.Plan.Nutritionist.UserId.ToString();
+                            var connectionId = NotificationHub.Users.ConnectionIds.FirstOrDefault(u => u.Key == nuUserId).Value;
 
                             try
                             {
@@ -783,21 +781,22 @@ namespace NuCares.Controllers
                             }
 
                             //  通知訊息
-                            int channelId = coursedata.Order.Plan.Nutritionist.UserId;  // 傳送通知給哪個營樣師
-                            Notice.AddNotice(db, channelId, "已評價", courseId.ToString());   // 紀錄通知訊息
+                            int channelId = courseData.Order.Plan.Nutritionist.UserId;  // 傳送通知給哪個營樣師
+                            int noticeId = Notice.AddNotice(db, channelId, "已評價", courseId.ToString());   // 紀錄通知訊息
 
                             // Signal R通知
-                            string sourceName = userToken["UserName"].ToString();
                             //Notice.SendNotice(sourceName, "已評價");
-
-                            Notice.TestNotice(db, connectionId);
+                            if (connectionId != null)
+                            {
+                                Notice.GetNotice(db, connectionId, noticeId, courseData);
+                            }
 
                             var result = new
                             {
                                 StatusCode = 200,
                                 Status = "Success",
                                 Message = "評價成功",
-                                ChannelId = channelId
+                                Test = connectionId
                             };
                             return Ok(result);
                         }

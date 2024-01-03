@@ -37,6 +37,7 @@
         connection.start().done(function () {
             console.log('SignalR連線成功')
             hubProxy.invoke('userConnected', 'jg44555678974@examplsess.com')
+            hubProxy.invoke('send', '我是測試')
                 .fail(function (error) {
                     console.error(error);
                 });
