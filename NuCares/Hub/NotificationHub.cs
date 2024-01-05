@@ -47,7 +47,7 @@ namespace NuCares
         public void UserConnected(string id)
         {
             // 將目前使用者新增至 user 清單
-            // 如果已經存在相同 name（使用者Id），則更新該使用者的連線 connectionId
+            // 如果已經存在相同使用者Id，則更新該使用者的連線 connectionId
             if (Users.ConnectionIds.ContainsKey(id))
             {
                 Users.ConnectionIds[id] = Context.ConnectionId;
