@@ -14,18 +14,16 @@ namespace NuCares
         public void Send(string userName)
         {
             // 檢查目前的 ConnectionId
-            Clients.All.notify($"{userName}的connectionId: {Context.ConnectionId}");
+            Clients.All.notify($"{userName} 你的connectionId: {Context.ConnectionId}");
 
             var keys = Users.ConnectionIds.Keys.ToList();
             for (int i = 0; i < keys.Count; i++)
             {
-                string connectionId = keys[i];
-                string name = Users.ConnectionIds[connectionId];
+                string id = keys[i];
+                string connectionId = Users.ConnectionIds[id];
 
-                Clients.All.notify($"ConnectionIds[{i}]中，id: {connectionId} name: {name}");
+                Clients.All.notify($"ConnectionIds[{i}]中，id: {id} name: {connectionId}");
             }
-
-            Clients.All.notify();
         }
 
         // 傳送訊息
