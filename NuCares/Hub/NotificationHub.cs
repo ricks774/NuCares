@@ -14,18 +14,16 @@ namespace NuCares
         public void Send(string userName)
         {
             // 檢查目前的 ConnectionId
-            Clients.All.notify($"{userName}的connectionId: {Context.ConnectionId}");
+            Clients.All.notify($"{userName} 你的connectionId: {Context.ConnectionId}");
 
             var keys = Users.ConnectionIds.Keys.ToList();
             for (int i = 0; i < keys.Count; i++)
             {
-                string connectionId = keys[i];
-                string name = Users.ConnectionIds[connectionId];
+                string id = keys[i];
+                string connectionId = Users.ConnectionIds[id];
 
-                Clients.All.notify($"ConnectionIds[{i}]中，id: {connectionId} name: {name}");
+                Clients.All.notify($"ConnectionIds[{i}]中，id: {id} name: {connectionId}");
             }
-
-            Clients.All.notify();
         }
 
         // 傳送訊息
@@ -44,18 +42,18 @@ namespace NuCares
         }
 
         // 新使用者連線時
-        public void UserConnected(string name)
+        public void UserConnected(string id)
         {
             // 將目前使用者新增至 user 清單
-            // 如果已經存在相同 name（使用者Id），則更新該使用者的連線 connectionId
-            if (Users.ConnectionIds.ContainsKey(name))
+            // 如果已經存在相同使用者Id，則更新該使用者的連線 connectionId
+            if (Users.ConnectionIds.ContainsKey(id))
             {
-                Users.ConnectionIds[name] = Context.ConnectionId;
+                Users.ConnectionIds[id] = Context.ConnectionId;
             }
             else
             {
                 // 將目前使用者新增至 user 清單
-                Users.ConnectionIds.Add(name, Context.ConnectionId);
+                Users.ConnectionIds.Add(id, Context.ConnectionId);
             }
             //// 發送給所有人，取得user清單
             //Clients.All.getList(Users.ConnectionIds.Select(u => new { id = u.Key, name = u.Value }).ToList());
