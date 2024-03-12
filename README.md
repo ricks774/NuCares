@@ -1,3 +1,7 @@
+<p align="center">
+  ![](Images/Nucares_logo.svg)
+</p>
+
 # NuCares ｜ Who cares? NuCares!!
 
 ![Mockup](https://github.com/ricks774/NuCares_/blob/main/NuCares/Images/NuCares_Mockup.png?raw=true)
