@@ -1,5 +1,5 @@
 <p align="center">
-  <img src = "Images/Nucares_logo.svg" />
+  <img src = "https://raw.githubusercontent.com/ricks774/NuCares_/b83d020ef23be0f7e28d3bd2addff262a8e724bd/NuCares/Images/Nucares_logo.svg" />
 </p>
 
 # NuCares ｜ Who cares? NuCares!!
