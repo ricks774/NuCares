@@ -1,4 +1,7 @@
 # NuCares ｜ Who cares? NuCares!!
+
+<img src = "../Images/NuCares_Mockup.png">
+
 [專案網址](https://nu-cares.vercel.app) ｜ [前端 Github Repo](https://github.com/Annie-Peng/NuCares) ｜ [Swagger](https://nucares.top/swagger/index.html?url=/swagger/v1/swagger.json) ｜
 
 <hr/>
