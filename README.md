@@ -1,6 +1,8 @@
 # NuCares ｜ Who cares? NuCares!!
 
-<img src = "../Images/NuCares_Mockup.png">
+![Mockup](https://github.com/ricks774/NuCares_/blob/main/NuCares/Images/NuCares_Mockup.png?raw=true)
+
+
 
 [專案網址](https://nu-cares.vercel.app) ｜ [前端 Github Repo](https://github.com/Annie-Peng/NuCares) ｜ [Swagger](https://nucares.top/swagger/index.html?url=/swagger/v1/swagger.json) ｜
 
@@ -79,6 +81,7 @@
 | 刪除功能 | hotfix/ |
 
 <hr/>
+
 <p>
   <img alt="Visual_Studio" src="https://img.shields.io/badge/Visual_Studio-5C2D91?style=for-the-badge&logo=visual%20studio&logoColor=white" />
   <img alt=".NET" src="https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
@@ -89,6 +92,7 @@
   <img alt="Aws" src="https://img.shields.io/badge/AWS-%23e89d3a?style=for-the-badge&logo=amazonaws" />
   <img alt="Gcp" src="https://img.shields.io/badge/GCP-%236889ec?style=for-the-badge&logo=googlecloud&logoColor=white" />
 </p>
+
 ## 技術規格 
 ### 後端
 - C#
