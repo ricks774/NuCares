@@ -35,6 +35,7 @@ namespace NuCares.Security
                 { "Email", user.Email},
                 { "ImgUrl", user.ImgUrl },
                 { "IsNutritionist", user.IsNutritionist },
+                { "ConnectionId",user.ConnectionId},
                 { "Exp", DateTime.Now.AddDays(1).ToString() } // JwtToken 時效設定 1 天
             };
 

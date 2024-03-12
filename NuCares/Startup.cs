@@ -24,14 +24,14 @@ namespace NuCares
             // 針對 JSON 資料使用 camel (JSON 回應會改 camel，但 Swagger 提示不會)
             //config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
-            //設定 CORS
+            //設定 CORS，AllowAll 表示允許所有來源
             app.UseCors(CorsOptions.AllowAll);
             // 配置 SignalR Hub
             app.MapSignalR(new HubConfiguration
             {
                 EnableDetailedErrors = true, // 可選：啟用詳細錯誤信息
                 EnableJavaScriptProxies = true, // 可選：啟用 JavaScript 代理
-                EnableJSONP = true
+                EnableJSONP = true  // 可選：允許跨來源的瀏覽器通訊
             });
             //app.MapSignalR("/signalr", new HubConfiguration
             //{

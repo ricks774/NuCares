@@ -16,21 +16,28 @@
         var url = 'https://nucares.top/signalr';
         var localUrl = 'http://localhost:44354';
 
-        var connection = $.hubConnection(localUrl);
-
+        var connection = $.hubConnection();
         var hubProxy = connection.createHubProxy('notificationHub');
-        hubProxy.on('ReceiveMessage', function (user, message) {
-            alert('Hi ' + user + ', you said: ' + message);
-        });
+
+        //hubProxy.on('ReceiveMessage', function (user, message) {
+        //    alert('Hi ' + user + ', you said: ' + message);
+        //});
 
         // 接收新增問卷的通知
         hubProxy.on('notify', function (message) {
-            alert(message)
+            console.log(message)
         });
+
+        //// 註冊 'SendConnectionId' 事件處理程序
+        //hubProxy.on('SendConnectionId', function (connectionId) {
+        //    console.log('ConnectionId:', connectionId);
+        //});
 
         // 啟動連接
         connection.start().done(function () {
-            hubProxy.invoke('SendMessage', 'NoNo', 'hello world')
+            console.log('SignalR連線成功')
+            hubProxy.invoke('userConnected', '100')
+            hubProxy.invoke('send', '我是測試員')
                 .fail(function (error) {
                     console.error(error);
                 });
