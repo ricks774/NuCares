@@ -1,4 +1,13 @@
+<p align="center">
+  <img src = "Images/Nucares_logo.svg" />
+</p>
+
 # NuCares ｜ Who cares? NuCares!!
+
+![Mockup](https://github.com/ricks774/NuCares_/blob/main/NuCares/Images/NuCares_Mockup.png?raw=true)
+
+
+
 [專案網址](https://nu-cares.vercel.app) ｜ [前端 Github Repo](https://github.com/Annie-Peng/NuCares) ｜ [Swagger](https://nucares.top/swagger/index.html?url=/swagger/v1/swagger.json) ｜
 
 <hr/>
@@ -76,16 +85,19 @@
 | 刪除功能 | hotfix/ |
 
 <hr/>
+
 <p>
   <img alt="Visual_Studio" src="https://img.shields.io/badge/Visual_Studio-5C2D91?style=for-the-badge&logo=visual%20studio&logoColor=white" />
   <img alt=".NET" src="https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
   <img alt="C#" src="https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white" />
   <img alt="SQL" src="https://img.shields.io/badge/Microsoft%20SQL%20Server-CC2927?style=for-the-badge&logo=microsoft%20sql%20server&logoColor=white" />
   <img alt="POSTMAN" src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white" />
+  <br />
   <img alt="SWAGGER" src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=Swagger&logoColor=white" />
   <img alt="Aws" src="https://img.shields.io/badge/AWS-%23e89d3a?style=for-the-badge&logo=amazonaws" />
   <img alt="Gcp" src="https://img.shields.io/badge/GCP-%236889ec?style=for-the-badge&logo=googlecloud&logoColor=white" />
 </p>
+
 ## 技術規格 
 ### 後端
 - C#
