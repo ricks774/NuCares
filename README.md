@@ -63,29 +63,6 @@
 
 <hr/>
 
-## Git規範 
-### Git Commit 規則
-| 類型 | 格式 | 說明 |
-| :---: | :---: | :--- |
-| 新增功能 | feat: | 新增功能 |
-| 修改功能 | modify: | 調整現有功能(不是錯誤) |
-| 刪除功能 | remove: | 刪除現有功能 |
-| 修補錯誤 | fix: | 修正現有功能的錯誤 |
-| 重構程式 | refactor: | 重組、優化程式(邏輯不變) |
-| 快速修正 | hotfix: | 緊急修正現有功能的錯誤 |
-| 樣式相關 | style: | 修改程式碼風格 (不影響程式碼運行的變動) |
-| 維護文件 | docs: | 新增/修改文件 |
-| 維護資料 | chore: | 更新專案建置、版本…其他 (不影響程式碼運行的變動) |
-
-### Git Branch 規則
-| 類型 | 格式 |
-| :---: | :---: |
-| 新增功能 | feat/ |
-| 修改功能 | fix/ |
-| 刪除功能 | hotfix/ |
-
-<hr/>
-
 <p>
   <img alt="Visual_Studio" src="https://img.shields.io/badge/Visual_Studio-5C2D91?style=for-the-badge&logo=visual%20studio&logoColor=white" />
   <img alt=".NET" src="https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
